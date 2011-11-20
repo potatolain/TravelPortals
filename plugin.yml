@@ -1,0 +1,7 @@
+name: TravelPortals
+main: com.bukkit.cppchriscpp.TravelPortals.TravelPortals
+version: 1.5_1
+commands:
+  portal:
+    description: Portals
+    usage: /portal help

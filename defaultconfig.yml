@@ -1,0 +1,44 @@
+# TravelPortals configuration file
+
+# The type of block used for the frame of the portal. Default: 49
+frame: 49
+# The name for the type of block being used for the frame. Default: obsidian
+framename: obsidian
+
+# The type of block to fill the portal with. Default: 8 (water)
+fill: 8
+
+# The type of block used for the door. Default: 64 
+door: 64
+
+# A second type of block that can be used for the door. Default: 71
+# This makes it so users can use iron doors too! If you do not want this,
+# change this value to 64. (Or whatever you are using for your only door type.)
+door2: 71
+
+# The name of the type of block used for the door. Default: door
+doorname: door
+
+# The type of block that needs to be placed to make a portal. 
+# Default: 76
+torch: 76
+#The name of the type of block that needs to be placed to make a portal
+# Default: redstone torch
+torchname: redstone torch
+
+# Use permissions system? Default: false. 
+# Without permissions, all users can create, use, and destroy portals. 
+permissions: false
+
+# Turn this option on, and the list of current portals will be exported to travelportals.txt 
+# every time a portal is updated. Trigger this manually with /portal export.
+autoexport: false
+
+# This defines how long a portal is inactive for after it is used in seconds.
+# Default: 8
+cooldown : 8
+
+# This option will keep a number of backups of the portals file in case anything goes wrong. 
+# They do not need much space; if you have problems with the file I strongly suggest upping this
+# to 5 or 10. 
+numsaves: 3

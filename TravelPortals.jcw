@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workspace>
+	<settings>
+		<label>TravelPortals</label>
+		<id>972</id>
+		<version>0</version>
+	</settings>
+	<users>
+		<user>
+			<path>TravelPortals.jcu</path>
+		</user>
+	</users>
+	<projects>
+		<project>
+			<path>TravelPortals.jcp</path>
+		</project>
+	</projects>
+</workspace>
