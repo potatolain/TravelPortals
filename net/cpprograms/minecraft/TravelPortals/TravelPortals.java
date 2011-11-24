@@ -1,4 +1,4 @@
-package com.bukkit.cppchriscpp.TravelPortals;
+package net.cpprograms.minecraft.TravelPortals;
 
 import java.io.*;
 import java.util.HashMap;
@@ -13,7 +13,6 @@ import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -21,10 +20,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 
-import com.nijikokun.bukkit.Permissions.Permissions;
-import com.nijiko.permissions.PermissionHandler;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.*;
 
 /**
@@ -123,25 +118,14 @@ public class TravelPortals extends JavaPlugin {
 	 */
 	protected int numsaves = 3;
 
-	/**
-	 * Permissions handler
-	 */
-	public static PermissionHandler Permissions = null;
-
 
 	/**
 	 * Called upon enabling the plugin
 	 */
-    public void onEnable() {
+    @SuppressWarnings({ "deprecation", "unchecked" })
+	public void onEnable() {
 
 		server = getServer();
-        // Register our events
-        PluginManager pm = getServer().getPluginManager();
-		// pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
-		// pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
-        pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.High, this);
 
 		// Read in the YAML config stuff
 		try
@@ -151,7 +135,7 @@ public class TravelPortals extends JavaPlugin {
 			if (data.containsKey("frame"))
 				blocktype = Integer.parseInt(data.get("frame").toString());
 			if (data.containsKey("framename"))
-				strBlocktype = (String)data.get("framename");
+				strBlocktype = data.get("framename").toString();
 			if (data.containsKey("fill"))
 				portaltype = Integer.parseInt(data.get("fill").toString());
 			if (data.containsKey("door"))
@@ -185,10 +169,13 @@ public class TravelPortals extends JavaPlugin {
 			System.out.println("TravelPortals: Check your config.yml!");
 		}
 
-        // Basic permissions setup
-		if (usepermissions)
-			setupPermissions();
-
+		if (!this.getDataFolder().exists())
+		{
+			System.out.println("Could not read plugin's data folder! Please put the TravelPortals folder in the plugins folder with the plugin!");
+			System.out.println("Aborting plugin load");
+			return;
+		}
+		
         try
         {
 
@@ -231,6 +218,13 @@ public class TravelPortals extends JavaPlugin {
         catch (IOException i)
         {
 	    	System.out.println("Could not load TravelPortals location file!");
+	    	System.out.println("If this is your first time running the plugin, you can ignore this message.");
+	    	System.out.println("If this is not your first run, STOP YOUR SERVER NOW! You could lose your portals!");
+	    	System.out.println("The file plugins/TravelPortals/TravelPortals.ser is missing or unreadable.");
+	    	System.out.println("Please check that this file exists and is in the right directory.");
+	    	System.out.println("If it is not, there should be a backup in the plugins/TravelPortals/backups folder.");
+	    	System.out.println("Copy this, place it in the plugins/TravelPortals folder, and rename it to TravelPortals.ser and restart the server.");
+	    	System.out.println("If this does not fix the problem, or if something strange went wrong, please report this issue.");
         }
         catch (java.lang.ClassNotFoundException i)
         {
@@ -278,6 +272,14 @@ public class TravelPortals extends JavaPlugin {
            }
         }*/
 
+        // Register our events
+        PluginManager pm = getServer().getPluginManager();
+		// pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
+		// pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
+        pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.High, this);
+		
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
     }
@@ -310,20 +312,6 @@ public class TravelPortals extends JavaPlugin {
      */
     public void onDisable() {
 		savedata();
-    }
-
-    // Generic Permission setup. (Provided in their code.)
-    public void setupPermissions() {
-	Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
-
-
-	if(this.Permissions == null) {
-	    if(test != null) {
-		this.Permissions = ((Permissions)test).getHandler();
-	    } else {
-		this.getServer().getPluginManager().disablePlugin(this);
-	    }
-	}
     }
 
     public boolean isDebugging(final Player player) {
@@ -443,13 +431,13 @@ public class TravelPortals extends JavaPlugin {
      * @param z Z coordinate to search near.
      * @return The index of a nearby portal in plugin.warpLocations, or -1 if it is not found.
      */
-    public int getWarpFromLocation(int x, int y, int z)
+    public int getWarpFromLocation(String worldname, int x, int y, int z)
     {
         // Iterate through all warps and check how close they are
         for (int i = 0; i < this.warpLocations.size(); i++)
         {
             WarpLocation wd = this.warpLocations.get(i);
-            if (wd.getY() == y)
+            if (wd.getY() == y && wd.getName().equals(worldname))
             {
                 // We found one!!
                 if (Math.abs(wd.getX() - x) <= 1 && Math.abs(wd.getZ() - z) <= 1)

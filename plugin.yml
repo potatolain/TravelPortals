@@ -1,6 +1,6 @@
 name: TravelPortals
-main: com.bukkit.cppchriscpp.TravelPortals.TravelPortals
-version: 1.5_1
+main: net.cpprograms.minecraft.TravelPortals.TravelPortals
+version: 1.5
 commands:
   portal:
     description: Portals

@@ -1,14 +1,10 @@
-package com.bukkit.cppchriscpp.TravelPortals;
+package net.cpprograms.minecraft.TravelPortals;
 
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockListener;
-import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 
 /**
@@ -29,7 +25,7 @@ public class TravelPortalsBlockListener extends BlockListener {
     {
     	if (event.getBlock().getTypeId() == plugin.torchtype)
     	{
-    		if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(event.getPlayer(), "travelportals.portal.create"))
+    		if (plugin.usepermissions && event.getPlayer().hasPermission("travelportals.portal.create"))
     			return;
     		Player player = event.getPlayer();
 			int numwalls = 0;
@@ -113,7 +109,7 @@ public class TravelPortalsBlockListener extends BlockListener {
 
 	    		player.sendMessage("§4You have created a portal! Type /portal help for help using it.");
 
-	    		this.plugin.addWarp(new WarpLocation(x,y,z, doordir, player.getWorld().getName()));
+	    		this.plugin.addWarp(new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName()));
 	    		this.plugin.savedata();
 	    	}
 
@@ -137,7 +133,7 @@ public class TravelPortalsBlockListener extends BlockListener {
                 if (((Math.abs(w.getX() - block.getX()) < 2 && Math.abs(w.getZ() - block.getZ()) < 1) || (Math.abs(w.getZ() - block.getZ()) < 2 && Math.abs(w.getX() - block.getX()) < 1)) && (block.getY() - w.getY() < 2 && block.getY() - w.getY() >= 0))
                 {
                     // Permissions test
-                    if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(event.getPlayer(), "travelportals.portal.destroy"))
+                    if (plugin.usepermissions && event.getPlayer().hasPermission("travelportals.portal.destroy"))
                     {
                         event.setCancelled(true);
                         return;

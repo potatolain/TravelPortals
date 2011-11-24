@@ -1,8 +1,8 @@
-package com.bukkit.cppchriscpp.TravelPortals;
+package net.cpprograms.minecraft.TravelPortals;
 
 /**
  * DO WHAT YOU WANT TO PUBLIC LICENSE
- * (Obtained from: http://www.astalavista.com/proxy/browse.php/Oi8vcGFz/dGViaW4u/Y29tL0Ry/Ulh2YlJl/b5/)
+ * Credit to angelsl for the original code.
  */
 public class MinecraftFontWidthCalculator {
 

@@ -1,4 +1,4 @@
-package com.bukkit.cppchriscpp.TravelPortals;
+package net.cpprograms.minecraft.TravelPortals;
 
 /**
  * @(#)WarpLocation.java
@@ -39,6 +39,11 @@ public class WarpLocation implements java.io.Serializable {
      * Is this portal hidden?
      */
     private boolean hidden = false;
+    
+    /**
+     * Portal owner.
+     */
+    private String owner = "";
 
     /**
      * Where is the door?
@@ -85,11 +90,12 @@ public class WarpLocation implements java.io.Serializable {
     }
 
     /**
-     * Creates a warp point at a position. This is the most likely constructor you'll use.
+     * Creates a warp point at a position.
      * @param _x The X coordinate of the warp point's position.
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
+     * @deprecated
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
     {
@@ -98,23 +104,28 @@ public class WarpLocation implements java.io.Serializable {
     	doorpos = _doorpos;
     	world = _world;
     }
-
+    
     /**
-     * Creates a warp point with the name given. May be useful in the future.
+     * Creates a warp point at a position. This is the most likely constructor you'll use.
      * @param _x The X coordinate of the warp point's position.
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
-     * @param _name The name of this warp.
+     * @param _doorpos The position of the door.
+     * @param _owner The person who owns this.
      */
-    /*public WarpLocation(int _x, int _y, int _z, String _name)
+    public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, String _owner)
     {
-    	x = _x; y = _y; z = _z; name = _name; destination = "";
+    	x = _x; y = _y; z = _z; name = ""; destination = "";
     	lastused = 0;
-    }*/
+    	doorpos = _doorpos;
+    	world = _world;
+    	owner = _owner;
+    }
 
     /**
      * Create one of these from the legacy format.
      * @param old The point in the old format.
+     * @deprecated
      */
     public WarpLocation(WarpPoint old)
     {
@@ -179,6 +190,24 @@ public class WarpLocation implements java.io.Serializable {
     public void setName(String n)
     {
             name = n;
+    }
+    
+    /**
+     * Gets the current owner of the portal.
+     * @return The owner of the portal.
+     */
+    public String getOwner()
+    {
+    	return owner;
+    }
+    
+    /**
+     * Sets the current owner of the portal.
+     * @param _owner The new owner.
+     */
+    public void setOwner(String _owner)
+    {
+    	owner = _owner;
     }
 
     /**

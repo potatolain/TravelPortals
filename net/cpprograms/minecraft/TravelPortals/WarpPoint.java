@@ -1,4 +1,4 @@
-package com.bukkit.cppchriscpp.TravelPortals;
+package net.cpprograms.minecraft.TravelPortals;
 
 /**
  * @(#)WarpPoint.java
@@ -12,7 +12,9 @@ package com.bukkit.cppchriscpp.TravelPortals;
 /**
  * A quick serializable storage medium for warping points.
  * @author cppchriscpp
+ * @deprecated
  */
+@SuppressWarnings("serial")
 public class WarpPoint implements java.io.Serializable {
     /**
      * Used to store the position of the warp.

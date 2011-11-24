@@ -1,19 +1,15 @@
-package com.bukkit.cppchriscpp.TravelPortals;
+package net.cpprograms.minecraft.TravelPortals;
 
 import java.util.TreeMap;
 import java.util.Iterator;
 
 import org.bukkit.Location;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import com.nijiko.permissions.PermissionHandler;
 
 /**
  * Handle events for all Player related events
@@ -40,42 +36,42 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// Help command
     		if (split[1].equalsIgnoreCase("help"))
     		{
-    			if (plugin.usepermissions && plugin.Permissions != null)
-    				if ((!plugin.Permissions.has(player, "travelportals.command.help")))
+    			if (plugin.usepermissions)
+    				if (!player.hasPermission("travelportals.command.help"))
     					return false;
 
 				player.sendMessage("§3-- TravelPortals Help --");
 
-				if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.portal.create")))
+				if (plugin.usepermissions && player.hasPermission("travelportals.portal.create"))
 				{
                     player.sendMessage("§2You can create portals by surrounding a 2x1 block with");
 		            player.sendMessage("§2" + plugin.strBlocktype + " and a " + plugin.strDoortype + ", then putting a");
 		            player.sendMessage("§2" + plugin.strTorchtype + " at the bottom.");
 				}
 
-				if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.command.name")))
+				if (plugin.usepermissions && player.hasPermission("travelportals.command.name"))
 	            	player.sendMessage("§2/portal name [name] sets the name of this portal.");
 
-				if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.command.warp")))
+				if (plugin.usepermissions && player.hasPermission("travelportals.command.warp"))
 	            	player.sendMessage("§2/portal warp [name] sets the portal name to warp to.");
 
-                if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.command.hide")))
+                if (plugin.usepermissions && player.hasPermission("travelportals.command.hide"))
                     player.sendMessage("§2/portal hide [name] hides (or unhides) a portal from the list.");
 
-                if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.command.info")))
+                if (plugin.usepermissions && player.hasPermission("travelportals.command.info"))
                     player.sendMessage("§2/portal info shows information about named or nearby portal.");
 
-                if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.command.deactivate")))
+                if (plugin.usepermissions && player.hasPermission("travelportals.command.deactivate"))
                     player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 
-				if (!plugin.usepermissions || (plugin.Permissions != null && plugin.Permissions.has(player, "travelportals.command.list")))
+				if (plugin.usepermissions && player.hasPermission("travelportals.command.list"))
 	            	player.sendMessage("§7To get a list of existing portals, use the command /portal list.");
     		}
 
     		// List of portals (8 per page)
     		else if (split[1].equalsIgnoreCase("list"))
     		{
-    			if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.list"))
+    			if (plugin.usepermissions && !player.hasPermission("travelportals.command.list"))
     				return false;
 
                 // Get what page to use.
@@ -159,7 +155,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// Set the name of a nearby portal
     		else if (split[1].equalsIgnoreCase("name"))
     		{
-    			if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.name"))
+    			if (plugin.usepermissions && player.hasPermission("travelportals.command.name"))
     				return false;
     			if (split.length < 3)
     				player.sendMessage("§4You have to include a name for the location!");
@@ -168,7 +164,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     			else
     			{
     				// Check to make sure the user is actually near a portal.
-    				int loc = this.plugin.getWarpFromLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+    				int loc = this.plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
 
     				if (loc == -1)
     					player.sendMessage("§4No portal found! (You must be within one block of the portal.)");
@@ -191,9 +187,9 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// set where to warp to
     		else if (split[1].equalsIgnoreCase("warp"))
     		{
-    			if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.warp"))
+    			if (plugin.usepermissions && !player.hasPermission("travelportals.command.warp"))
     				return false;
-    			int loc = plugin.getWarpFromLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+    			int loc = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
     			if (split.length < 3)
     				player.sendMessage("§4You have to include a destination!");
     			else if (loc == -1)
@@ -215,7 +211,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// Hide a portal
     		else if (split[1].equalsIgnoreCase("hide"))
     		{
-    			if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.hide"))
+    			if (plugin.usepermissions && player.hasPermission("travelportals.command.hide"))
     				return false;
     			if (split.length < 3)
     			{
@@ -237,7 +233,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// Manually trigger the export function.
     		else if (split[1].equalsIgnoreCase("export"))
     		{
-                if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.dumplist"))
+                if (plugin.usepermissions && player.hasPermission("travelportals.command.dumplist"))
                     return false;
                 this.plugin.dumpPortalList();
                 player.sendMessage("§3Portal list dumped to travelportals.txt.");
@@ -245,7 +241,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// Op-only portal destruction.
     		else if (split[1].equalsIgnoreCase("deactivate"))
     		{
-                if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.hide"))
+                if (plugin.usepermissions && !player.hasPermission("travelportals.command.hide"))
                     return false;
                 else if (!plugin.usepermissions && !player.isOp())
                     return false;
@@ -269,8 +265,8 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		// Print out some information about the portal.
     		else if (split[1].equalsIgnoreCase("info"))
     		{
-                if (plugin.usepermissions && plugin.Permissions != null)
-                    if ((!plugin.Permissions.has(player, "travelportals.command.info")))
+                if (plugin.usepermissions)
+                    if (player.hasPermission("travelportals.command.info"))
                         return false;
                 if (split.length == 3)
                 {
@@ -281,7 +277,8 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                     {
                         String n = plugin.warpLocations.get(w).getName();
                         String d = plugin.warpLocations.get(w).getDestination();
-                        if (n == "")
+                        String o = plugin.warpLocations.get(w).getOwner();
+                        if (n.equals(""))
                             n = "has no name";
                         else
                         {
@@ -294,13 +291,18 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                             else
                                 d = "warps to " + d;
                         }
+                        if (o.equals(""))
+                        	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
+                        else
+                        	o = "It is owned by " + o;
                         player.sendMessage("§3This portal " + n + " and " + d + ".");
+                        player.sendMessage("§3" + o);
                     }
                     return true;
                 }
                 else
                 {
-                    int w = plugin.getWarpFromLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+                    int w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
                     if (w == -1)
                         player.sendMessage("§4You must provide a portal name, or stand in front of one.");
                     else
@@ -345,7 +347,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     public void onPlayerMove(PlayerMoveEvent event)
     {
         // Permissions check
-        if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(event.getPlayer(), "travelportals.portal.use"))
+        if (plugin.usepermissions && event.getPlayer().hasPermission("travelportals.portal.use"))
     		return;
 
         // The player that caused this is necessary, as is the block.
@@ -356,7 +358,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
 		if (blk.getTypeId() == plugin.portaltype || blk.getTypeId() == 9 || blk.getTypeId() == 76)
 		{
 		    // Find nearby warp.
-			int w = plugin.getWarpFromLocation(event.getTo().getBlockX(), event.getTo().getBlockY(), event.getTo().getBlockZ());
+			int w = plugin.getWarpFromLocation(event.getTo().getWorld().getName(), event.getTo().getBlockX(), event.getTo().getBlockY(), event.getTo().getBlockZ());
 			if (w == -1)
 				return;
 
@@ -368,10 +370,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
             // Complain if this isn't usable
 			if (!plugin.warpLocations.get(w).hasDestination())
 			{
-				if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.warp"))
+				if (plugin.usepermissions && player.hasPermission("travelportals.command.warp"))
 				{
 				}
-				else if (plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.help"))
+				else if (plugin.usepermissions && player.hasPermission("travelportals.command.help"))
 				{
 					player.sendMessage("§4This portal has no destination.");
 				}
@@ -390,7 +392,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
 				if (loc == -1)
 				{
 					player.sendMessage("§4This portal's destination (" + plugin.warpLocations.get(w).getDestination() + ") does not exist.");
-					if (!(plugin.usepermissions && plugin.Permissions != null && !plugin.Permissions.has(player, "travelportals.command.warp")))
+					if (!(plugin.usepermissions && player.hasPermission("travelportals.command.warp")))
 						player.sendMessage("§2See /portal help for more information.");
 
                     plugin.warpLocations.get(w).setLastUsed();
@@ -446,12 +448,12 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                     Location locy = new Location(player.getWorld(), x + 0.50, y, z + 0.50, rotation, 0);
                     if (plugin.warpLocations.get(loc).getWorld() != null && !plugin.warpLocations.get(loc).getWorld().equals(""))
                     {
-                        World wo = plugin.server.createWorld(plugin.warpLocations.get(loc).getWorld(), Environment.NORMAL);
-                        locy.setWorld(wo);
+                    	World wo = WorldCreator.name(plugin.warpLocations.get(loc).getWorld()).createWorld();
+                    	locy.setWorld(wo);
                     }
                     else
                     {
-                        locy.setWorld(plugin.server.getWorlds().get(0));
+                        locy.setWorld(TravelPortals.server.getWorlds().get(0));
                     }
                     // Warp the user!
                     player.teleport(locy);
