@@ -42,29 +42,29 @@ public class TravelPortalsPlayerListener extends PlayerListener {
 
 				player.sendMessage("§3-- TravelPortals Help --");
 
-				if (plugin.usepermissions && player.hasPermission("travelportals.portal.create"))
+				if (!plugin.usepermissions || player.hasPermission("travelportals.portal.create"))
 				{
                     player.sendMessage("§2You can create portals by surrounding a 2x1 block with");
 		            player.sendMessage("§2" + plugin.strBlocktype + " and a " + plugin.strDoortype + ", then putting a");
 		            player.sendMessage("§2" + plugin.strTorchtype + " at the bottom.");
 				}
 
-				if (plugin.usepermissions && player.hasPermission("travelportals.command.name"))
+				if (!plugin.usepermissions || player.hasPermission("travelportals.command.name"))
 	            	player.sendMessage("§2/portal name [name] sets the name of this portal.");
 
-				if (plugin.usepermissions && player.hasPermission("travelportals.command.warp"))
+				if (!plugin.usepermissions || player.hasPermission("travelportals.command.warp"))
 	            	player.sendMessage("§2/portal warp [name] sets the portal name to warp to.");
 
-                if (plugin.usepermissions && player.hasPermission("travelportals.command.hide"))
+                if (!plugin.usepermissions || player.hasPermission("travelportals.command.hide"))
                     player.sendMessage("§2/portal hide [name] hides (or unhides) a portal from the list.");
 
-                if (plugin.usepermissions && player.hasPermission("travelportals.command.info"))
+                if (!plugin.usepermissions || player.hasPermission("travelportals.command.info"))
                     player.sendMessage("§2/portal info shows information about named or nearby portal.");
 
-                if (plugin.usepermissions && player.hasPermission("travelportals.command.deactivate"))
+                if (!plugin.usepermissions || player.hasPermission("travelportals.command.deactivate"))
                     player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 
-				if (plugin.usepermissions && player.hasPermission("travelportals.command.list"))
+				if (!plugin.usepermissions || player.hasPermission("travelportals.command.list"))
 	            	player.sendMessage("§7To get a list of existing portals, use the command /portal list.");
     		}
 
@@ -165,7 +165,9 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     			{
     				// Check to make sure the user is actually near a portal.
     				int loc = this.plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-
+    				player.sendMessage(player.getWorld().getName()+": "+player.getLocation().getBlockX()+","+player.getLocation().getBlockY()+","+player.getLocation().getBlockZ());
+    				
+    				
     				if (loc == -1)
     					player.sendMessage("§4No portal found! (You must be within one block of the portal.)");
     				else
@@ -268,64 +270,45 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                 if (plugin.usepermissions)
                     if (player.hasPermission("travelportals.command.info"))
                         return false;
+                int w = -1;
                 if (split.length == 3)
                 {
-                    int w = plugin.getWarp(split[2]);
-                    if (w == -1)
+                    w = plugin.getWarp(split[2]);
+                    if (w == -1) {
                         player.sendMessage("§4There is no portal with that name.");
-                    else
-                    {
-                        String n = plugin.warpLocations.get(w).getName();
-                        String d = plugin.warpLocations.get(w).getDestination();
-                        String o = plugin.warpLocations.get(w).getOwner();
-                        if (n.equals(""))
-                            n = "has no name";
-                        else
-                        {
-                            n = "is named " + n;
-                            int m = plugin.getWarp(d);
-                            if (m == -1)
-                                d = "warps to §c" + d + "§";
-                            else if (plugin.warpLocations.get(m).getHidden())
-                                d = "warps to §9?????§";
-                            else
-                                d = "warps to " + d;
-                        }
-                        if (o.equals(""))
-                        	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
-                        else
-                        	o = "It is owned by " + o;
-                        player.sendMessage("§3This portal " + n + " and " + d + ".");
-                        player.sendMessage("§3" + o);
+                        return true;
                     }
-                    return true;
+                } else {
+                    w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+                    if (w == -1) {
+                        player.sendMessage("§4You must provide a portal name, or stand in front of one.");
+                        return true;
+                    }
                 }
+                
+                String n = plugin.warpLocations.get(w).getName();
+                String d = plugin.warpLocations.get(w).getDestination();
+                String o = plugin.warpLocations.get(w).getOwner();
+                if (n.equals(""))
+                    n = "has no name";
                 else
                 {
-                    int w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-                    if (w == -1)
-                        player.sendMessage("§4You must provide a portal name, or stand in front of one.");
+                    n = "is named " + n;
+                    int m = plugin.getWarp(d);
+                    if (m == -1)
+                        d = "warps to §c" + d + "§";
+                    else if (plugin.warpLocations.get(m).getHidden())
+                        d = "warps to §9?????§";
                     else
-                    {
-                        String n = plugin.warpLocations.get(w).getName();
-                        String d = plugin.warpLocations.get(w).getDestination();
-                        if (n == "")
-                            n = "has no name";
-                        else
-                        {
-                            n = "is named " + n;
-                            int m = plugin.getWarp(d);
-                            if (m == -1)
-                                d = "warps to §c" + d + "§";
-                            else if (plugin.warpLocations.get(m).getHidden())
-                                d = "warps to §9?????§";
-                            else
-                                d = "warps to " + d;
-                        }
-                        player.sendMessage("§3This portal " + n + " and " + d + ".");
-
-                    }
+                        d = "warps to " + d;
                 }
+                if (o.equals(""))
+                	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
+                else
+                	o = "It is owned by " + o;
+                player.sendMessage("§3This portal " + n + " and " + d + ".");
+                player.sendMessage("§3" + o);
+               
     		}
     		else // whoops
     		{

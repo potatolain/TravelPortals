@@ -260,18 +260,6 @@ public class TravelPortals extends JavaPlugin {
 	        }
         }
 
-        // Hackish helper for portals to the nether on my server.
-        // Use it if you need it.
-        // REMOVE THIS FOR REAL BUILDS
-        /*for (WarpLocation w : warpLocations)
-        {
-           if (w.getWorld().equals("netherworld"))
-           {
-               w.setWorld("nether");
-               System.out.println("Updating warp " + w.getName() + " from netherworld to nether");
-           }
-        }*/
-
         // Register our events
         PluginManager pm = getServer().getPluginManager();
 		// pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
@@ -437,7 +425,7 @@ public class TravelPortals extends JavaPlugin {
         for (int i = 0; i < this.warpLocations.size(); i++)
         {
             WarpLocation wd = this.warpLocations.get(i);
-            if (wd.getY() == y && wd.getName().equals(worldname))
+            if (wd.getY() == y && wd.getWorld().equals(worldname))
             {
                 // We found one!!
                 if (Math.abs(wd.getX() - x) <= 1 && Math.abs(wd.getZ() - z) <= 1)
