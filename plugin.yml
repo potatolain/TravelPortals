@@ -5,3 +5,129 @@ commands:
   portal:
     description: Portals
     usage: /portal help
+permissions: 
+  travelportals.classicuser:
+    description: User permissions that work like classic TravelPortals; all users have access to all portals.
+    children: 
+      travelportals.portal.create: true
+      travelportals.portal.use: true
+      travelportals.portal.destroy: true
+      travelportals.command.help: true
+      travelportals.command.hide: true
+      travelportals.command.list: true
+      travelportals.command.name: true
+      travelportals.command.warp: true
+      travelportals.command.info: true
+      travelportals.command.claim: true
+      travelportals.admin.portal.use: true
+      travelportals.admin.portal.destroy: true
+      travelportals.admin.command.name: true
+      travelportals.admin.command.warp: true
+      travelportals.admin.command.hide: true
+  travelportals.normaluser:
+    description: User permissions that limit each user to their own portals
+    children: 
+      travelportals.portal.create: true
+      travelportals.portal.use: true
+      travelportals.portal.destroy: true
+      travelportals.command.help: true
+      travelportals.command.hide: true
+      travelportals.command.list: true
+      travelportals.command.name: true
+      travelportals.command.warp: true
+      travelportals.command.info: true
+      travelportals.command.claim: true
+  travelportals.op:
+    description: Suggested permissions for ops. Gives access to most commands
+    children:
+      travelportals.portal.create: true
+      travelportals.portal.use: true
+      travelportals.portal.destroy: true
+      travelportals.command.help: true
+      travelportals.command.hide: true
+      travelportals.command.list: true
+      travelportals.command.name: true
+      travelportals.command.warp: true
+      travelportals.command.info: true
+      travelportals.command.claim: true
+      travelportals.admin.portal.use: true
+      travelportals.admin.portal.destroy: true
+      travelportals.admin.command.name: true
+      travelportals.admin.command.warp: true
+      travelportals.admin.command.hide: true
+      travelportals.admin.command.deactivate: true
+      travelportals.admin.command.claim: true
+  travelportals.*:
+    description: Gives access to everything. Use with caution.
+    children: 
+      travelportals.portal.create: true
+      travelportals.portal.use: true
+      travelportals.portal.destroy: true
+      travelportals.command.help: true
+      travelportals.command.hide: true
+      travelportals.command.list: true
+      travelportals.command.name: true
+      travelportals.command.warp: true
+      travelportals.command.info: true
+      travelportals.command.claim: true
+      travelportals.admin.portal.use: true
+      travelportals.admin.portal.destroy: true
+      travelportals.admin.command.name: true
+      travelportals.admin.command.warp: true
+      travelportals.admin.command.hide: true
+      travelportals.admin.command.deactivate: true
+      travelportals.admin.command.claim: true
+      travelportals.admin.command.export: true
+  # Here be real permissions
+  travelportals.portal.create:
+    description: Allows the user to create portals.
+    default: true
+  travelportals.portal.use:
+    description: Allows the user to use his/her own portals.
+    default: true
+  travelportals.portal.destroy:
+    description: Allows the user to destroyhis/her own portals.
+    default: true
+  travelportals.command.help:
+    description: Allows the user to see the help.
+    default: true
+  travelportals.command.list:
+    description: Allows the user to see the list of portals.
+    default: true
+  travelportals.command.name:
+    description: Allows the user to name his/her own portals.
+    default: true
+  travelportals.command.warp:
+    description: Allows the user to change the destination of his/her own portals.
+    default true;
+  travelportals.command.hide:
+    description: Allows the user to hide his/her portals.
+    default: true
+  travelportals.command.claim:
+    description: Allows the user to claim unclaimed portals (ones made by older versions)
+    default: true
+  travelportals.command.info:
+    description: Allows the user to get some information about nearby portals.
+    default: true
+  # Here be dragons.. err, admin permissions
+  travelportals.admin.portal.use:
+    description: Allows the user to use any existing portals.
+    default: true
+  travelportals.admin.portal.destroy:
+    description: Allows the user to destroy ALL portals; not just his/her own.
+    default: op
+  travelportals.admin.command.name:
+    description: Allows the user to change the name of any existing portal.
+    default: op
+  travelportals.admin.command.warp:
+    description: Allows the user to change the destination of any existing portal.
+    default: op
+  travelportals.admin.command.claim:
+    description: Allows the user to claim existing portals, EVEN IF THEY ARE ALREADY OWNED.
+    default: op
+  travelportals.admin.command.deactivate:
+    description: Allows staff to clean up portals that may no longer be valid.
+    default: op
+  travelportals.admin.command.export:
+    description: Allows staff to force an export of current warps in txt format.
+    default: op
