@@ -60,7 +60,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
 
                 if (!plugin.usepermissions || player.hasPermission("travelportals.command.info"))
                     player.sendMessage("§2/portal info shows information about named or nearby portal.");
-
+                
+                if (!plugin.usepermissions || player.hasPermission("travelportals.command.claim"))
+                	player.sendMessage("§2/portal claim claims (or gives up ownership of) a portal.");
+                
                 if (!plugin.usepermissions || player.hasPermission("travelportals.command.deactivate"))
                     player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 
@@ -268,7 +271,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("info"))
     		{
                 if (plugin.usepermissions)
-                    if (player.hasPermission("travelportals.command.info"))
+                    if (!player.hasPermission("travelportals.command.info"))
                         return false;
                 int w = -1;
                 if (split.length == 3)
@@ -305,10 +308,33 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                 if (o.equals(""))
                 	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
                 else
-                	o = "It is owned by " + o;
+                	o = "It is owned by " + o + ".";
                 player.sendMessage("§3This portal " + n + " and " + d + ".");
                 player.sendMessage("§3" + o);
                
+    		}
+    		else if (split[1].equalsIgnoreCase("claim")) 
+    		{
+    			if (plugin.usepermissions && !player.hasPermission("travelportals.command.claim"))
+    				return false;
+    			
+	           int w = -1;
+	           w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+               if (w == -1) {
+            	   player.sendMessage("§4No portal found! (You must be within one block of a portal.)");
+                   return true;
+               }
+               
+               if (plugin.warpLocations.get(w).getOwner().equals("") || ((!plugin.usepermissions && player.isOp()) || player.hasPermission("travelportals.admin.claim"))) {
+            	   plugin.warpLocations.get(w).setOwner(player.getName());
+            	   plugin.savedata();
+            	   player.sendMessage("§2You have successfully claimed this portal!");
+            	   return true;
+               } else {
+            	   player.sendMessage("§4This portal is already owned by "+plugin.warpLocations.get(w).getOwner()+"!");
+            	   return true;
+               }
+    			
     		}
     		else // whoops
     		{
@@ -438,6 +464,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                     {
                         locy.setWorld(TravelPortals.server.getWorlds().get(0));
                     }
+                    // Pre-load the chunk we're headed for...
+                    if (!locy.getBlock().getChunk().isLoaded())
+                    	locy.getBlock().getChunk().load();
+                    
                     // Warp the user!
                     player.teleport(locy);
                     event.setTo(locy);
