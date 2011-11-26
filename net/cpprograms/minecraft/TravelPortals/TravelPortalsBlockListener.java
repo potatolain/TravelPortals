@@ -133,10 +133,17 @@ public class TravelPortalsBlockListener extends BlockListener {
                 if (((Math.abs(w.getX() - block.getX()) < 2 && Math.abs(w.getZ() - block.getZ()) < 1) || (Math.abs(w.getZ() - block.getZ()) < 2 && Math.abs(w.getX() - block.getX()) < 1)) && (block.getY() - w.getY() < 2 && block.getY() - w.getY() >= 0))
                 {
                     // Permissions test
-                    if (plugin.usepermissions && event.getPlayer().hasPermission("travelportals.portal.destroy"))
-                    {
-                        event.setCancelled(true);
-                        return;
+                    if (plugin.usepermissions) {
+                    	if (!event.getPlayer().hasPermission("travelportals.portal.destroy")) {
+	                        event.setCancelled(true);
+	                        return;
+                    	}
+                    	if (!w.getOwner().equals("") && !w.getOwner().equals(player)) {
+                    		if (!event.getPlayer().hasPermission("travelportals.admin.portal.destroy")) {
+                    			event.setCancelled(true);
+                    			return;
+                    		}
+                    	}
                     }
                     // They hit an important warping block..destroy the warp point.
                     // Remove the blocks
