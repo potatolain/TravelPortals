@@ -168,7 +168,6 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     			{
     				// Check to make sure the user is actually near a portal.
     				int loc = this.plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-    				player.sendMessage(player.getWorld().getName()+": "+player.getLocation().getBlockX()+","+player.getLocation().getBlockY()+","+player.getLocation().getBlockZ());
     				
     				
     				if (loc == -1)
