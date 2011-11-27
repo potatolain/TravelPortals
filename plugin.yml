@@ -99,7 +99,7 @@ permissions:
     default: true
   travelportals.command.warp:
     description: Allows the user to change the destination of his/her own portals.
-    default true;
+    default: true;
   travelportals.command.hide:
     description: Allows the user to hide his/her portals.
     default: true

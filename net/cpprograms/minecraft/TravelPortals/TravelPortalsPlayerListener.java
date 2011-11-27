@@ -64,7 +64,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                 if (!plugin.usepermissions || player.hasPermission("travelportals.command.claim"))
                 	player.sendMessage("§2/portal claim claims (or gives up ownership of) a portal.");
                 
-                if (!plugin.usepermissions || player.hasPermission("travelportals.command.deactivate"))
+                if ((!plugin.usepermissions && player.isOp()) || player.hasPermission("travelportals.command.deactivate"))
                     player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 
 				if (!plugin.usepermissions || player.hasPermission("travelportals.command.list"))
@@ -397,7 +397,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     public void onPlayerMove(PlayerMoveEvent event)
     {
         // Permissions check
-        if (plugin.usepermissions && event.getPlayer().hasPermission("travelportals.portal.use"))
+        if (plugin.usepermissions && !event.getPlayer().hasPermission("travelportals.portal.use"))
     		return;
 
         // The player that caused this is necessary, as is the block.
