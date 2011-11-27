@@ -1,5 +1,5 @@
 TravelPortals Plugin
-Version 2.0
+Version 1.5
 
 Introduction 
 ------------
@@ -56,19 +56,15 @@ The Commands:
 - /portal list [page number] gives a list of existing portals. 
 - /portal export dumps the current portals to travelportals.txt in the data folder.
   Format: x,y,z,name,destination,hidden
+- /portal claim [name] Claims a portal which is not currently owned. 
 
 
 Permissions
 -----------
 
-This plugin now supports Bukkit permissions on an optional basis. By default, it 
+This plugin now supports permissions on an optional basis. By default, it 
 is turned off. To turn it on, you need to change a configuration option for it.
 See the section on configuration for that. The options for it are as follows:
-
-Note: These permissions have changed with version 2.0. The default permissions
-limit the user to modifying their own created portals. If the user does
-not own a portal, this user will need an admin permission (see below) to modify
-said portal.
 
 - travelportals.portal.create
 - travelportals.portal.destroy
@@ -79,30 +75,8 @@ said portal.
 - travelportals.command.name
 - travelportals.command.warp
 - travelportals.command.info
-- travelportals.command.claim
-
-The plugin also has some admin-only stuff, which can be limited using the 
-travelportals.admin permission nodes. In addition, users with admin permissions
-to commands will be able to use these commands on any portals; not just ones that
-they own.
-
-- travelportals.admin.command.name
-- travelportals.admin.command.warp
-- travelportals.admin.command.claim
-- travelportals.admin.command.hide
-- travelportals.admin.portal.use
-- travelportals.admin.portal.destroy
-
-- travelportals.admin.command.deactivate
-- travelportals.admin.command.export
-
-Finally, some default groups have been implemented to make life easier: 
-
-- travelportals.classicuser - Makes the permissions work like classic TravelPortals
-- travelportals.normaluser  - Generic user permissions, as above. Not really needed.
-- travelportals.op          - Suggested permissions for ops. (Has admin stuff)
-- travelportals.*           - All permissions you could ever want.
-
+- travelportals.command.deactivate
+- travelportals.command.export
 
 Support & Bug Reports
 ---------------------
