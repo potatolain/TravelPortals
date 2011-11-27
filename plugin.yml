@@ -86,7 +86,7 @@ permissions:
     description: Allows the user to use his/her own portals.
     default: true
   travelportals.portal.destroy:
-    description: Allows the user to destroyhis/her own portals.
+    description: Allows the user to destroy his/her own portals.
     default: true
   travelportals.command.help:
     description: Allows the user to see the help.

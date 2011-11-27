@@ -66,7 +66,7 @@ is turned off. To turn it on, you need to change a configuration option for it.
 See the section on configuration for that. The options for it are as follows:
 
 Note: These permissions have changed with version 2.0. The default permissions
-limit the user to modifying and using their own created portals. If the user does
+limit the user to modifying their own created portals. If the user does
 not own a portal, this user will need an admin permission (see below) to modify
 said portal.
 
@@ -95,6 +95,13 @@ they own.
 
 - travelportals.admin.command.deactivate
 - travelportals.admin.command.export
+
+Finally, some default groups have been implemented to make life easier: 
+
+- travelportals.classicuser - Makes the permissions work like classic TravelPortals
+- travelportals.normaluser  - Generic user permissions, as above. Not really needed.
+- travelportals.op          - Suggested permissions for ops. (Has admin stuff)
+- travelportals.*           - All permissions you could ever want.
 
 
 Support & Bug Reports

@@ -25,7 +25,7 @@ public class TravelPortalsBlockListener extends BlockListener {
     {
     	if (event.getBlock().getTypeId() == plugin.torchtype)
     	{
-    		if (plugin.usepermissions && event.getPlayer().hasPermission("travelportals.portal.create"))
+    		if (plugin.usepermissions && !event.getPlayer().hasPermission("travelportals.portal.create"))
     			return;
     		Player player = event.getPlayer();
 			int numwalls = 0;

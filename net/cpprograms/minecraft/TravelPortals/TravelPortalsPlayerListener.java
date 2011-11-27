@@ -38,7 +38,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		{
     			if (plugin.usepermissions)
     				if (!player.hasPermission("travelportals.command.help"))
-    					return false;
+    				{
+    					player.sendMessage("§2You do not have permission to use this command.");
+    					return true;
+    				}
 
 				player.sendMessage("§3-- TravelPortals Help --");
 
@@ -64,7 +67,7 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                 if (!plugin.usepermissions || player.hasPermission("travelportals.command.claim"))
                 	player.sendMessage("§2/portal claim claims (or gives up ownership of) a portal.");
                 
-                if ((!plugin.usepermissions && player.isOp()) || player.hasPermission("travelportals.command.deactivate"))
+                if ((!plugin.usepermissions && player.isOp()) || player.hasPermission("travelportals.admin.command.deactivate"))
                     player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 
 				if (!plugin.usepermissions || player.hasPermission("travelportals.command.list"))
@@ -75,7 +78,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("list"))
     		{
     			if (plugin.usepermissions && !player.hasPermission("travelportals.command.list"))
-    				return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
 
                 // Get what page to use.
     	        int pn = 1;
@@ -159,7 +165,11 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("name"))
     		{
     			if (plugin.usepermissions && !player.hasPermission("travelportals.command.name"))
-    				return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
+    			
     			if (split.length < 3)
     				player.sendMessage("§4You have to include a name for the location!");
     			else if (this.plugin.getWarp(split[2]) != -1) // Is this name already taken?
@@ -204,7 +214,11 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("warp"))
     		{
     			if (plugin.usepermissions && !player.hasPermission("travelportals.command.warp"))
-    				return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
+    			
     			int loc = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
     			if (split.length < 3)
     				player.sendMessage("§4You have to include a destination!");
@@ -241,7 +255,11 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("hide"))
     		{
     			if (plugin.usepermissions && player.hasPermission("travelportals.command.hide"))
-    				return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
+    			
     			if (split.length < 3)
     			{
     				player.sendMessage("§4You have to include portal name!");
@@ -275,7 +293,11 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("export"))
     		{
                 if (plugin.usepermissions && player.hasPermission("travelportals.admin.command.export"))
-                    return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
+                
                 this.plugin.dumpPortalList();
                 player.sendMessage("§3Portal list dumped to travelportals.txt.");
     		}
@@ -283,9 +305,16 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("deactivate"))
     		{
                 if (plugin.usepermissions && !player.hasPermission("travelportals.admin.command.deactivate"))
-                    return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
+                
                 else if (!plugin.usepermissions && !player.isOp())
-                    return false;
+				{
+					player.sendMessage("§2Only ops are able to use this command.");
+					return true;
+				}
 
                 if (split.length < 3)
                 {
@@ -308,7 +337,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		{
                 if (plugin.usepermissions)
                     if (!player.hasPermission("travelportals.command.info"))
-                        return false;
+    				{
+    					player.sendMessage("§2You do not have permission to use this command.");
+    					return true;
+    				}
                 int w = -1;
                 if (split.length == 3)
                 {
@@ -328,19 +360,21 @@ public class TravelPortalsPlayerListener extends PlayerListener {
                 String n = plugin.warpLocations.get(w).getName();
                 String d = plugin.warpLocations.get(w).getDestination();
                 String o = plugin.warpLocations.get(w).getOwner();
-                if (n.equals(""))
+                
+            	if (n.equals(""))
                     n = "has no name";
                 else
-                {
-                    n = "is named " + n;
-                    int m = plugin.getWarp(d);
-                    if (m == -1)
-                        d = "warps to §c" + d + "§";
-                    else if (plugin.warpLocations.get(m).getHidden())
-                        d = "warps to §9?????§";
-                    else
-                        d = "warps to " + d;
-                }
+                	n = "is named " + n;
+            	
+                int m = plugin.getWarp(d);
+                if (m == -1 && !d.equals(""))
+                    d = "warps to §c" + d + "§";
+                else if (d.equals(""))
+                	d = "has no destination";
+                else if (plugin.warpLocations.get(m).getHidden())
+                    d = "warps to §9?????§";
+                else
+                    d = "warps to " + d;
                 if (o.equals(""))
                 	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
                 else
@@ -352,7 +386,10 @@ public class TravelPortalsPlayerListener extends PlayerListener {
     		else if (split[1].equalsIgnoreCase("claim")) 
     		{
     			if (plugin.usepermissions && !player.hasPermission("travelportals.command.claim"))
-    				return false;
+				{
+					player.sendMessage("§2You do not have permission to use this command.");
+					return true;
+				}
     			
 	           int w = -1;
 	           w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
@@ -420,13 +457,19 @@ public class TravelPortalsPlayerListener extends PlayerListener {
             // Ownership check
             if (plugin.usepermissions) 
             {
-            	if (!player.hasPermission("travelportals.portal.use"))
+            	if (!player.hasPermission("travelportals.portal.use")) 
+            	{
+            		player.sendMessage("§4You do not have permission to use portals.");
             		return;
+            	}
             	
             	if (!plugin.warpLocations.get(w).getOwner().equals("") && !plugin.warpLocations.get(w).getOwner().equals(player.getName()))
             	{
-            		if (!player.hasPermission("travelportals.admin.portal.use"))
+            		if (!player.hasPermission("travelportals.admin.portal.use")) 
+            		{
+            			player.sendMessage("§4You do not own this portal, so you cannot use it.");
             			return;
+            		}
             	}
             }
 
@@ -459,6 +502,17 @@ public class TravelPortalsPlayerListener extends PlayerListener {
 				}
 				else
 				{
+					
+					// Another permissions check...
+					if (plugin.usepermissions && !player.hasPermission("travelportals.admin.portal.use")) 
+					{
+						
+						if (!plugin.warpLocations.get(w).getOwner().equals("") && !plugin.warpLocations.get(w).getOwner().equals(player.getName()))
+						{
+							player.sendMessage("§4You do not own the destination portal, and do not have permission to use it.");
+							return;
+						}
+					}
                     int x = plugin.warpLocations.get(loc).getX();
                     int y = plugin.warpLocations.get(loc).getY();
                     int z = plugin.warpLocations.get(loc).getZ();
