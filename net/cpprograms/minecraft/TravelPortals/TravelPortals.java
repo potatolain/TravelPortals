@@ -122,7 +122,7 @@ public class TravelPortals extends JavaPlugin {
 	/**
 	 * Called upon enabling the plugin
 	 */
-    @SuppressWarnings({ "deprecation", "unchecked" })
+    @SuppressWarnings({ "unchecked", "deprecation" })
 	public void onEnable() {
 
 		server = getServer();
@@ -208,7 +208,7 @@ public class TravelPortals extends JavaPlugin {
 		{
 			FileInputStream fIn = new FileInputStream(new File(this.getDataFolder(), "TravelPortals.ser"));
 			ObjectInputStream oIn = new ObjectInputStream(fIn);
-			warpLocations = (ArrayList<WarpLocation>)oIn.readObject();
+			warpLocations = (ArrayList<net.cpprograms.minecraft.TravelPortals.WarpLocation>)oIn.readObject();
 			oIn.close();
 			fIn.close();
 			successfulRead = true;
@@ -226,38 +226,58 @@ public class TravelPortals extends JavaPlugin {
 	    	System.out.println("Copy this, place it in the plugins/TravelPortals folder, and rename it to TravelPortals.ser and restart the server.");
 	    	System.out.println("If this does not fix the problem, or if something strange went wrong, please report this issue.");
         }
-        catch (java.lang.ClassNotFoundException i)
+        catch (java.lang.ClassNotFoundException i) 
         {
+        	System.out.println("TravelPortals: Something has gone very wrong. Please contact owner@cpprograms.net!");
+        	return;
         }
-
-		// If we could not read the config, try to read in the old format.
-		if (!successfulRead)
-		{
-	        try
-	        {
-	            FileInputStream fIn = new FileInputStream("doorwarp.ser");
-	            ObjectInputStream oIn = new ObjectInputStream(fIn);
-	            ArrayList<WarpPoint> wps = new ArrayList<WarpPoint>();
-
-	            wps = (ArrayList<WarpPoint>)oIn.readObject();
-
-	            for (WarpPoint w : wps)
-	            {
-	            	warpLocations.add(new WarpLocation(w));
-	            }
-	            oIn.close();
-	            fIn.close();
-	           	System.out.println("Imported old TravelPortals data. Not to worry!");
-	           	savedata();
-	           	File oldversion = new File("doorwarp.ser");
-	           	oldversion.renameTo(new File("doorwarp.ser.bak"));
-	        }
-	        catch (IOException i)
-	        {
-	        }
-	        catch (java.lang.ClassNotFoundException i)
-	        {
-	        }
+        
+        // Test to see if we need to do conversion.
+        try 
+        {
+        	if (!warpLocations.isEmpty()) {
+        		WarpLocation w = warpLocations.get(0);
+        		w.getName();
+        	}
+        } 
+        catch (java.lang.ClassCastException i)
+        {
+        	{
+        		System.out.println("Importing old pre-2.0 portals...");
+				try 
+				{
+					warpLocations = new ArrayList<net.cpprograms.minecraft.TravelPortals.WarpLocation>();
+		        	FileInputStream fIn = new FileInputStream(new File(this.getDataFolder(), "TravelPortals.ser"));
+					ObjectInputStream oIn = new ObjectInputStream(fIn);
+					ArrayList<com.bukkit.cppchriscpp.TravelPortals.WarpLocation> oldloc = (ArrayList<com.bukkit.cppchriscpp.TravelPortals.WarpLocation>)oIn.readObject();
+					for (com.bukkit.cppchriscpp.TravelPortals.WarpLocation wl : oldloc) 
+					{
+						// Yes, this blows.
+						net.cpprograms.minecraft.TravelPortals.WarpLocation temp = new WarpLocation(wl.getX(), wl.getY(), wl.getZ(), wl.getDoorPosition(), wl.getWorld(), wl.getOwner());
+						temp.setName(wl.getName());
+						temp.setDestination(wl.getDestination());
+						temp.setHidden(wl.getHidden());
+						warpLocations.add(temp);
+					}
+					oIn.close();
+					fIn.close();
+					successfulRead = true;
+					
+					this.savedata();
+					
+					this.doBackup();
+					System.out.println("Imported old portals sucecessfully!");
+				} 
+				catch (IOException e) {
+					System.out.println("TravelPortals: Importing old portals failed.");
+					return;
+				}
+				catch (ClassNotFoundException e) 
+				{
+					System.out.println("TravelPortals: Something has gone horribly wrong. Contact owner@cpprograms.net!");
+					return;
+				}
+        	}
         }
 
         // Register our events

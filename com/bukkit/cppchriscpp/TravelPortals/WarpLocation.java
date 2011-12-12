@@ -1,21 +1,24 @@
-package net.cpprograms.minecraft.TravelPortals;
+package com.bukkit.cppchriscpp.TravelPortals;
 
 /**
- * @(#)WarpPoint.java
+ * @(#)WarpLocation.java
  *
  * Stores warp locations for users.
  *
  * @author cppchriscpp
- * @version 1.00
+ * @version 1.10
  */
 
 /**
  * A quick serializable storage medium for warping points.
- * @author cppchriscpp
+ * REPLACES WarpPoint
+ * Replaced by the one in the right package...
  * @deprecated
+ * @author cppchriscpp
  */
-@SuppressWarnings("serial")
-public class WarpPoint implements java.io.Serializable {
+public class WarpLocation implements java.io.Serializable {
+
+	static final long serialVersionUID = 4523543646L;
     /**
      * Used to store the position of the warp.
      */
@@ -35,17 +38,44 @@ public class WarpPoint implements java.io.Serializable {
     private transient long lastused;
 
     /**
+     * Is this portal hidden?
+     */
+    private boolean hidden = false;
+    
+    /**
+     * Portal owner.
+     */
+    private String owner = "";
+
+    /**
+     * Where is the door?
+     * 0: Unknown
+     * 1: X-1 Y-1
+     * 2: X+1 Y-1
+     * 3: X-1 Y+1
+     * 4: X+1 Y+1
+     */
+    private int doorpos = 0;
+
+
+    /**
      * The amount of time it takes for this to cool down so it can be
      * used again.
      */
-    private static final transient /* enough keywords? */ int cooldown = 5000;
+    // private static final transient /* enough keywords? */ int cooldown = 5000;
+
+    /**
+     * What world is this?
+     */
+    private String world = "";
 
     /**
      * Default constructor. I suggest against using this.
      */
-    public WarpPoint() {
+    public WarpLocation() {
     	x=0; y=0; z=0; name = "";
     	lastused = 0;
+    	world = "";
     }
 
     /**
@@ -54,23 +84,44 @@ public class WarpPoint implements java.io.Serializable {
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
      */
-    public WarpPoint(int _x, int _y, int _z)
+    public WarpLocation(int _x, int _y, int _z, String _world)
     {
     	x = _x; y = _y; z = _z; name = ""; destination = "";
     	lastused = 0;
+    	world = _world;
     }
 
     /**
-     * Creates a warp point with the name given. May be useful in the future.
+     * Creates a warp point at a position.
      * @param _x The X coordinate of the warp point's position.
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
-     * @param _name The name of this warp.
+     * @param _doorpos The position of the door.
+     * @deprecated
      */
-    public WarpPoint(int _x, int _y, int _z, String _name)
+    public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
     {
-    	x = _x; y = _y; z = _z; name = _name; destination = "";
+    	x = _x; y = _y; z = _z; name = ""; destination = "";
     	lastused = 0;
+    	doorpos = _doorpos;
+    	world = _world;
+    }
+    
+    /**
+     * Creates a warp point at a position. This is the most likely constructor you'll use.
+     * @param _x The X coordinate of the warp point's position.
+     * @param _y The Y coordinate of the warp point's position.
+     * @param _z The Z coordinate of the warp point's position.
+     * @param _doorpos The position of the door.
+     * @param _owner The person who owns this.
+     */
+    public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, String _owner)
+    {
+    	x = _x; y = _y; z = _z; name = ""; destination = "";
+    	lastused = 0;
+    	doorpos = _doorpos;
+    	world = _world;
+    	owner = _owner;
     }
 
     /**
@@ -124,6 +175,26 @@ public class WarpPoint implements java.io.Serializable {
     public void setName(String n)
     {
             name = n;
+    }
+    
+    /**
+     * Gets the current owner of the portal.
+     * @return The owner of the portal.
+     */
+    public String getOwner()
+    {
+    	if (owner == null)
+    		owner = "";
+    	return owner;
+    }
+    
+    /**
+     * Sets the current owner of the portal.
+     * @param _owner The new owner.
+     */
+    public void setOwner(String _owner)
+    {
+    	owner = _owner;
     }
 
     /**
@@ -181,7 +252,7 @@ public class WarpPoint implements java.io.Serializable {
 
     /**
      * Set the time this was last used
-     * @time the new time this was used.
+     * @param time the new time this was used.
      */
     public void setLastUsed(long time)
     {
@@ -189,9 +260,59 @@ public class WarpPoint implements java.io.Serializable {
     }
 
     /**
+     * Get the position of the door.
+     * @return The position of the door.
+     */
+    public int getDoorPosition()
+    {
+    	return doorpos;
+    }
+
+    /**
+     * Set the position of the door
+     * @param dp The position of the door
+     */
+    public void setDoorPosition(int dp)
+    {
+    	doorpos = dp;
+    }
+
+    /**
+     * Set whether the warp's name is hidden.
+     * @param dp whether to show the warp.
+     */
+
+    public void setHidden(boolean dp)
+    {
+    	hidden = dp;
+    }
+
+    /**
+     * Figure out whether this warp is hidden.
+     * @return true to suppress name, false otherwise.
+     */
+    public boolean getHidden()
+    {
+    	return hidden;
+    }
+
+    /**
+     * What world is this in?
+     */
+    public String getWorld()
+    {
+    	return world;
+    }
+
+    public void setWorld(String w)
+    {
+        world = w;
+    }
+
+    /**
      * Check if this portal is usable. (Time limit)
      */
-    public boolean isUsable()
+    public boolean isUsable(int cooldown)
     {
         return (lastused+cooldown < System.currentTimeMillis());
     }

@@ -123,23 +123,6 @@ public class WarpLocation implements java.io.Serializable {
     }
 
     /**
-     * Create one of these from the legacy format.
-     * @param old The point in the old format.
-     * @deprecated
-     */
-    public WarpLocation(WarpPoint old)
-    {
-    	x = old.getX();
-    	y = old.getY();
-    	z = old.getZ();
-    	name = old.getName();
-    	destination = old.getDestination();
-    	lastused = 0;
-    	world = "";
-
-    }
-
-    /**
      * Check to see if this is a valid warp for use. (Has a name and destination)
      * @return true if the destination and name are both set, otherwise false.
      */
@@ -198,6 +181,8 @@ public class WarpLocation implements java.io.Serializable {
      */
     public String getOwner()
     {
+    	if (owner == null)
+    		owner = "";
     	return owner;
     }
     
