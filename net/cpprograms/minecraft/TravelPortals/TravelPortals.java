@@ -1,7 +1,7 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import net.cpprograms.minecraft.General.PluginBase;
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.text.DateFormat;
@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 
 import org.yaml.snakeyaml.Yaml;
@@ -27,7 +25,7 @@ import org.bukkit.command.*;
  *
  * @author cppchriscpp
  */
-public class TravelPortals extends JavaPlugin {
+public class TravelPortals extends PluginBase {
 	/**
 	 * A Player listener
 	 */
@@ -37,11 +35,6 @@ public class TravelPortals extends JavaPlugin {
      * A Block listener.
      */
     private final TravelPortalsBlockListener blockListener = new TravelPortalsBlockListener(this);
-
-    /**
-     * Something related to debugging
-     */
-    private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
 
 	/*
 	 * All user warp points
@@ -161,18 +154,19 @@ public class TravelPortals extends JavaPlugin {
 		}
 		catch (IOException i)
 		{
-			System.out.println("Could not load the configuration file! Using default values.");
+			logWarning("Could not load the configuration file! Using default values.");
 		}
 		catch (java.lang.NumberFormatException i)
 		{
-			System.out.println("TravelPortals: An exception occurred when trying to read your config file.");
-			System.out.println("TravelPortals: Check your config.yml!");
+			logSevere("An exception occurred when trying to read your config file.");
+			logSevere("Check your config.yml!");
+			return;
 		}
 
 		if (!this.getDataFolder().exists())
 		{
-			System.out.println("Could not read plugin's data folder! Please put the TravelPortals folder in the plugins folder with the plugin!");
-			System.out.println("Aborting plugin load");
+			logSevere("Could not read plugin's data folder! Please put the TravelPortals folder in the plugins folder with the plugin!");
+			logSevere("Aborting plugin load");
 			return;
 		}
 		
@@ -196,14 +190,13 @@ public class TravelPortals extends JavaPlugin {
         }
         catch (SecurityException i)
         {
-            System.out.println("Could not read/write TravelPortals data folder! Aborting.");
+            logSevere("Could not read/write TravelPortals data folder! Aborting.");
             return;
         }
 
 
 
         // Attempt to read in the current version's save data.
-		boolean successfulRead = false;
 		try
 		{
 			FileInputStream fIn = new FileInputStream(new File(this.getDataFolder(), "TravelPortals.ser"));
@@ -211,24 +204,23 @@ public class TravelPortals extends JavaPlugin {
 			warpLocations = (ArrayList<net.cpprograms.minecraft.TravelPortals.WarpLocation>)oIn.readObject();
 			oIn.close();
 			fIn.close();
-			successfulRead = true;
 
 			doBackup();
 		}
         catch (IOException i)
         {
-	    	System.out.println("Could not load TravelPortals location file!");
-	    	System.out.println("If this is your first time running the plugin, you can ignore this message.");
-	    	System.out.println("If this is not your first run, STOP YOUR SERVER NOW! You could lose your portals!");
-	    	System.out.println("The file plugins/TravelPortals/TravelPortals.ser is missing or unreadable.");
-	    	System.out.println("Please check that this file exists and is in the right directory.");
-	    	System.out.println("If it is not, there should be a backup in the plugins/TravelPortals/backups folder.");
-	    	System.out.println("Copy this, place it in the plugins/TravelPortals folder, and rename it to TravelPortals.ser and restart the server.");
-	    	System.out.println("If this does not fix the problem, or if something strange went wrong, please report this issue.");
+	    	logWarning("Could not load TravelPortals location file!");
+	    	logWarning("If this is your first time running the plugin, you can ignore this message.");
+	    	logWarning("If this is not your first run, STOP YOUR SERVER NOW! You could lose your portals!");
+	    	logWarning("The file plugins/TravelPortals/TravelPortals.ser is missing or unreadable.");
+	    	logWarning("Please check that this file exists and is in the right directory.");
+	    	logWarning("If it is not, there should be a backup in the plugins/TravelPortals/backups folder.");
+	    	logWarning("Copy this, place it in the plugins/TravelPortals folder, and rename it to TravelPortals.ser and restart the server.");
+	    	logWarning("If this does not fix the problem, or if something strange went wrong, please report this issue.");
         }
         catch (java.lang.ClassNotFoundException i) 
         {
-        	System.out.println("TravelPortals: Something has gone very wrong. Please contact owner@cpprograms.net!");
+        	logSevere("TravelPortals: Something has gone very wrong. Please contact owner@cpprograms.net!");
         	return;
         }
         
@@ -243,7 +235,7 @@ public class TravelPortals extends JavaPlugin {
         catch (java.lang.ClassCastException i)
         {
         	{
-        		System.out.println("Importing old pre-2.0 portals...");
+        		logInfo("Importing old pre-2.0 portals...");
 				try 
 				{
 					warpLocations = new ArrayList<net.cpprograms.minecraft.TravelPortals.WarpLocation>();
@@ -261,20 +253,19 @@ public class TravelPortals extends JavaPlugin {
 					}
 					oIn.close();
 					fIn.close();
-					successfulRead = true;
 					
 					this.savedata();
 					
 					this.doBackup();
-					System.out.println("Imported old portals sucecessfully!");
+					logInfo("Imported old portals sucecessfully!");
 				} 
 				catch (IOException e) {
-					System.out.println("TravelPortals: Importing old portals failed.");
+					logWarning("Importing old portals failed.");
 					return;
 				}
 				catch (ClassNotFoundException e) 
 				{
-					System.out.println("TravelPortals: Something has gone horribly wrong. Contact owner@cpprograms.net!");
+					logSevere("Something has gone horribly wrong. Contact owner@cpprograms.net!");
 					return;
 				}
         	}
@@ -287,9 +278,8 @@ public class TravelPortals extends JavaPlugin {
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
 		// pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
         pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.High, this);
-		
-        PluginDescriptionFile pdfFile = this.getDescription();
-        System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+        
+        super.onEnable();
     }
 
     /**
@@ -320,14 +310,7 @@ public class TravelPortals extends JavaPlugin {
      */
     public void onDisable() {
 		savedata();
-    }
-
-    public boolean isDebugging(final Player player) {
-        if (debugees.containsKey(player)) {
-            return debugees.get(player);
-        } else {
-            return false;
-        }
+		super.onDisable();
     }
 
     /**
@@ -363,7 +346,7 @@ public class TravelPortals extends JavaPlugin {
         catch (IOException i)
         {
             // i.printStackTrace();
-            System.out.println("Could not save TravelPortals data!");
+            logWarning("Could not save TravelPortals data!");
         }
 
         if (autoExport)
@@ -384,7 +367,7 @@ public class TravelPortals extends JavaPlugin {
             File dir = new File(this.getDataFolder() + "/backups");
             if (!dir.isDirectory())
             {
-                System.out.println("Cannot save backups!");
+                logSevere("Cannot save backups!");
             }
             String[] list = dir.list();
             if (numsaves > 0 && list.length+1 > numsaves)
@@ -397,13 +380,9 @@ public class TravelPortals extends JavaPlugin {
         }
         catch (SecurityException i)
         {
-            System.out.println("Warning: Saving a backup of the TravelPortals file failed.");
+            logWarning("Saving a backup of the TravelPortals file failed.");
         }
         savedata(true);
-    }
-
-    public void setDebugging(final Player player, final boolean value) {
-        debugees.put(player, value);
     }
 
    	/**
