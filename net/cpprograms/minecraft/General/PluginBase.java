@@ -24,9 +24,19 @@ public class PluginBase extends JavaPlugin {
 	String pluginVersion = "";
 	
 	/**
+	 * Debugging mode - determines whether to send debugging messages.
+	 */
+	boolean debugMode = false;
+	
+	/**
 	 * Logging component.
 	 */
 	public static final Logger log = Logger.getLogger("Minecraft");
+	
+	/**
+	 * Permissions handler.
+	 */
+	public PermissionsHandler permissions;
 	
 	/**
 	 * Constructor. Do some setup stuff.
@@ -37,6 +47,7 @@ public class PluginBase extends JavaPlugin {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		pluginName = pdfFile.getName();
 		pluginVersion = pdfFile.getVersion();
+		this.permissions = new PermissionsHandler();
 	}
 	
 	/**
@@ -63,6 +74,16 @@ public class PluginBase extends JavaPlugin {
 	public void showLoadedMessage() 
 	{
         this.logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
+	}
+	
+	/**
+	 * Call the CommandHandler for this plugin...
+	 * @return true if command is handled; else false.
+	 */
+	public boolean OnCommand(/* params */)
+	{
+		// TODO: call CommandHandler
+		return false;
 	}
 	
 	/**
@@ -99,6 +120,16 @@ public class PluginBase extends JavaPlugin {
 	public void logSevere(String message)
 	{
 		this.log(message, Level.SEVERE);
+	}
+	
+	/**
+	 * Log a debug message (if debugging is on.)
+	 * @param string message The message to log.
+	 */
+	public void logDebug(String message)
+	{
+		if (this.debugMode)
+			this.log(message, Level.CONFIG);
 	}
 	
 	/**

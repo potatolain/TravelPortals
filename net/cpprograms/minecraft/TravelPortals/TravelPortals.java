@@ -1,5 +1,6 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import net.cpprograms.minecraft.General.PermissionsHandler;
 import net.cpprograms.minecraft.General.PluginBase;
 import java.io.*;
 import java.util.Map;
@@ -280,6 +281,8 @@ public class TravelPortals extends PluginBase {
         pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.High, this);
         
         super.onEnable();
+        // Override PermissionsHandler with our variable. Have to do this after the parent method
+        permissions = new PermissionsHandler(usepermissions);
     }
 
     /**
@@ -327,7 +330,7 @@ public class TravelPortals extends PluginBase {
         return false;
     }
 
-    /*
+    /**
      * Called upon disabling the plugin.
      */
     public void onDisable() {

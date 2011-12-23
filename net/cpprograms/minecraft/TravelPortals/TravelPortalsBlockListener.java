@@ -23,9 +23,15 @@ public class TravelPortalsBlockListener extends BlockListener {
      */
     public void onBlockPlace(BlockPlaceEvent event)
     {
+    	if (event.isCancelled()) 
+    	{
+    		plugin.logDebug("BlockPlace blocked because event was cancelled.");
+    		return;
+    	}
+    	
     	if (event.getBlock().getTypeId() == plugin.torchtype)
     	{
-    		if (plugin.usepermissions && !event.getPlayer().hasPermission("travelportals.portal.create"))
+    		if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.portal.create"))
     			return;
     		Player player = event.getPlayer();
 			int numwalls = 0;
@@ -122,6 +128,12 @@ public class TravelPortalsBlockListener extends BlockListener {
     public void onBlockBreak(BlockBreakEvent event)
     {
 
+    	if (event.isCancelled())
+    	{
+    		plugin.logDebug("BlockBreak blocked due to event cancellation.");
+    		return;
+    	}
+    	
         // Is this block important to us?
         if (event.getBlock().getTypeId() == plugin.blocktype || event.getBlock().getTypeId() == plugin.doortype || event.getBlock().getTypeId() == plugin.doortype2)
         {
@@ -134,12 +146,12 @@ public class TravelPortalsBlockListener extends BlockListener {
                 {
                     // Permissions test
                     if (plugin.usepermissions) {
-                    	if (!event.getPlayer().hasPermission("travelportals.portal.destroy")) {
+                    	if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.portal.destroy")) {
 	                        event.setCancelled(true);
 	                        return;
                     	}
                     	if (!w.getOwner().equals("") && !w.getOwner().equals(player)) {
-                    		if (!event.getPlayer().hasPermission("travelportals.admin.portal.destroy")) {
+                    		if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.admin.portal.destroy")) {
                     			event.setCancelled(true);
                     			return;
                     		}
