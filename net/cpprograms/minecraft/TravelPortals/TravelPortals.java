@@ -301,6 +301,28 @@ public class TravelPortals extends PluginBase {
             for (int i = 0; i < args.length; i++)
                 aags[i+1] = args[i];
             return playerListener.onPlayerCommand((Player)sender, aags);
+        } else {
+        	// FIXME: Code from the 2.2-pre1 patch release! Very ugly!
+        	// Also, move this code into its own real method. Probably a good time to move the stuff from the player
+        	// listener.. perhaps make a new class for this to keep TravelPortals.java clean.
+        	if (label.equals("portal"))
+        	{
+        		if (args[0].equals("renameworld") && args.length == 3) 
+        		{
+        			this.renameWorld(args[1], args[2]);
+        			this.logInfo("Renamed world " + args[1] + " to " + args[2]);
+        		}
+        		else if (args[0].equals("fixblankworld") && args.length == 2)
+        		{
+        			this.renameWorld("", args[1]);
+        			this.logInfo("Corrected all unnamed worlds to " + args[1]);
+        		}
+        		else 
+        		{
+        			this.logInfo("Unrecognized command");
+        		}
+        		return true;
+        	}
         }
         return false;
     }
@@ -399,7 +421,6 @@ public class TravelPortals extends PluginBase {
      * @param name The name of the portal to find.
      * @return The index of the portal in plugin.warpLocations, or -1 if it is not found.
      */
-
     public int getWarp(String name)
     {
         // Test all warps to see if they have the name we're looking for.
@@ -433,6 +454,21 @@ public class TravelPortals extends PluginBase {
         }
         return -1;
     }
+    
+    /**
+     * This is a function to rename a world for all existing portals. 
+     * @param oldworld The name of the old world.
+     * @param newworld The name of the new world.
+     * FIXME: This method was written for a patch referenced as 2.2-pre1. Check this code!!
+     */
+    public void renameWorld(String oldworld, String newworld)
+    {
+    	for (int i = 0; i < this.warpLocations.size(); i++) 
+    	{
+    		if (this.warpLocations.get(i).getWorld().equals(oldworld))
+    			this.warpLocations.get(i).setWorld(newworld);
+    	}
+    }
 
     /**
      * Dump the portal list to a text file for parsing.
@@ -444,7 +480,7 @@ public class TravelPortals extends PluginBase {
             FileOutputStream fOut = new FileOutputStream(new File(this.getDataFolder(), "travelportals.txt"));
             PrintStream pOut = new PrintStream(fOut);
             for (WarpLocation w : this.warpLocations)
-                pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.getHidden());
+                pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.getHidden() +"," + w.getWorld() + "," + w.getOwner());
 
             pOut.close();
             fOut.close();
