@@ -5,7 +5,25 @@ commands:
   portal:
     description: Portals
     usage: /portal help
-permissions: 
+permissions:
+  travelportals.nopermission:
+    description: Give users no permissions. This may become the new default. Base off of this.
+    children: 
+      travelportals.portal.create: false
+      travelportals.portaluse: false
+      travelportals.portal.destroy: false
+      travelportals.command.help: false
+      travelportals.command.hide: false
+      travelportals.command.list: false
+      travelportals.command.name: false
+      travelportals.command.warp: false
+      travelportals.command.info: false
+      travelportals.command.claim: false
+      travelportals.admin.portal.use: false
+      travelportals.admin.portal.destroy: false
+      travelportals.admin.command.name: false
+      travelportals.admin.command.warp: false
+      travelportals.admin.command.hide: false
   travelportals.classicuser:
     description: User permissions that work like classic TravelPortals; all users have access to all portals.
     children: 

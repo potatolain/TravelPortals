@@ -1,5 +1,6 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import net.cpprograms.minecraft.General.CommandHandler;
 import net.cpprograms.minecraft.General.PermissionsHandler;
 import net.cpprograms.minecraft.General.PluginBase;
 import java.io.*;
@@ -9,7 +10,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.bukkit.entity.Player;
 import org.bukkit.Server;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
@@ -18,8 +18,6 @@ import org.bukkit.plugin.PluginManager;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
-
-import org.bukkit.command.*;
 
 /**
  * TravelPortals Bukkit port.
@@ -283,6 +281,7 @@ public class TravelPortals extends PluginBase {
         super.onEnable();
         // Override PermissionsHandler with our variable. Have to do this after the parent method
         permissions = new PermissionsHandler(usepermissions);
+        commandHandler = new CommandHandler(this, PortalCommandSet.class);
     }
 
     /**
@@ -294,7 +293,7 @@ public class TravelPortals extends PluginBase {
      * @return true to override the default behavior, false otherwise.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    /*public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
         if (sender instanceof Player)
         {
@@ -328,7 +327,7 @@ public class TravelPortals extends PluginBase {
         	}
         }
         return false;
-    }
+    }*/
 
     /**
      * Called upon disabling the plugin.
@@ -370,7 +369,6 @@ public class TravelPortals extends PluginBase {
         }
         catch (IOException i)
         {
-            // i.printStackTrace();
             logWarning("Could not save TravelPortals data!");
         }
 

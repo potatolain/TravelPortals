@@ -3,6 +3,8 @@ package net.cpprograms.minecraft.General;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,7 +28,7 @@ public class PluginBase extends JavaPlugin {
 	/**
 	 * Debugging mode - determines whether to send debugging messages.
 	 */
-	boolean debugMode = false;
+	boolean debugMode = true;
 	
 	/**
 	 * Logging component.
@@ -39,6 +41,11 @@ public class PluginBase extends JavaPlugin {
 	public PermissionsHandler permissions;
 	
 	/**
+	 * Handle our commands!
+	 */
+	public CommandHandler commandHandler;
+	
+	/**
 	 * Constructor. Do some setup stuff.
 	 */
 	public void onLoad() 
@@ -47,7 +54,7 @@ public class PluginBase extends JavaPlugin {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		pluginName = pdfFile.getName();
 		pluginVersion = pdfFile.getVersion();
-		this.permissions = new PermissionsHandler();
+		permissions = new PermissionsHandler();
 	}
 	
 	/**
@@ -56,7 +63,7 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void onEnable() 
 	{
-		
+		commandHandler = new CommandHandler();
 		showLoadedMessage();
     }
 	
@@ -74,16 +81,6 @@ public class PluginBase extends JavaPlugin {
 	public void showLoadedMessage() 
 	{
         this.logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
-	}
-	
-	/**
-	 * Call the CommandHandler for this plugin...
-	 * @return true if command is handled; else false.
-	 */
-	public boolean OnCommand(/* params */)
-	{
-		// TODO: call CommandHandler
-		return false;
 	}
 	
 	/**
@@ -129,7 +126,16 @@ public class PluginBase extends JavaPlugin {
 	public void logDebug(String message)
 	{
 		if (this.debugMode)
-			this.log(message, Level.CONFIG);
+			this.log(message, Level.INFO);
+	}
+	
+	/**
+	 * Check if we're debugging with this plugin.
+	 * @return true if we're debugging; false otherwise.
+	 */
+	public boolean isDebugging()
+	{
+		return debugMode;
 	}
 	
 	/**
@@ -140,6 +146,37 @@ public class PluginBase extends JavaPlugin {
 	private void log(String message, Level level)
 	{
 		log.log(level, "[" + pluginName +"] " + message);
+	}
+	
+	/**
+	 * Run a command with our CommandSender.
+	 * @param sender Our sender; entity or otherwise.
+	 * @param command The command being sent.
+	 * @param label The label for the command.
+	 * @param args The arguments passed in.
+	 * @return true if the command is handled; false otherwise.
+	 */
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	{
+		return commandHandler.HandleCommand(sender, command, label, args);
+	}
+	
+	/**
+	 * Gets the name of this plugin.
+	 * @return The name of the plugin.
+	 */
+	public String getName()
+	{
+		return pluginName;
+	}
+	
+	/**
+	 * Gets the version of the plugin.
+	 * @return The version of the plugin.
+	 */
+	public String getVersion()
+	{
+		return pluginVersion;
 	}
 	
 	
