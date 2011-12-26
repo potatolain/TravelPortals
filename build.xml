@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="ChangeSilkTouch" default="deploy" basedir="bin"><!-- This where to be export to the local dir --> 
+<description>Ant targets for Engine into jar</description>
+
+<target name="deploy" description="Make a jar and deploy it to our test server.">
+   <!-- Export File for jar --> 
+	<jar jarfile="./TravelPortals.jar" basedir="." includes="**/*.class **/*.yml **/readme.txt" />
+	<copy file="./TravelPortals.jar" todir="${bukkit.testserver.plugins}" />
+</target> 
+	
+</project>

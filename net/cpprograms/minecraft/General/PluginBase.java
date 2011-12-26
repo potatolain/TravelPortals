@@ -1,10 +1,17 @@
 package net.cpprograms.minecraft.General;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,7 +35,13 @@ public class PluginBase extends JavaPlugin {
 	/**
 	 * Debugging mode - determines whether to send debugging messages.
 	 */
-	boolean debugMode = true;
+	boolean debugMode = false;
+	
+	/**
+	 * Whether to automatically load and use the built in configuration stuff. 
+	 * Set this to be false in your onLoad before calling super() if you do not want it.
+	 */
+	boolean useConfig = true;
 	
 	/**
 	 * Logging component.
@@ -55,6 +68,19 @@ public class PluginBase extends JavaPlugin {
 		pluginName = pdfFile.getName();
 		pluginVersion = pdfFile.getVersion();
 		permissions = new PermissionsHandler();
+		if (useConfig)
+			if (!loadConfig())
+			{
+				this.logSevere("Could not load configuration for " + getName() + "! This may break the plugin!");
+			}
+			else
+			{
+				if (getConfig().contains("debug"))
+				{
+					debugMode = getConfig().getBoolean("debug");
+					logDebug("Debugging is active!");
+				}
+			}
 	}
 	
 	/**
@@ -94,7 +120,7 @@ public class PluginBase extends JavaPlugin {
 	
 	/**
 	 * Log a warning message
-	 * @param string message The message to log.
+	 * @param message The message to log.
 	 */
 	public void logWarning(String message)
 	{
@@ -103,7 +129,7 @@ public class PluginBase extends JavaPlugin {
 	
 	/**
 	 * Log an info message
-	 * @param string message The message to log.
+	 * @param message The message to log.
 	 */
 	public void logInfo(String message)
 	{
@@ -112,7 +138,7 @@ public class PluginBase extends JavaPlugin {
 	
 	/**
 	 * Log a severe message
-	 * @param string message The message to log.
+	 * @param message The message to log.
 	 */
 	public void logSevere(String message)
 	{
@@ -121,7 +147,7 @@ public class PluginBase extends JavaPlugin {
 	
 	/**
 	 * Log a debug message (if debugging is on.)
-	 * @param string message The message to log.
+	 * @param message The message to log.
 	 */
 	public void logDebug(String message)
 	{
@@ -177,6 +203,73 @@ public class PluginBase extends JavaPlugin {
 	public String getVersion()
 	{
 		return pluginVersion;
+	}
+	
+	/**
+	 * Load our default config.yml, or alternatively, create and load the default one.
+	 * @return
+	 */
+	protected boolean loadConfig()
+	{
+    	try
+    	{
+    		getConfig().load(new File(getDataFolder(), "config.yml"));
+    	} catch (FileNotFoundException e) {
+			logInfo("No config file found. Creating a default configuration file: " + getName() + "/config.yml");
+			return this.saveDefaultConfig();
+		} catch (IOException e) {
+			logSevere("IOException while loading " + getName() + "'s config file! Check on your config.yml, and make sure that the plugins folder is writable.");
+			if (debugMode)
+				e.printStackTrace();
+			return false;
+		} catch (InvalidConfigurationException e) {
+			logSevere("Your configuration file for " + getName() + " is invalid. Double check your syntax. (And remove any tab characters)");
+			if (debugMode)
+				e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Save a default configuration file if ours does not exist.
+	 * @return true if the save was successful; false otherwise.
+	 */
+	protected boolean saveDefaultConfig()
+	{
+		try
+		{
+			File conf = new File(this.getDataFolder(), "config.yml");
+			
+			InputStream is = this.getClass().getResourceAsStream("/config.yml");
+			if (!conf.exists())
+				conf.createNewFile();
+			OutputStream os = new FileOutputStream(conf);
+			
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = is.read(buf)) > 0)
+				os.write(buf, 0, len);
+
+			is.close();
+			os.close();
+		} 
+		catch (IOException e) 
+		{
+			logSevere("Could not save default config.yml file! Check the plugin's data directory!");
+			if (debugMode)
+				e.printStackTrace();
+			return false;
+		} 
+		catch (NullPointerException e) 
+		{
+			logSevere("Could not find default config.yml file! Plugin developer: Did you include config.yml in the root of the jar?");
+			if (debugMode)
+				e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 	
 	

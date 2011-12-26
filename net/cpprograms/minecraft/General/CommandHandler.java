@@ -32,12 +32,15 @@ public class CommandHandler
 	public CommandSet commands;
 	
 	
+	/**
+	 * Default constructor.
+	 */
 	public CommandHandler() {}
 	
 	/**
 	 * Constructor. Please provide your plugin here. 
-	 * TODO: How do we handle extended plugins without requiring inheriting this method?
-	 * @param plugin
+	 * @param plugin The plugin.
+	 * @param commandClass The class to get our methods from.
 	 */
 	@SuppressWarnings("rawtypes")
 	public CommandHandler(PluginBase plugin, Class commandClass)
@@ -46,7 +49,7 @@ public class CommandHandler
 		this.plugin = plugin;
 		try {
 			this.commands = (CommandSet)(commandClass.newInstance());
-			commands.setPlugin(plugin);
+			this.commands.setPlugin(plugin);
 		} catch (InstantiationException e) {
 			plugin.logWarning("Error enabling plugin " + plugin.getName() + " InstanciationException while adding plugin to CommandSet");
 			plugin.logWarning("Commands may not work right!");
@@ -62,7 +65,7 @@ public class CommandHandler
 		// Try to get the method name from the class...
 		if (commandClass.getName().endsWith("CommandSet"))
 		{
-			commandName = commandClass.getSimpleName().substring(0,commandClass.getSimpleName().length() - 10);
+			this.commandName = commandClass.getSimpleName().substring(0,commandClass.getSimpleName().length() - 10);
 		}
 	}
 	

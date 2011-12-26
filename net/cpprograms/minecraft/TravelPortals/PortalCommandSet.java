@@ -290,7 +290,7 @@ public class PortalCommandSet extends CommandSet
 	/**
 	 * Set the location for a warp.
 	 * @param sender The entity responsible for this command
- 	 * @param params The parameters passed in (the name of the portal to warp to.
+ 	 * @param args The parameters passed in (the name of the portal to warp to.
 	 * @return true if this is handled; false otherwise. 
 	 */
 	public boolean warp(CommandSender sender, String[] args)
@@ -474,6 +474,8 @@ public class PortalCommandSet extends CommandSet
         String d = plugin.warpLocations.get(w).getDestination();
         String o = plugin.warpLocations.get(w).getOwner();
         String l = plugin.warpLocations.get(w).getWorld();
+        if (l == null || l.length() == 0)
+        	l = "(Unknown)";
         
     	if (n.equals(""))
             n = "has no name";
@@ -488,7 +490,7 @@ public class PortalCommandSet extends CommandSet
         else if (plugin.warpLocations.get(m).getHidden())
             d = "warps to §9?????§";
         else
-            d = "warps to " + d;
+            d = "warps to " + d + "§3 in world "+l;
         if (o.equals(""))
         	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
         else

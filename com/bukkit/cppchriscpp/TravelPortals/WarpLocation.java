@@ -83,6 +83,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _x The X coordinate of the warp point's position.
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
+     * @param _world The world that this warp point is in.
      */
     public WarpLocation(int _x, int _y, int _z, String _world)
     {
@@ -97,6 +98,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
+     * @param _world The world that this location is in.
      * @deprecated
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
@@ -113,6 +115,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
+     * @param _world The world to position this portal within.
      * @param _owner The person who owns this.
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, String _owner)
@@ -170,7 +173,7 @@ public class WarpLocation implements java.io.Serializable {
 
     /**
      * Sets the name of this point.
-     * @param The new name for this point.
+     * @param n The new name for this point.
      */
     public void setName(String n)
     {
@@ -298,12 +301,17 @@ public class WarpLocation implements java.io.Serializable {
 
     /**
      * What world is this in?
+     * @return The name of the world.
      */
     public String getWorld()
     {
     	return world;
     }
 
+    /**
+     * Set what world this portal is in.
+     * @param w The world.
+     */
     public void setWorld(String w)
     {
         world = w;
@@ -311,6 +319,8 @@ public class WarpLocation implements java.io.Serializable {
 
     /**
      * Check if this portal is usable. (Time limit)
+     * @param cooldown How long of a cooldown to allow for.
+     * @return true if this WarpLocation is usable; false otherwise.
      */
     public boolean isUsable(int cooldown)
     {

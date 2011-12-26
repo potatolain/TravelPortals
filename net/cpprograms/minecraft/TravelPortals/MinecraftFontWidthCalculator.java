@@ -4,6 +4,7 @@ package net.cpprograms.minecraft.TravelPortals;
  * DO WHAT YOU WANT TO PUBLIC LICENSE
  * Credit to angelsl for the original code.
  */
+@SuppressWarnings("all")
 public class MinecraftFontWidthCalculator {
 
     private static String weirdHardcodedStuffIFoundInMinecraft = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'abcdefghijklmnopqrstuvwxyz{|}~¦ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»";

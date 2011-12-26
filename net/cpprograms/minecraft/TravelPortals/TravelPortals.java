@@ -4,20 +4,16 @@ import net.cpprograms.minecraft.General.CommandHandler;
 import net.cpprograms.minecraft.General.PermissionsHandler;
 import net.cpprograms.minecraft.General.PluginBase;
 import java.io.*;
-import java.util.Map;
 import java.util.ArrayList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.bukkit.Server;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
-
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
-import org.yaml.snakeyaml.reader.UnicodeReader;
 
 /**
  * TravelPortals Bukkit port.
@@ -35,15 +31,10 @@ public class TravelPortals extends PluginBase {
      */
     private final TravelPortalsBlockListener blockListener = new TravelPortalsBlockListener(this);
 
-	/*
+	/**
 	 * All user warp points
 	 */
 	public ArrayList<WarpLocation> warpLocations = new ArrayList<WarpLocation>();
-
-	/**
-	 * YAML config reader
-	 */
-	private final Yaml yaml = new Yaml(new SafeConstructor());
 
 	/**
 	 * The type of block portals must be made from. (Default is 49 (Obsidian))
@@ -122,38 +113,33 @@ public class TravelPortals extends PluginBase {
 		// Read in the YAML config stuff
 		try
 		{
-			FileInputStream fIn = new FileInputStream(new File(this.getDataFolder(), "config.yml"));
-			Map<String, Object> data = (Map<String, Object>)yaml.load(new UnicodeReader(fIn));
-			if (data.containsKey("frame"))
-				blocktype = Integer.parseInt(data.get("frame").toString());
-			if (data.containsKey("framename"))
-				strBlocktype = data.get("framename").toString();
-			if (data.containsKey("fill"))
-				portaltype = Integer.parseInt(data.get("fill").toString());
-			if (data.containsKey("door"))
-				doortype = Integer.parseInt(data.get("door").toString());
-			if (data.containsKey("door2"))
-			    doortype2 = Integer.parseInt(data.get("door2").toString());
-			if (data.containsKey("doorname"))
-				strDoortype = data.get("doorname").toString();
-			if (data.containsKey("torch"))
-				torchtype = Integer.parseInt(data.get("torch").toString());
-			if (data.containsKey("torchname"))
-				strTorchtype = data.get("torchname").toString();
-			if (data.containsKey("permissions"))
-				usepermissions = Boolean.parseBoolean(data.get("permissions").toString());
-            if (data.containsKey("autoexport"))
-                autoExport = Boolean.parseBoolean(data.get("autoexport").toString());
-            if (data.containsKey("cooldown"))
-                cooldown = 1000 * Integer.parseInt(data.get("cooldown").toString());
-            if (data.containsKey("numsaves"))
-                numsaves = Integer.parseInt(data.get("numsaves").toString());
+			FileConfiguration conf = getConfig();
+			if (conf.contains("frame"))
+				blocktype = conf.getInt("frame");
+			if (conf.contains("framename"))
+				strBlocktype = conf.getString("framename");
+			if (conf.contains("fill"))
+				portaltype = conf.getInt("fill");
+			if (conf.contains("door"))
+				doortype = conf.getInt("door");
+			if (conf.contains("door2"))
+			    doortype2 = conf.getInt("door2");
+			if (conf.contains("doorname"))
+				strDoortype = conf.getString("doorname");
+			if (conf.contains("torch"))
+				torchtype = conf.getInt("torch");
+			if (conf.contains("torchname"))
+				strTorchtype = conf.getString("torchname");
+			if (conf.contains("permissions"))
+				usepermissions = conf.getBoolean("permissions");
+            if (conf.contains("autoexport"))
+                autoExport = conf.getBoolean("autoexport");
+            if (conf.contains("cooldown"))
+                cooldown = 1000 * conf.getInt("cooldown");
+            if (conf.contains("numsaves"))
+                numsaves = conf.getInt("numsaves");
 
 
-		}
-		catch (IOException i)
-		{
-			logWarning("Could not load the configuration file! Using default values.");
 		}
 		catch (java.lang.NumberFormatException i)
 		{
@@ -284,14 +270,6 @@ public class TravelPortals extends PluginBase {
         commandHandler = new CommandHandler(this, PortalCommandSet.class);
     }
 
-    /**
-     * Implement commands sent from all over! (Well, only from players as it stands.
-     * @param sender The person sending the command.
-     * @param command The actual command used.
-     * @param label The label that caused command to be used.
-     * @param args The arguments provided with the command.
-     * @return true to override the default behavior, false otherwise.
-     */
     @Override
     /*public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
@@ -435,6 +413,7 @@ public class TravelPortals extends PluginBase {
 
     /**
      * Find a warp point from a relative location. (Within 1 block)
+     * @param worldname The world name to get the warp from.
      * @param x X coordinate to search near.
      * @param y Y coordinate to search near.
      * @param z Z coordinate to search near.
@@ -460,7 +439,6 @@ public class TravelPortals extends PluginBase {
      * This is a function to rename a world for all existing portals. 
      * @param oldworld The name of the old world.
      * @param newworld The name of the new world.
-     * FIXME: This method was written for a patch referenced as 2.2-pre1. Check this code!!
      */
     public void renameWorld(String oldworld, String newworld)
     {

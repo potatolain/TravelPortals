@@ -15,6 +15,10 @@ import org.bukkit.World;
 public class TravelPortalsPlayerListener extends PlayerListener {
     private final TravelPortals plugin;
 
+    /**
+     * Constructor.
+     * @param instance The plugin to attach to.
+     */
     public TravelPortalsPlayerListener(TravelPortals instance) {
         plugin = instance;
     }

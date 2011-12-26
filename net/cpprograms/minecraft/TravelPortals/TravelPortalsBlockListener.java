@@ -14,6 +14,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 public class TravelPortalsBlockListener extends BlockListener {
     private final TravelPortals plugin;
 
+    /**
+     * Constructor
+     * @param plugin The plugin to attach to.
+     */
     public TravelPortalsBlockListener(final TravelPortals plugin) {
         this.plugin = plugin;
     }

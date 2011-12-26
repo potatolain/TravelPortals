@@ -75,6 +75,7 @@ public abstract class CommandSet
 	 * What to do if an unknown method is called. (Override this)
 	 * @param sender The entity responsible for the command.
 	 * @param method true if handled; false otherwise.
+	 * @param params Any parameters that were passed in.
 	 * @return true if handled, false otherwise.
 	 */
 	public boolean noSuchMethod(CommandSender sender, String method, String[] params)
@@ -89,6 +90,7 @@ public abstract class CommandSet
 	 * @param sender The CommandSender that sent the command.
 	 * @param command The command sent.
 	 * @param args The arguments passed in.
+	 * @param e The exception being handled by this.
 	 * @return true if handled; false otherwise.
 	 */
 	public boolean internalError(CommandSender sender, String command, String[] args, Exception e)

@@ -81,6 +81,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _x The X coordinate of the warp point's position.
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
+     * @param _world The world to put this portal into.
      */
     public WarpLocation(int _x, int _y, int _z, String _world)
     {
@@ -95,6 +96,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
+     * @param _world The world to put this WarpLocation into.
      * @deprecated
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
@@ -111,6 +113,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _y The Y coordinate of the warp point's position.
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
+     * @param _world The world to put this WarpLocation into.
      * @param _owner The person who owns this.
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, String _owner)
@@ -168,7 +171,7 @@ public class WarpLocation implements java.io.Serializable {
 
     /**
      * Sets the name of this point.
-     * @param The new name for this point.
+     * @param n The new name for this point.
      */
     public void setName(String n)
     {
@@ -296,12 +299,17 @@ public class WarpLocation implements java.io.Serializable {
 
     /**
      * What world is this in?
+     * @return The world that this location is in.
      */
     public String getWorld()
     {
     	return world;
     }
 
+    /**
+     * Set the world that a portal is in.
+     * @param w The world that this portal is in.
+     */
     public void setWorld(String w)
     {
         world = w;
@@ -309,6 +317,8 @@ public class WarpLocation implements java.io.Serializable {
 
     /**
      * Check if this portal is usable. (Time limit)
+     * @param cooldown How long this takes to cool down.
+     * @return true if the portal can be used; false if it cannot.
      */
     public boolean isUsable(int cooldown)
     {
