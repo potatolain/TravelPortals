@@ -92,9 +92,8 @@ public class PortalCommandSet extends CommandSet
 	
 			if (plugin.permissions.hasPermission(player, "travelportals.portal.create"))
 			{
-	            player.sendMessage("§2You can create portals by surrounding a 2x1 block with");
-	            player.sendMessage("§2" + plugin.strBlocktype + " and a " + plugin.strDoortype + ", then putting a");
-	            player.sendMessage("§2" + plugin.strTorchtype + " at the bottom.");
+	            player.sendMessage("§9Create a portal by surrounding a 2x1 area with " + plugin.strBlocktype);
+	            player.sendMessage("§9and a " + plugin.strDoortype + ", then putting a" + plugin.strTorchtype + " at the bottom.");
 			}
 	
 			if (plugin.permissions.hasPermission(player, "travelportals.command.name"))
@@ -116,7 +115,10 @@ public class PortalCommandSet extends CommandSet
 	            player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 	
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", false))
-				player.sendMessage("§2To rename a world, BLAH");
+				player.sendMessage("§2If you rename a world, use /portal renameworld oldname newname to replace it");
+			
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld", false))
+				player.sendMessage("§2You can set any portals without worlds with /portal fixworld world");
 	        
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 	        	player.sendMessage("§7To get a list of existing portals, use the command /portal list.");
@@ -125,12 +127,13 @@ public class PortalCommandSet extends CommandSet
 		else
 		{
 			sender.sendMessage("§3-- TravelPortals Help --");
-			sender.sendMessage("§7Note: You do not have access to most commands from the command line.");
+			sender.sendMessage("§7Note: Most commands aren't accessible from the command line.");
 			sender.sendMessage("§2portal info shows information about named or nearby portal.");
 			sender.sendMessage("§2portal hide hides or unhides a named portal.");
 			sender.sendMessage("§2portal deactivate [name] deactivates a portal entirely.");
 			sender.sendMessage("§2portal export exports all known portals to travelportals.txt");
-			sender.sendMessage("§2BLAH RENAME WORLD");
+			sender.sendMessage("§2If you rename a world, use /portal renameworld oldname newname to replace it");
+			sender.sendMessage("§2You can set any portals without worlds with /portal fixworld world");
 			sender.sendMessage("§7To get a list of existing portals, use the command /portal list.");
 		}
 		return true;
@@ -555,6 +558,48 @@ public class PortalCommandSet extends CommandSet
 		
 		return true;
 		
+	}
+	
+	/**
+	 * Rename a world.
+	 * @param sender The entity responsible for sending the command.
+	 * @param args The arguments passed in (old world name, new world name)
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean renameworld(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.renameworld", false))
+			return noPermissionForAction(sender);
+		
+		if (args.length < 2)
+		{
+			sender.sendMessage("§4You need to include the name of the old world and the name of the new world.");
+			return true;
+		}
+		plugin.renameWorld(args[0], args[1]);
+		sender.sendMessage("§2The world \"" + args[0] + "\" has been renamed to \"" + args[1] + "\".");
+		return true;
+	}
+	
+	/**
+	 * Fix all blank world names in portals
+	 * @param sender The entity which sent the command.
+	 * @param args The arguments passed in.
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean fixworld(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.fixworld", false))
+			return this.noPermissionForAction(sender);
+			
+		if (args.length < 1)
+		{
+			sender.sendMessage("§4You need to include the name of a default world to use.");
+			return true;
+		}
+		plugin.renameWorld("", args[0]);
+		sender.sendMessage("§2All portals without a saved world now point to world \"" + args[0] + "\"");
+		return true;
 	}
 	
     // Thank you tkelly

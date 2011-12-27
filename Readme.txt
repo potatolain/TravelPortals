@@ -1,5 +1,5 @@
 TravelPortals Plugin
-Version 2.0
+Version 2.2
 
 Introduction 
 ------------
@@ -57,7 +57,14 @@ The Commands:
 - /portal export dumps the current portals to travelportals.txt in the data folder.
   Format: x,y,z,name,destination,hidden
 - /portal claim claims a portal that does not currently have an owner. It will also
-  unclaim an existing portal, if you own it.
+  unclaim an existing portal, if you own it. You can also include a name to claim a
+  portal for someone else.
+- /portal renameworld [old world name] [new world name] Run this after renaming a world
+  or the portals in that world will not point to the right place.
+- /portal fixworld [world name] This will fix any portals that are not linked to a world
+  to be linked to the world specified. You most likely do not need to run this command,
+  unless you've been running this plugin since before multiworld was supported. If you
+  do, you only need to run it once.
 
 
 Permissions
@@ -92,6 +99,8 @@ they own.
 - travelportals.admin.command.warp
 - travelportals.admin.command.claim
 - travelportals.admin.command.hide
+- travelportals.admin.command.renameworld
+- travelportals.admin.command.fixworld
 - travelportals.admin.portal.use
 - travelportals.admin.portal.destroy
 
@@ -114,22 +123,6 @@ You have a few options for this. The first is by directly emailing me. My email 
 Your other option is the thread on the Bukkit forums.
 
 Either way, I will try to get back to you as soon as is reasonably possible.
-
-SUBMITTING A SUPPORT REQUEST
-----------------------------
-
-If you want help with this plugin, please provide the following information about your
-server setup. It will help me figure out what is wrong, and what you or I can do about
-it. 
-
-- an EXTREMELY detailed description of the problem (Don't spare any words; I don't mind reading)
-- Server's Operating System
-- Server's version of Java (See here: www.java.com/en/download/installed.jsp; update and try again if you are out of date)
-- Server's CraftBukkit build (go to the console and type /version; provide that.)
-- A list of plugins you use. (Particularly if there's a chance it is caused by another plugin)
-- Any changes in your setup that preceeded the errors
-- Any other details that could be relevant. 
-
 
 Latest Version
 --------------
