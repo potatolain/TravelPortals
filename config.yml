@@ -42,3 +42,17 @@ cooldown : 8
 # They do not need much space; if you have problems with the file I strongly suggest upping this
 # to 5 or 10. 
 numsaves: 3
+
+# This option determines whether to use the playerMove functionality (default) or the new
+# polling technique developed by asofold, which may perform better on high-load servers. 
+# true uses the old method; false uses the new one.
+useplayermove: false
+
+# This option affects how often to check all players to see if they are in a portal or not.
+# It is in server ticks.
+# This does not affect anything if useplayermove is true.
+polling-mainticks: 7
+
+# How many ticks to wait before teleporting when using polling. Set to 0 to not wait at all.
+# This will not have any affect if useplayermove is set to true.
+polling-followticks: 17

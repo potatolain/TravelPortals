@@ -9,8 +9,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -100,6 +105,27 @@ public class TravelPortals extends PluginBase {
 	 * How many backup saves should there be? (3)
 	 */
 	protected int numsaves = 3;
+	
+    /**
+     * Ticks for a sync repeated task to check all players for if they are in a portal.
+     */
+    protected int mainTicks = 17;
+    
+    /**
+     * Ticks for checking for the target desination and the teleport after the player was found in a portal.
+     * Set to <= 0 for immediate teleport.
+     */
+    protected int followTicks = 7;
+    
+    /**
+     * Flag indicating if playerMove should be used or not.
+     */
+    protected boolean usePlayerMove = true;
+    
+    /**
+     * The task for the alternate checking method for if players are in a portal etc.
+     */
+    private PortalUseTask useTask = null;
 
 
 	/**
@@ -138,7 +164,13 @@ public class TravelPortals extends PluginBase {
                 cooldown = 1000 * conf.getInt("cooldown");
             if (conf.contains("numsaves"))
                 numsaves = conf.getInt("numsaves");
-
+            
+            if (conf.contains("useplayermove"))
+            	usePlayerMove = conf.getBoolean("usePlayerMove");
+            if (conf.contains("polling-mainticks"))
+            	mainTicks = conf.getInt("polling-mainticks");
+            if (conf.contains("polling-followticks"))
+            	followTicks = conf.getInt("polling-followticks");
 
 		}
 		catch (java.lang.NumberFormatException i)
@@ -258,10 +290,25 @@ public class TravelPortals extends PluginBase {
 
         // Register our events
         PluginManager pm = getServer().getPluginManager();
-		// pm.registerEvent(Event.Type.PLAYER_COMMAND, playerListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+
+        if (this.usePlayerMove)
+        	pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+        else
+        {
+        	if (this.useTask != null)
+        		this.useTask.cancel();
+        	
+        	this.useTask = new PortalUseTask(this);
+        	if (!this.useTask.register())
+        	{
+        		logSevere("Failed to register portal use task. Falling back to old PlayerMove style.");
+        		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+        		this.useTask = null;
+        	}
+        	
+        }
+		
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
-		// pm.registerEvent(Event.Type.BLOCK_DAMAGED, blockListener, Priority.Normal, this);
         pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.High, this);
         
         super.onEnable();
@@ -269,43 +316,6 @@ public class TravelPortals extends PluginBase {
         permissions = new PermissionsHandler(usepermissions);
         commandHandler = new CommandHandler(this, PortalCommandSet.class);
     }
-
-    @Override
-    /*public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-    {
-        if (sender instanceof Player)
-        {
-        	// Very ugly. Some day this needs to be fixed.
-            String[] aags = new String[args.length + 1];
-            aags[0] = "/" + label;
-            for (int i = 0; i < args.length; i++)
-                aags[i+1] = args[i];
-            return playerListener.onPlayerCommand((Player)sender, aags);
-        } else {
-        	// FIXME: Code from the 2.2-pre1 patch release! Very ugly!
-        	// Also, move this code into its own real method. Probably a good time to move the stuff from the player
-        	// listener.. perhaps make a new class for this to keep TravelPortals.java clean.
-        	if (label.equals("portal"))
-        	{
-        		if (args[0].equals("renameworld") && args.length == 3) 
-        		{
-        			this.renameWorld(args[1], args[2]);
-        			this.logInfo("Renamed world " + args[1] + " to " + args[2]);
-        		}
-        		else if (args[0].equals("fixblankworld") && args.length == 2)
-        		{
-        			this.renameWorld("", args[1]);
-        			this.logInfo("Corrected all unnamed worlds to " + args[1]);
-        		}
-        		else 
-        		{
-        			this.logInfo("Unrecognized command");
-        		}
-        		return true;
-        	}
-        }
-        return false;
-    }*/
 
     /**
      * Called upon disabling the plugin.
@@ -467,6 +477,174 @@ public class TravelPortals extends PluginBase {
         catch (Exception e)
         {
         }
+    }
+    
+    /**
+     * Gets the destination of this teleport, but only if the user can use it.
+     * @param player The player in question.
+     * @param disablePortal Disable this portal (set its cooldown).
+     * @return The location to warp to, or null if there is no warping to be done.
+     */
+    public Location getWarpLocationIfAllowed (Player player, boolean disablePortal)
+    {
+        if (!permissions.hasPermission(player, "travelportals.portal.use"))
+    		return null;
+
+        Block blk = player.getWorld().getBlockAt(player.getLocation());
+        // Is the user actually in portal material?
+		if (blk.getTypeId() == portaltype)
+		{
+		    // Find nearby warp.
+			int w = getWarpFromLocation(player.getWorld().getName(), blk.getLocation().getBlockX(), blk.getLocation().getBlockY(), blk.getLocation().getBlockZ());
+			if (w == -1)
+				return null;
+
+            if (!warpLocations.get(w).isUsable(cooldown))
+            {
+                return null;
+            }
+            
+            // Ownership check
+            if (usepermissions) 
+            {
+            	if (!permissions.hasPermission(player, "travelportals.portal.use")) 
+            	{
+            		player.sendMessage("§4You do not have permission to use portals.");
+            		return null;
+            	}
+            	
+            	if (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))
+            	{
+            		if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
+            		{
+            			player.sendMessage("§4You do not own this portal, so you cannot use it.");
+            			return null;
+            		}
+            	}
+            }
+
+            // Complain if this isn't usable
+			if (!warpLocations.get(w).hasDestination())
+			{
+				if ((!permissions.hasPermission(player, "travelportals.command.warp") || (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))))
+				{
+					player.sendMessage("§4This portal has no destination.");
+				}
+				else
+				{
+					player.sendMessage("§4You need to set this portal's destination first!");
+					player.sendMessage("§2See /portal help for more information.");
+				}
+                warpLocations.get(w).setLastUsed();
+                return null;
+			}
+			else // send the user on his way!
+			{
+				// Find the warp this one points to
+				int loc = getWarp(warpLocations.get(w).getDestination());
+
+				if (loc == -1)
+				{
+					player.sendMessage("§4This portal's destination (" + warpLocations.get(w).getDestination() + ") does not exist.");
+					if (!(permissions.hasPermission(player, "travelportals.command.warp")))
+						player.sendMessage("§2See /portal help for more information.");
+
+                    warpLocations.get(w).setLastUsed();
+                    return null;
+				}
+				else
+				{
+					
+					// Another permissions check...
+					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
+					{
+						
+						if (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))
+						{
+							player.sendMessage("§4You do not own the destination portal, and do not have permission to use it.");
+							return null;
+						}
+					}
+                    int x = warpLocations.get(loc).getX();
+                    int y = warpLocations.get(loc).getY();
+                    int z = warpLocations.get(loc).getZ();
+                    float rotation = 180.0f; // c
+
+                    // Use rotation to place the player correctly.
+					int d = warpLocations.get(loc).getDoorPosition();
+
+					if (d > 0)
+					{
+						if (d == 1)
+							rotation = 270.0f;
+						else if (d == 2)
+							rotation = 0.0f;
+						else if (d == 3)
+							rotation = 90.0f;
+						else
+							rotation = 180.0f;
+					}
+					// Guess.
+					else if (player.getWorld().getBlockAt(x + 1, y, z).getTypeId() == doortype)
+                    {
+                        rotation = 270.0f;
+                        warpLocations.get(loc).setDoorPosition(1);
+                    }
+                    else if (player.getWorld().getBlockAt(x, y, z+1).getTypeId() == doortype)
+                    {
+                        rotation = 0.0f;
+                        warpLocations.get(loc).setDoorPosition(2);
+                    }
+                    else if (player.getWorld().getBlockAt(x - 1, y, z).getTypeId() == doortype)
+                    {
+                        rotation = 90.0f;
+                        warpLocations.get(loc).setDoorPosition(3);
+                    }
+                    else if (player.getWorld().getBlockAt(x, y, z-1).getTypeId() == doortype)
+                    {
+                        rotation = 180.0f;
+                        warpLocations.get(loc).setDoorPosition(4);
+                    }
+                    else
+                    {
+                    	// oh noes :<
+                    }
+	                   // Create the location for the user to warp to
+                    Location locy = new Location(player.getWorld(), x + 0.50, y, z + 0.50, rotation, 0);
+                    if (warpLocations.get(loc).getWorld() != null && !warpLocations.get(loc).getWorld().equals(""))
+                    {
+                    	World wo = WorldCreator.name(warpLocations.get(loc).getWorld()).createWorld();
+                    	locy.setWorld(wo);
+                    }
+                    else
+                    {
+                    	logWarning("World name not set for portal " + warpLocations.get(loc).getName() + " - consider running the following command from the console:");
+                    	logWarning("portal fixworld " + TravelPortals.server.getWorlds().get(0).getName());
+                    	logWarning("Replacing the world name with the world this portal should link to, if it is incorrect.");
+                        locy.setWorld(TravelPortals.server.getWorlds().get(0));
+                    }
+                    
+                    if (disablePortal)
+                    {
+                    	warpLocations.get(loc).setLastUsed();
+                    	warpLocations.get(w).setLastUsed();
+                    }
+                    
+                    return locy;
+				}
+			}
+		}
+        return null;
+    }
+    
+    /**
+     * Get a location for the user to warp to, if they are allowed to use it.
+     * @param player The player to warp.
+     * @return A location, or null if the user does not need to be teleported.
+     */
+    public Location getWarpLocationIfAllowed(Player player) 
+    { 
+    	return getWarpLocationIfAllowed(player, true); 
     }
 }
 
