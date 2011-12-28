@@ -109,10 +109,11 @@ they own.
 
 Finally, some default groups have been implemented to make life easier: 
 
-- travelportals.classicuser - Makes the permissions work like classic TravelPortals
-- travelportals.normaluser  - Generic user permissions, as above. Not really needed.
-- travelportals.op          - Suggested permissions for ops. (Has admin stuff)
-- travelportals.*           - All permissions you could ever want.
+- travelportals.nopermission    - The user has no permissions at all. You'll probably want to build off of this.
+- travelportals.classicuser     - Makes the permissions work like classic TravelPortals
+- travelportals.normaluser      - Generic user permissions, as above. Not really needed.
+- travelportals.op              - Suggested permissions for ops. (Has admin stuff)
+- travelportals.*               - All permissions you could ever want.
 
 
 Support & Bug Reports

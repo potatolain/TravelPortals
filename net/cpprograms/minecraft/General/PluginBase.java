@@ -78,7 +78,6 @@ public class PluginBase extends JavaPlugin {
 				if (getConfig().contains("debug"))
 				{
 					debugMode = getConfig().getBoolean("debug");
-					logDebug("Debugging is active!");
 				}
 			}
 	}
@@ -107,6 +106,7 @@ public class PluginBase extends JavaPlugin {
 	public void showLoadedMessage() 
 	{
         this.logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
+        this.logDebug("Debugging mode is active.");
 	}
 	
 	/**

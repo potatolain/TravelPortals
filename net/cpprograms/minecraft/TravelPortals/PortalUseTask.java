@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 
@@ -189,15 +188,15 @@ public class PortalUseTask implements Runnable {
          // Permissions check
     	if (!plugin.permissions.hasPermission(player, "travelportals.portal.use"))
             return -1;
-        
         Location playerLoc = player.getLocation();
         World world = player.getWorld();
-        
-        // The player that caused this is necessary, as is the block.
-        Block blk = world.getBlockAt(playerLoc.getBlockX(), playerLoc.getBlockY(), playerLoc.getBlockZ());
 
+        playerLoc.setX(playerLoc.getX() + 1.0);
+        int bid = world.getBlockAt(playerLoc).getTypeId();
+        playerLoc.setX(playerLoc.getX() - 1.0);
+        
         // Is the user actually in portal material?
-        if (blk.getTypeId() == plugin.portaltype)
+        if (bid == plugin.doortype || bid == plugin.doortype2 || bid == plugin.blocktype)
         {
             // Find nearby warp.
             int w = plugin.getWarpFromLocation(world.getName(),playerLoc.getBlockX(),playerLoc.getBlockY(), playerLoc.getBlockZ());

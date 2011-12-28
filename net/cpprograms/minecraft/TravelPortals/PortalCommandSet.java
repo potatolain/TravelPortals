@@ -149,7 +149,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.list"))
 		{
-			sender.sendMessage("§2You do not have permission to use this command.");
+			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 
@@ -245,7 +245,7 @@ public class PortalCommandSet extends CommandSet
 		
 		if (!plugin.permissions.hasPermission(player, "travelportals.command.name"))
 		{
-			player.sendMessage("§2You do not have permission to use this command.");
+			player.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 		
@@ -304,7 +304,7 @@ public class PortalCommandSet extends CommandSet
 		Player player = (Player) sender;
 		if (!plugin.permissions.hasPermission(player, "travelportals.command.warp"))
 		{
-			player.sendMessage("§2You do not have permission to use this command.");
+			player.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 		
@@ -352,7 +352,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.hide"))
 		{
-			sender.sendMessage("§2You do not have permission to use this command.");
+			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 		
@@ -397,7 +397,7 @@ public class PortalCommandSet extends CommandSet
 	{
         if (sender instanceof Player && plugin.usepermissions && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.export"))
 		{
-			sender.sendMessage("§2You do not have permission to use this command.");
+			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
         
@@ -416,7 +416,7 @@ public class PortalCommandSet extends CommandSet
 	{
         if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.deactivate", sender.isOp()))
 		{
-			sender.sendMessage("§2You do not have permission to use this command.");
+			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 
@@ -448,7 +448,7 @@ public class PortalCommandSet extends CommandSet
 	{
         if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.info"))
 		{
-			sender.sendMessage("§2You do not have permission to use this command.");
+			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
         int w = -1;
@@ -518,7 +518,7 @@ public class PortalCommandSet extends CommandSet
 		
 		if (!plugin.permissions.hasPermission(player, "travelportals.command.claim"))
 		{
-			sender.sendMessage("§2You do not have permission to use this command.");
+			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 		

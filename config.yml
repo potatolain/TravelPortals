@@ -46,7 +46,7 @@ numsaves: 3
 # This option determines whether to use the playerMove functionality (default) or the new
 # polling technique developed by asofold, which may perform better on high-load servers. 
 # true uses the old method; false uses the new one.
-useplayermove: false
+useplayermove: true
 
 # This option affects how often to check all players to see if they are in a portal or not.
 # It is in server ticks.
@@ -56,3 +56,8 @@ polling-mainticks: 7
 # How many ticks to wait before teleporting when using polling. Set to 0 to not wait at all.
 # This will not have any affect if useplayermove is set to true.
 polling-followticks: 17
+
+# Whether to turn on debugging mode. Generally you'll want to keep this set to false, but 
+# the output from it can make diagnosing problems easier, and if you are going to report
+# a bug, you will likely be asked to turn this on and reproduce the problem.
+debug: false

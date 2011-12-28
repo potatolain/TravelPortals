@@ -166,7 +166,7 @@ public class TravelPortals extends PluginBase {
                 numsaves = conf.getInt("numsaves");
             
             if (conf.contains("useplayermove"))
-            	usePlayerMove = conf.getBoolean("usePlayerMove");
+            	usePlayerMove = conf.getBoolean("useplayermove");
             if (conf.contains("polling-mainticks"))
             	mainTicks = conf.getInt("polling-mainticks");
             if (conf.contains("polling-followticks"))
@@ -485,14 +485,18 @@ public class TravelPortals extends PluginBase {
      * @param disablePortal Disable this portal (set its cooldown).
      * @return The location to warp to, or null if there is no warping to be done.
      */
-    public Location getWarpLocationIfAllowed (Player player, boolean disablePortal)
+    public Location getWarpLocationIfAllowed(Player player, boolean disablePortal)
     {
         if (!permissions.hasPermission(player, "travelportals.portal.use"))
     		return null;
 
+        Location playerLoc = player.getLocation();
+        playerLoc.setX(playerLoc.getX() + 1.0);
         Block blk = player.getWorld().getBlockAt(player.getLocation());
+        
+        int bid = player.getWorld().getBlockAt(playerLoc).getTypeId();
         // Is the user actually in portal material?
-		if (blk.getTypeId() == portaltype)
+		if (bid == blocktype || bid == doortype || bid == doortype2)
 		{
 		    // Find nearby warp.
 			int w = getWarpFromLocation(player.getWorld().getName(), blk.getLocation().getBlockX(), blk.getLocation().getBlockY(), blk.getLocation().getBlockZ());
