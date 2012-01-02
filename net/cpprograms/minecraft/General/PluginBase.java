@@ -213,6 +213,8 @@ public class PluginBase extends JavaPlugin {
 	{
     	try
     	{
+    		if (!getDataFolder().exists())
+    			getDataFolder().mkdirs();
     		getConfig().load(new File(getDataFolder(), "config.yml"));
     	} catch (FileNotFoundException e) {
 			logInfo("No config file found. Creating a default configuration file: " + getName() + "/config.yml");

@@ -1,5 +1,5 @@
 TravelPortals Plugin
-Version 2.2
+Version 2.2.1
 
 Introduction 
 ------------
@@ -21,8 +21,8 @@ fill with water. (This would be the nether portal texture, but Minecraft did not
 Installation
 ------------
 
-Simply drop TravelPortals.jar and the TravelPortals folder into your plugins folder, 
-restart the server, and you should be set to go!
+Simply drop TravelPortals.jarinto your plugins folder, restart the server, and you should be 
+set to go!
 
 If you want to configure the plugin or use permissions, you will need to set these
 things up. See the next two sections for details on how to do this.
