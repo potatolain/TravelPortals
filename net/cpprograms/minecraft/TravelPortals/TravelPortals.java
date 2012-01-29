@@ -16,8 +16,6 @@ import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -292,7 +290,7 @@ public class TravelPortals extends PluginBase {
         PluginManager pm = getServer().getPluginManager();
 
         if (this.usePlayerMove)
-        	pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+        	pm.registerEvents(playerListener, this);
         else
         {
         	if (this.useTask != null)
@@ -302,14 +300,13 @@ public class TravelPortals extends PluginBase {
         	if (!this.useTask.register())
         	{
         		logSevere("Failed to register portal use task. Falling back to old PlayerMove style.");
-        		pm.registerEvent(Event.Type.PLAYER_MOVE, playerListener, Priority.Normal, this);
+        		pm.registerEvents(playerListener, this);
         		this.useTask = null;
         	}
         	
         }
 		
-		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
-        pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.High, this);
+		pm.registerEvents(blockListener, this);
         
         super.onEnable();
         // Override PermissionsHandler with our variable. Have to do this after the parent method

@@ -1,14 +1,15 @@
 package net.cpprograms.minecraft.TravelPortals;
 
 import org.bukkit.Location;
-import org.bukkit.event.player.PlayerListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * Handle events for all Player related events
  * @author cppchriscpp
  */
-public class TravelPortalsPlayerListener extends PlayerListener {
+public class TravelPortalsPlayerListener implements Listener {
     private final TravelPortals plugin;
 
     /**
@@ -21,7 +22,9 @@ public class TravelPortalsPlayerListener extends PlayerListener {
 
 	/**
 	 * Runs when a player moves. Acts if the player is in a portal block.
+	 * @param event The event related to this.
 	 */
+    @EventHandler
     public void onPlayerMove(PlayerMoveEvent event)
     {
         // Permissions check

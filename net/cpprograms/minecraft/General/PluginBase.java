@@ -218,7 +218,7 @@ public class PluginBase extends JavaPlugin {
     		getConfig().load(new File(getDataFolder(), "config.yml"));
     	} catch (FileNotFoundException e) {
 			logInfo("No config file found. Creating a default configuration file: " + getName() + "/config.yml");
-			return this.saveDefaultConfig();
+			return this.saveDefaultConfiguration();
 		} catch (IOException e) {
 			logSevere("IOException while loading " + getName() + "'s config file! Check on your config.yml, and make sure that the plugins folder is writable.");
 			if (debugMode)
@@ -237,7 +237,7 @@ public class PluginBase extends JavaPlugin {
 	 * Save a default configuration file if ours does not exist.
 	 * @return true if the save was successful; false otherwise.
 	 */
-	protected boolean saveDefaultConfig()
+	protected boolean saveDefaultConfiguration()
 	{
 		try
 		{

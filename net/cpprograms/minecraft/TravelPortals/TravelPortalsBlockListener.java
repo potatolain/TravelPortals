@@ -3,7 +3,8 @@ package net.cpprograms.minecraft.TravelPortals;
 import org.bukkit.block.Block;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockListener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -11,7 +12,7 @@ import org.bukkit.event.block.BlockBreakEvent;
  * TravelPortals block listener
  * @author cppchriscpp
  */
-public class TravelPortalsBlockListener extends BlockListener {
+public class TravelPortalsBlockListener implements Listener {
     private final TravelPortals plugin;
 
     /**
@@ -24,7 +25,9 @@ public class TravelPortalsBlockListener extends BlockListener {
 
     /**
      * Called when a block is placed; let us know if a portal is being created.
+     * @param event The event related to the block placement.
      */
+    @EventHandler
     public void onBlockPlace(BlockPlaceEvent event)
     {
     	if (event.isCancelled()) 
@@ -128,7 +131,9 @@ public class TravelPortalsBlockListener extends BlockListener {
 
     /**
      * Called when a block is broken; let us know if a portal is being destroyed.
+     * @param event The event related to block breakage.
      */
+    @EventHandler
     public void onBlockBreak(BlockBreakEvent event)
     {
 
