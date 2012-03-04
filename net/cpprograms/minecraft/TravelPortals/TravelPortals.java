@@ -488,7 +488,7 @@ public class TravelPortals extends PluginBase {
     		return null;
 
         Location playerLoc = player.getLocation();
-        playerLoc.setX(playerLoc.getX() + 1.0);
+        playerLoc = playerLoc.add(playerLoc.getDirection());
         Block blk = player.getWorld().getBlockAt(player.getLocation());
         
         int bid = player.getWorld().getBlockAt(playerLoc).getTypeId();
