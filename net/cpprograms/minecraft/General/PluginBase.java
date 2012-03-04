@@ -71,7 +71,7 @@ public class PluginBase extends JavaPlugin {
 		if (useConfig)
 			if (!loadConfig())
 			{
-				this.logSevere("Could not load configuration for " + getName() + "! This may break the plugin!");
+				this.logSevere("Could not load configuration for " + getPluginName() + "! This may break the plugin!");
 			}
 			else
 			{
@@ -191,7 +191,7 @@ public class PluginBase extends JavaPlugin {
 	 * Gets the name of this plugin.
 	 * @return The name of the plugin.
 	 */
-	public String getName()
+	public String getPluginName()
 	{
 		return pluginName;
 	}
@@ -217,15 +217,15 @@ public class PluginBase extends JavaPlugin {
     			getDataFolder().mkdirs();
     		getConfig().load(new File(getDataFolder(), "config.yml"));
     	} catch (FileNotFoundException e) {
-			logInfo("No config file found. Creating a default configuration file: " + getName() + "/config.yml");
+			logInfo("No config file found. Creating a default configuration file: " + getPluginName() + "/config.yml");
 			return this.saveDefaultConfiguration();
 		} catch (IOException e) {
-			logSevere("IOException while loading " + getName() + "'s config file! Check on your config.yml, and make sure that the plugins folder is writable.");
+			logSevere("IOException while loading " + getPluginName() + "'s config file! Check on your config.yml, and make sure that the plugins folder is writable.");
 			if (debugMode)
 				e.printStackTrace();
 			return false;
 		} catch (InvalidConfigurationException e) {
-			logSevere("Your configuration file for " + getName() + " is invalid. Double check your syntax. (And remove any tab characters)");
+			logSevere("Your configuration file for " + getPluginName() + " is invalid. Double check your syntax. (And remove any tab characters)");
 			if (debugMode)
 				e.printStackTrace();
 			return false;

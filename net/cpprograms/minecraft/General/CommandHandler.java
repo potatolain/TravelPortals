@@ -51,12 +51,12 @@ public class CommandHandler
 			this.commands = (CommandSet)(commandClass.newInstance());
 			this.commands.setPlugin(plugin);
 		} catch (InstantiationException e) {
-			plugin.logWarning("Error enabling plugin " + plugin.getName() + " InstanciationException while adding plugin to CommandSet");
+			plugin.logWarning("Error enabling plugin " + plugin.getPluginName() + " InstanciationException while adding plugin to CommandSet");
 			plugin.logWarning("Commands may not work right!");
 			if (plugin.isDebugging())
 				e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			plugin.logWarning("Error enabling plugin " + plugin.getName() + " IllegalAccessException while adding plugin to CommandSet");
+			plugin.logWarning("Error enabling plugin " + plugin.getPluginName() + " IllegalAccessException while adding plugin to CommandSet");
 			plugin.logWarning("Commands may not work right!");
 			if (plugin.isDebugging())
 				e.printStackTrace();
