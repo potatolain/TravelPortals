@@ -489,6 +489,7 @@ public class TravelPortals extends PluginBase {
 
         Location playerLoc = player.getLocation();
         playerLoc = playerLoc.add(playerLoc.getDirection());
+        playerLoc.setY(player.getLocation().getY());
         Block blk = player.getWorld().getBlockAt(player.getLocation());
         
         int bid = player.getWorld().getBlockAt(playerLoc).getTypeId();
@@ -611,7 +612,7 @@ public class TravelPortals extends PluginBase {
                     	// oh noes :<
                     }
 	                   // Create the location for the user to warp to
-                    Location locy = new Location(player.getWorld(), x + 0.50, y, z + 0.50, rotation, 0);
+                    Location locy = new Location(player.getWorld(), x + 0.50, y + 0.1, z + 0.50, rotation, 0);
                     if (warpLocations.get(loc).getWorld() != null && !warpLocations.get(loc).getWorld().equals(""))
                     {
                     	World wo = WorldCreator.name(warpLocations.get(loc).getWorld()).createWorld();
