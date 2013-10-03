@@ -13,7 +13,7 @@ package com.bukkit.cppchriscpp.TravelPortals;
  * A quick serializable storage medium for warping points.
  * REPLACES WarpPoint
  * Replaced by the one in the right package...
- * @deprecated
+ * @Deprecated
  * @author cppchriscpp
  */
 public class WarpLocation implements java.io.Serializable {
@@ -99,7 +99,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
      * @param _world The world that this location is in.
-     * @deprecated
+     * @Deprecated
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
     {

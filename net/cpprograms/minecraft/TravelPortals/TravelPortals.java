@@ -129,7 +129,8 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * Called upon enabling the plugin
 	 */
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @Override
+	@SuppressWarnings({ "unchecked" })
 	public void onEnable() {
 
 		server = getServer();
@@ -317,7 +318,8 @@ public class TravelPortals extends PluginBase {
     /**
      * Called upon disabling the plugin.
      */
-    public void onDisable() {
+    @Override
+	public void onDisable() {
 		savedata();
 		super.onDisable();
     }
@@ -455,6 +457,22 @@ public class TravelPortals extends PluginBase {
     			this.warpLocations.get(i).setWorld(newworld);
     	}
     }
+    
+    /**
+     * Delete all portals linking to a world.
+     * @param oldworld The world to delete all portals to.
+     */
+    public void deleteWorld(String oldworld) 
+    {
+    	for (int i = 0; i < this.warpLocations.size(); i++)
+    	{
+    		if (this.warpLocations.get(i).getWorld().equals(oldworld))
+    		{
+    			this.warpLocations.remove(i);
+    			i--;
+    		}
+    	}
+    }
 
     /**
      * Dump the portal list to a text file for parsing.
@@ -474,6 +492,37 @@ public class TravelPortals extends PluginBase {
         catch (Exception e)
         {
         }
+    }
+    
+    /**
+     * Import existing portals from a given txt file into the world. THIS WIPES OUT EXISTING PORTALS. You have been warned.
+     * @param file The file to import from.
+     */
+    public void importPortalList(File file)
+    {
+    	try
+    	{
+    		this.warpLocations = new ArrayList<WarpLocation>();
+    		BufferedReader br = new BufferedReader(new FileReader(file));
+    		String line;
+    		while ((line = br.readLine()) != null)
+    		{
+    			String[] data = line.split(",");
+    			if (data.length != 8)
+    				continue;
+    			WarpLocation warp = new WarpLocation(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), 0, data[6], data[7]);
+    			warp.setHidden(data[5] == "1");
+    			warp.setDestination(data[4]);
+    			warp.setName(data[3]);
+    			this.warpLocations.add(warp);
+    		}
+    		br.close();
+    	}
+    	catch (Exception e)
+    	{
+    		this.logSevere("Unable to load portal list from "+file.getName()+"!");
+    		this.logDebug(e.getMessage());
+    	}
     }
     
     /**

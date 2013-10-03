@@ -1,6 +1,6 @@
 name: TravelPortals
 main: net.cpprograms.minecraft.TravelPortals.TravelPortals
-version: 2.2.4
+version: 2.2.6
 commands:
   portal:
     description: Portals
@@ -148,4 +148,7 @@ permissions:
     default: op
   travelportals.admin.command.export:
     description: Allows staff to force an export of current warps in txt format.
+    default: op
+  travelportals.admin.command.import:
+    description: Allows staff to import a list of existing warps in the same txt format.
     default: op

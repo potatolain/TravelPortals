@@ -3,6 +3,5 @@
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="var" path="BUKKIT"/>
-	<classpathentry kind="var" path="SNAKEYAML"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -61,6 +62,7 @@ public class PluginBase extends JavaPlugin {
 	/**
 	 * Constructor. Do some setup stuff.
 	 */
+	@Override
 	public void onLoad() 
 	{	
 		// Grab a name and version from the plugin's description file.
@@ -86,6 +88,7 @@ public class PluginBase extends JavaPlugin {
 	 * What to do when the plugin is enabled. 
 	 * If nothing else, this will show that the plugin was loaded.
 	 */
+	@Override
 	public void onEnable() 
 	{
 		commandHandler = new CommandHandler();
@@ -95,6 +98,7 @@ public class PluginBase extends JavaPlugin {
 	/**
 	 * What to do when the plugin is disabled.
 	 */
+	@Override
 	public void onDisable()
 	{
 		showUnloadedMessage();
@@ -105,8 +109,8 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void showLoadedMessage() 
 	{
-        this.logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
-        this.logDebug("Debugging mode is active.");
+        logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
+        logDebug("Debugging mode is active.");
 	}
 	
 	/**
@@ -114,7 +118,7 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void showUnloadedMessage()
 	{
-		this.logInfo( pluginName + " version " + pluginVersion + " has been disabled.");
+		logInfo( pluginName + " version " + pluginVersion + " has been disabled.");
 	}
 	
 	
@@ -124,7 +128,7 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void logWarning(String message)
 	{
-		this.log(message, Level.WARNING);
+		log(message, Level.WARNING);
 	}
 	
 	/**
@@ -133,7 +137,7 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void logInfo(String message)
 	{
-		this.log(message, Level.INFO);
+		log(message, Level.INFO);
 	}
 	
 	/**
@@ -142,7 +146,7 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void logSevere(String message)
 	{
-		this.log(message, Level.SEVERE);
+		log(message, Level.SEVERE);
 	}
 	
 	/**
@@ -152,7 +156,7 @@ public class PluginBase extends JavaPlugin {
 	public void logDebug(String message)
 	{
 		if (this.debugMode)
-			this.log(message, Level.INFO);
+			log(message, Level.INFO);
 	}
 	
 	/**
@@ -166,10 +170,10 @@ public class PluginBase extends JavaPlugin {
 	
 	/**
 	 * Log a message
-	 * @param string message The message to log.
-	 * @param Level level The level of the message.
+	 * @param message message The message to log.
+	 * @param level The level of the message.
 	 */
-	private void log(String message, Level level)
+	public void log(String message, Level level)
 	{
 		log.log(level, "[" + pluginName +"] " + message);
 	}
@@ -182,6 +186,7 @@ public class PluginBase extends JavaPlugin {
 	 * @param args The arguments passed in.
 	 * @return true if the command is handled; false otherwise.
 	 */
+	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
 	{
 		return commandHandler.HandleCommand(sender, command, label, args);
@@ -274,6 +279,16 @@ public class PluginBase extends JavaPlugin {
 		return true;
 	}
 	
+	/**
+	 * Just allows us to generate worlds ourselves. Does nothing otherwise.
+	 * @param name The world to gen for.
+	 * @param id The id of the world to gen for.
+	 * @return ChunkGenerator a ChunkGenerator.
+	 */
+	@Override
+	public ChunkGenerator getDefaultWorldGenerator(String name, String id) {
+		return super.getDefaultWorldGenerator(name, id);
+	}
 	
 }
 

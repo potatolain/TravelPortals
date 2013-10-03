@@ -97,7 +97,7 @@ public class WarpLocation implements java.io.Serializable {
      * @param _z The Z coordinate of the warp point's position.
      * @param _doorpos The position of the door.
      * @param _world The world to put this WarpLocation into.
-     * @deprecated
+     * @Deprecated
      */
     public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
     {

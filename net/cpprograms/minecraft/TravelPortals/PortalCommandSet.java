@@ -1,5 +1,6 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TreeMap;
@@ -27,6 +28,7 @@ public class PortalCommandSet extends CommandSet
 	 * Set the plugin that we're using. 
 	 * @param plugin The plugin to use.
 	 */
+	@Override
 	public void setPlugin(PluginBase plugin)
 	{
 		this.plugin = (TravelPortals) plugin;
@@ -36,6 +38,7 @@ public class PortalCommandSet extends CommandSet
 	 * What to do if we're given no parameters...
 	 * @param sender The entity responsible for sending the command.
 	 */
+	@Override
 	public boolean noParams(CommandSender sender)
 	{
         sender.sendMessage("§4Incorrect usage; try /portal help for help with portals.");
@@ -48,6 +51,7 @@ public class PortalCommandSet extends CommandSet
 	 * @param method The method sent.
 	 * @param args The arguments passed in.
 	 */
+	@Override
 	public boolean noSuchMethod(CommandSender sender, String method, String[] args)
 	{
 		return noParams(sender);
@@ -61,6 +65,7 @@ public class PortalCommandSet extends CommandSet
 	 * @param e The exception that was hit.
 	 * @return true if this was handled; false otherwise.
 	 */
+	@Override
 	public boolean internalError(CommandSender sender, String method, String[] args, Exception e)
 	{
 		sender.sendMessage("§4An internal error occurred while handling this command.");
@@ -80,6 +85,7 @@ public class PortalCommandSet extends CommandSet
 	 * @param args The arguments passed in.
 	 * @return true if this was handled; false otherwise.
 	 */
+	@Override
 	public boolean help(CommandSender sender, String[] args)
 	{
 		if (sender instanceof Player)
@@ -114,11 +120,17 @@ public class PortalCommandSet extends CommandSet
 	        if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
 	            player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
 	
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", false))
-				player.sendMessage("§2If you rename a world, use /portal renameworld oldname newname to replace it");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", player.isOp()))
+				player.sendMessage("§2If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
 			
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld", false))
-				player.sendMessage("§2You can set any portals without worlds with /portal fixworld world");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld"))
+				player.sendMessage("§2If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
+			
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export", player.isOp())) 
+				player.sendMessage("§2You can export to travelportals.txt with /portal export");
+			
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport", player.isOp()))
+				player.sendMessage("§2You can import portals with /portal reimport [file name]");
 	        
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 	        	player.sendMessage("§7To get a list of existing portals, use the command /portal list.");
@@ -132,6 +144,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage("§2portal hide hides or unhides a named portal.");
 			sender.sendMessage("§2portal deactivate [name] deactivates a portal entirely.");
 			sender.sendMessage("§2portal export exports all known portals to travelportals.txt");
+			sender.sendMessage("§2portal reimport [file name] imports a list of portals from a txt file");
 			sender.sendMessage("§2If you rename a world, use /portal renameworld oldname newname to replace it");
 			sender.sendMessage("§2You can set any portals without worlds with /portal fixworld world");
 			sender.sendMessage("§7To get a list of existing portals, use the command /portal list.");
@@ -407,6 +420,45 @@ public class PortalCommandSet extends CommandSet
 	}
 	
 	/**
+	 * Import a txt-formatted list of portals, likey you'd export with the export function.
+	 * @param sender User/console sending the message.
+	 * @param args Command line arguments.
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean reimport(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && plugin.usepermissions && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.reimport"))
+		{
+			sender.sendMessage("§4You do not have permission to use this command.");
+			return true;
+		}
+		
+		if (args.length < 1)
+		{
+			sender.sendMessage("§4You must provide a file to import from");
+			return true;
+		}
+		
+		File file = new File(plugin.getDataFolder(), args[0]);
+		if (!file.exists())
+		{
+			sender.sendMessage("§4File "+args[0]+" not found!");
+			return true;
+		}
+		
+		if (args.length != 2 || !args[1].equals("confirm"))
+		{
+			sender.sendMessage("§4This will COMPLETELY ERASE your existing portals!");
+			sender.sendMessage("§4If you are sure, type /portal reimport "+args[0]+" confirm");
+			return true;
+		}
+		plugin.importPortalList(file);
+		sender.sendMessage("§3Portals imported successfully. "+plugin.warpLocations.size()+" warps imported");
+		
+		return true;
+	}
+	
+	/**
 	 * Deactivates an existing portal
 	 * @param sender The entity responsible for sending the command.
 	 * @param args Arguments passed in (name of the portal)
@@ -580,6 +632,34 @@ public class PortalCommandSet extends CommandSet
 		sender.sendMessage("§2The world \"" + args[0] + "\" has been renamed to \"" + args[1] + "\".");
 		return true;
 	}
+	
+	/**
+	 * Rename a world.
+	 * @param sender The entity responsible for sending the command.
+	 * @param args The arguments passed in (old world name, new world name)
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean deleteworld(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.renameworld", false))
+			return noPermissionForAction(sender);
+		
+		if (args.length < 1)
+		{
+			sender.sendMessage("§4You need to include the name of the deleted world.");
+			return true;
+		}
+		if (args.length < 2 || args[1] != "confirm")
+		{
+			sender.sendMessage("§4This will irreversibly delete all portals linked to \"" + args[0] + "\"! Are you sure?");
+			sender.sendMessage("§2Type /portal deleteworld " + args[0] + " confirm to delete.");
+			return true;
+		}
+		plugin.deleteWorld(args[0]);
+		sender.sendMessage("§2All portals linked to \"" + args[0] + "\" have been deleted.");
+		return true;
+	}
+
 	
 	/**
 	 * Fix all blank world names in portals
