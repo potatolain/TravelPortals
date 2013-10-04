@@ -649,10 +649,11 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage("§4You need to include the name of the deleted world.");
 			return true;
 		}
-		if (args.length < 2 || args[1] != "confirm")
+		if (args.length < 2 || !args[1].equals("confirm"))
 		{
-			sender.sendMessage("§4This will irreversibly delete all portals linked to \"" + args[0] + "\"! Are you sure?");
-			sender.sendMessage("§2Type /portal deleteworld " + args[0] + " confirm to delete.");
+			sender.sendMessage("§4This will irreversibly delete all portals linked to \"" + args[0] + "\"!");
+			sender.sendMessage("§2Are you sure you want to do this?");
+			sender.sendMessage("§2Type §4/portal deleteworld " + args[0] + " confirm §2 to delete.");
 			return true;
 		}
 		plugin.deleteWorld(args[0]);
