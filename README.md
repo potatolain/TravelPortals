@@ -7,6 +7,9 @@ Introduction
 This mod allows you to make simple portals that can transport you between locations.
 You make them by making a border around a 2x1 space with obsidian and a wooden or iron
 door. You will require 6 obsidian, a door, and a redstone torch.
+
+A visual example is shown on this youtube video by MinecraftZero: http://www.youtube.com/watch?v=8H4JjwDvLMU
+
 It should look like this from above:
 
 ```
