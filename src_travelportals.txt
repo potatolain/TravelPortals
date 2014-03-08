@@ -1,6 +1,0 @@
-"D:\\My Dropbox\\craftbuk\\TravelPortals\\MinecraftFontWidthCalculator.java"
-"D:\\My Dropbox\\craftbuk\\TravelPortals\\TravelPortals.java"
-"D:\\My Dropbox\\craftbuk\\TravelPortals\\TravelPortalsBlockListener.java"
-"D:\\My Dropbox\\craftbuk\\TravelPortals\\TravelPortalsPlayerListener.java"
-"D:\\My Dropbox\\craftbuk\\TravelPortals\\WarpLocation.java"
-"D:\\My Dropbox\\craftbuk\\TravelPortals\\WarpPoint.java"
