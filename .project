@@ -27,7 +27,7 @@
 	<variableList>
 		<variable>
 			<name>CRAFTBUKKIT_HOME</name>
-			<value>file:/D:/cbstuff/jars</value>
+			<value>file:/F:/git/deps</value>
 		</variable>
 	</variableList>
 </projectDescription>

@@ -15,28 +15,28 @@ import org.bukkit.command.CommandSender;
  */
 public class CommandHandler 
 {
-	
+
 	/**
 	 * The plugin to reference when necessary.
 	 */
 	public PluginBase plugin;
-	
+
 	/**
 	 * The name of the command. Named from the class of the extension of CommandSet...
 	 */
 	public String commandName;
-	
+
 	/**
 	 * The class that has all of the methods we want to run.
 	 */
 	public CommandSet commands;
-	
-	
+
+
 	/**
 	 * Default constructor.
 	 */
 	public CommandHandler() {}
-	
+
 	/**
 	 * Constructor. Please provide your plugin here. 
 	 * @param plugin The plugin.
@@ -45,7 +45,7 @@ public class CommandHandler
 	@SuppressWarnings("rawtypes")
 	public CommandHandler(PluginBase plugin, Class commandClass)
 	{
-		
+
 		this.plugin = plugin;
 		try {
 			this.commands = (CommandSet)(commandClass.newInstance());
@@ -61,14 +61,14 @@ public class CommandHandler
 			if (plugin.isDebugging())
 				e.printStackTrace();
 		}
-		
+
 		// Try to get the method name from the class...
 		if (commandClass.getName().endsWith("CommandSet"))
 		{
 			this.commandName = commandClass.getSimpleName().substring(0,commandClass.getSimpleName().length() - 10);
 		}
 	}
-	
+
 	/**
 	 * Handle a command passed in from a plugin.
 	 * @param sender The entity (player or otherwise) that send the command.
@@ -83,11 +83,11 @@ public class CommandHandler
 		{
 			if (args.length == 0)
 				return commands.noParams(sender);
-			
+
 			String[] args_nocommand = new String[args.length - 1];
 			if (args_nocommand.length > 0)
 				System.arraycopy(args, 1, args_nocommand, 0, args.length-1);
-			
+
 			try 
 			{				
 				Method tocall = commands.getClass().getMethod(args[0].toLowerCase(), new Class[] { CommandSender.class, String[].class });

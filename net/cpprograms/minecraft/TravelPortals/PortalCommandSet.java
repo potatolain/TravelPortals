@@ -23,7 +23,7 @@ public class PortalCommandSet extends CommandSet
 	 * Our plugin.
 	 */
 	TravelPortals plugin;
-	
+
 	/**
 	 * Set the plugin that we're using. 
 	 * @param plugin The plugin to use.
@@ -33,7 +33,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		this.plugin = (TravelPortals) plugin;
 	}
-	
+
 	/**
 	 * What to do if we're given no parameters...
 	 * @param sender The entity responsible for sending the command.
@@ -41,10 +41,10 @@ public class PortalCommandSet extends CommandSet
 	@Override
 	public boolean noParams(CommandSender sender)
 	{
-        sender.sendMessage("§4Incorrect usage; try /portal help for help with portals.");
+		sender.sendMessage("§4Incorrect usage; try /portal help for help with portals.");
 		return true;
 	}
-	
+
 	/**
 	 * Incorrect usage... we really just want to show the user the same thing as noParams here.
 	 * @param sender The entity responsible for sending the command.
@@ -56,7 +56,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		return noParams(sender);
 	}
-	
+
 	/**
 	 * Log an internal error, and alert the user.
 	 * @param sender The entity responsible for sending the command.
@@ -78,7 +78,7 @@ public class PortalCommandSet extends CommandSet
 		plugin.logInfo("If you see this continually, please report this bug after turning on debug mode.");
 		return true;
 	}
-	
+
 	/**
 	 * Show help for the user/entity.
 	 * @param sender The entity responsible for sending the command.
@@ -93,48 +93,48 @@ public class PortalCommandSet extends CommandSet
 			Player player = (Player) sender;
 			if (!plugin.permissions.hasPermission(player, "travelportals.command.help"))
 				return noPermissionForAction(sender);
-	
+
 			player.sendMessage("§3-- TravelPortals Help --");
-	
+
 			if (plugin.permissions.hasPermission(player, "travelportals.portal.create"))
 			{
-	            player.sendMessage("§9Create a portal by surrounding a 2x1 area with " + plugin.strBlocktype);
-	            player.sendMessage("§9and a " + plugin.strDoortype + ", then putting a" + plugin.strTorchtype + " at the bottom.");
+				player.sendMessage("§9Create a portal by surrounding a 2x1 area with " + plugin.strBlocktype);
+				player.sendMessage("§9and a " + plugin.strDoortype + ", then putting a" + plugin.strTorchtype + " at the bottom.");
 			}
-	
+
 			if (plugin.permissions.hasPermission(player, "travelportals.command.name"))
-	        	player.sendMessage("§2/portal name [name] sets the name of this portal.");
-	
+				player.sendMessage("§2/portal name [name] sets the name of this portal.");
+
 			if (plugin.permissions.hasPermission(player, "travelportals.command.warp"))
-	        	player.sendMessage("§2/portal warp [name] sets the portal name to warp to.");
-	
-	        if (plugin.permissions.hasPermission(player, "travelportals.command.hide"))
-	            player.sendMessage("§2/portal hide [name] hides (or unhides) a portal from the list.");
-	
-	        if (plugin.permissions.hasPermission(player, "travelportals.command.info"))
-	            player.sendMessage("§2/portal info shows information about named or nearby portal.");
-	        
-	        if (plugin.permissions.hasPermission(player, "travelportals.command.claim"))
-	        	player.sendMessage("§2/portal claim claims (or gives up ownership of) a portal.");
-	        
-	        if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
-	            player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
-	
+				player.sendMessage("§2/portal warp [name] sets the portal name to warp to.");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.command.hide"))
+				player.sendMessage("§2/portal hide [name] hides (or unhides) a portal from the list.");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.command.info"))
+				player.sendMessage("§2/portal info shows information about named or nearby portal.");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.command.claim"))
+				player.sendMessage("§2/portal claim claims (or gives up ownership of) a portal.");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
+				player.sendMessage("§2/portal deactivate [name] deactivates a portal entirely.");
+
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", player.isOp()))
 				player.sendMessage("§2If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
-			
+
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld"))
 				player.sendMessage("§2If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
-			
+
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export", player.isOp())) 
 				player.sendMessage("§2You can export to travelportals.txt with /portal export");
-			
+
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport", player.isOp()))
 				player.sendMessage("§2You can import portals with /portal reimport [file name]");
-	        
+
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
-	        	player.sendMessage("§7To get a list of existing portals, use the command /portal list.");
-				
+				player.sendMessage("§7To get a list of existing portals, use the command /portal list.");
+
 		}
 		else
 		{
@@ -151,7 +151,7 @@ public class PortalCommandSet extends CommandSet
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Command to get the list of portals.
 	 * @param sender The entity that sent the command.
@@ -166,83 +166,83 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-        // Get what page to use.
-        int pn = 1;
-        if (args.length >= 1)
-           try
-           {
-               pn = Integer.parseInt(args[0]);
-           }
-           catch (NumberFormatException e)
-           {}
+		// Get what page to use.
+		int pn = 1;
+		if (args.length >= 1)
+			try
+		{
+				pn = Integer.parseInt(args[0]);
+		}
+		catch (NumberFormatException e)
+		{}
 
-        // Negative page numbers will not fly.
-        if (pn < 1) pn = 1;
+		// Negative page numbers will not fly.
+		if (pn < 1) pn = 1;
 
-        // This will load all of the portals in alphabetical order
+		// This will load all of the portals in alphabetical order
 		TreeMap<String, String> allp = new TreeMap<String, String>();
 		int tmp = -1;
 		for (WarpLocation w : plugin.warpLocations)
-		    if (w.hasName() && !w.getHidden())
-		    {
-		        tmp = this.plugin.getWarp(w.getDestination());
-		        if (tmp == -1)
-		            allp.put(w.getName(), "§c" + w.getDestination());
-		        else if (plugin.warpLocations.get(tmp).getHidden())
-		            allp.put(w.getName(), "§9?????");
-		        else
-                    allp.put(w.getName(), w.getDestination());
-		    }
+			if (w.hasName() && !w.getHidden())
+			{
+				tmp = this.plugin.getWarp(w.getDestination());
+				if (tmp == -1)
+					allp.put(w.getName(), "§c" + w.getDestination());
+				else if (plugin.warpLocations.get(tmp).getHidden())
+					allp.put(w.getName(), "§9?????");
+				else
+					allp.put(w.getName(), w.getDestination());
+			}
 
 
-        // No portals! :(
+		// No portals! :(
 		if (allp.size() == 0)
 		{
-		    sender.sendMessage("§4There are no visible portals to list!");
-		    return true;
+			sender.sendMessage("§4There are no visible portals to list!");
+			return true;
 		}
 
-        // Output this information to the user now!
-        sender.sendMessage("§2TravelPortals (Page " + pn + "/" + ((allp.size()/8) + (allp.size()%8>0?1:0)) + ")");
-        sender.sendMessage("§3---------------------------------------------------");
+		// Output this information to the user now!
+		sender.sendMessage("§2TravelPortals (Page " + pn + "/" + ((allp.size()/8) + (allp.size()%8>0?1:0)) + ")");
+		sender.sendMessage("§3---------------------------------------------------");
 
-        // An iterator for both names and destinations..
-        Iterator<String> pnames = allp.keySet().iterator();
-        Iterator<String> pdests = allp.values().iterator();
+		// An iterator for both names and destinations..
+		Iterator<String> pnames = allp.keySet().iterator();
+		Iterator<String> pdests = allp.values().iterator();
 
-        // Get to the page the user requested..
-        for (int j = 0; j < ((pn-1)*8) && pnames.hasNext(); j++)
-        {
-            pnames.next();
-            pdests.next();
-        }
+		// Get to the page the user requested..
+		for (int j = 0; j < ((pn-1)*8) && pnames.hasNext(); j++)
+		{
+			pnames.next();
+			pdests.next();
+		}
 
-        // Now, print out all of the portals on this page.
-        for (int j = 0; j < 8 && pnames.hasNext(); j++)
-        {
-            // Get the name, make it fill approx half the given space
-            String cl = pnames.next();
-            String dest = pdests.next();
-            if (cl.equals(""))
-                cl = "(no name)";
-            if (dest.equals(""))
-                dest = "(no destination)";
-            int left = (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)) - MinecraftFontWidthCalculator.getStringWidth(cl);
-            if (left > 0)
-            {
-                cl += whitespace(left);
-            }
-            else
-            {
-                cl = substring(cl, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
-            }
-            // Now make an arrow, and then the destination, with the same padding/trimming from above.
-            cl += " §f-->§3 " + substring(dest, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
-            sender.sendMessage("§3" + cl);
-        }
-        return true;
+		// Now, print out all of the portals on this page.
+		for (int j = 0; j < 8 && pnames.hasNext(); j++)
+		{
+			// Get the name, make it fill approx half the given space
+			String cl = pnames.next();
+			String dest = pdests.next();
+			if (cl.equals(""))
+				cl = "(no name)";
+			if (dest.equals(""))
+				dest = "(no destination)";
+			int left = (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)) - MinecraftFontWidthCalculator.getStringWidth(cl);
+			if (left > 0)
+			{
+				cl += whitespace(left);
+			}
+			else
+			{
+				cl = substring(cl, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
+			}
+			// Now make an arrow, and then the destination, with the same padding/trimming from above.
+			cl += " §f-->§3 " + substring(dest, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
+			sender.sendMessage("§3" + cl);
+		}
+		return true;
 	}
-	
+
 	/**
 	 * Name an existing portal
 	 * @param sender The entity responsible for sending the command.
@@ -253,15 +253,15 @@ public class PortalCommandSet extends CommandSet
 	{
 		if (!(sender instanceof Player))
 			return notAccessibleFromConsole(sender);
-		
+
 		Player player = (Player) sender;
-		
+
 		if (!plugin.permissions.hasPermission(player, "travelportals.command.name"))
 		{
 			player.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-		
+
 		if (args.length < 1)
 			player.sendMessage("§4You have to include a name for the location!");
 		else if (this.plugin.getWarp(args[0]) != -1) // Is this name already taken?
@@ -270,8 +270,8 @@ public class PortalCommandSet extends CommandSet
 		{
 			// Check to make sure the user is actually near a portal.
 			int loc = this.plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-			
-			
+
+
 			if (loc == -1)
 				player.sendMessage("§4No portal found! (You must be within one block of the portal.)");
 			else
@@ -288,39 +288,39 @@ public class PortalCommandSet extends CommandSet
 						}
 					}
 				}
-			    if (this.plugin.warpLocations.get(loc).getDestination() == args[0])
-			    {
-			        player.sendMessage("§4You cannot set a portal to warp to itself!");
-			    }
-			    else
-			    {
-				    this.plugin.warpLocations.get(loc).setName(args[0]);
-				    this.plugin.savedata();
-				    player.sendMessage("§2This portal is now known as " + args[0] + ".");
-			    }
+				if (this.plugin.warpLocations.get(loc).getDestination() == args[0])
+				{
+					player.sendMessage("§4You cannot set a portal to warp to itself!");
+				}
+				else
+				{
+					this.plugin.warpLocations.get(loc).setName(args[0]);
+					this.plugin.savedata();
+					player.sendMessage("§2This portal is now known as " + args[0] + ".");
+				}
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Set the location for a warp.
 	 * @param sender The entity responsible for this command
- 	 * @param args The parameters passed in (the name of the portal to warp to.
+	 * @param args The parameters passed in (the name of the portal to warp to.
 	 * @return true if this is handled; false otherwise. 
 	 */
 	public boolean warp(CommandSender sender, String[] args)
 	{
 		if (!(sender instanceof Player))
 			return notAccessibleFromConsole(sender);
-		
+
 		Player player = (Player) sender;
 		if (!plugin.permissions.hasPermission(player, "travelportals.command.warp"))
 		{
 			player.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-		
+
 		int loc = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
 		if (args.length < 1)
 			player.sendMessage("§4You have to include a destination!");
@@ -340,21 +340,21 @@ public class PortalCommandSet extends CommandSet
 					}
 				}
 			}
-			
-		    if (this.plugin.warpLocations.get(loc).getName() == args[0])
-		    {
-                player.sendMessage("§4You cannot set a portal to warp to itself!");
-		    }
-		    else
-		    {
-			    this.plugin.warpLocations.get(loc).setDestination(args[0]);
-		   	    this.plugin.savedata();
-			    player.sendMessage("§2This portal now points to " + args[0] + ".");
-		    }
+
+			if (this.plugin.warpLocations.get(loc).getName() == args[0])
+			{
+				player.sendMessage("§4You cannot set a portal to warp to itself!");
+			}
+			else
+			{
+				this.plugin.warpLocations.get(loc).setDestination(args[0]);
+				this.plugin.savedata();
+				player.sendMessage("§2This portal now points to " + args[0] + ".");
+			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Hide a portal
 	 * @param sender The entity responsible for sending the command.
@@ -368,7 +368,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-		
+
 		if (args.length < 1)
 		{
 			sender.sendMessage("§4You have to include portal name!");
@@ -399,7 +399,7 @@ public class PortalCommandSet extends CommandSet
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Export command - exports the portals to a text file.
 	 * @param sender The entity that sent this. 
@@ -408,17 +408,17 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean export(CommandSender sender, String[] args)
 	{
-        if (sender instanceof Player && plugin.usepermissions && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.export"))
+		if (sender instanceof Player && plugin.usepermissions && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.export"))
 		{
 			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-        
-        this.plugin.dumpPortalList();
-        sender.sendMessage("§3Portal list dumped to travelportals.txt.");
+
+		this.plugin.dumpPortalList();
+		sender.sendMessage("§3Portal list dumped to travelportals.txt.");
 		return true;
 	}
-	
+
 	/**
 	 * Import a txt-formatted list of portals, likey you'd export with the export function.
 	 * @param sender User/console sending the message.
@@ -432,20 +432,20 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-		
+
 		if (args.length < 1)
 		{
 			sender.sendMessage("§4You must provide a file to import from");
 			return true;
 		}
-		
+
 		File file = new File(plugin.getDataFolder(), args[0]);
 		if (!file.exists())
 		{
 			sender.sendMessage("§4File "+args[0]+" not found!");
 			return true;
 		}
-		
+
 		if (args.length != 2 || !args[1].equals("confirm"))
 		{
 			sender.sendMessage("§4This will COMPLETELY ERASE your existing portals!");
@@ -454,10 +454,10 @@ public class PortalCommandSet extends CommandSet
 		}
 		plugin.importPortalList(file);
 		sender.sendMessage("§3Portals imported successfully. "+plugin.warpLocations.size()+" warps imported");
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Deactivates an existing portal
 	 * @param sender The entity responsible for sending the command.
@@ -466,30 +466,30 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean deactivate(CommandSender sender, String[] args)
 	{
-        if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.deactivate", sender.isOp()))
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.deactivate", sender.isOp()))
 		{
 			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
 
-        if (args.length < 1)
-        {
-            sender.sendMessage("§4You must provide the name of the portal.");
-            return true;
-        }
+		if (args.length < 1)
+		{
+			sender.sendMessage("§4You must provide the name of the portal.");
+			return true;
+		}
 
-        int w = plugin.getWarp(args[0]);
-        if (w == -1)
-        {
-            sender.sendMessage("§4There is no portal with the name \"" + args[0] + "\"");
-            return true;
-        }
-        this.plugin.warpLocations.remove(w);
-        this.plugin.savedata();
-        sender.sendMessage("§2You have successfully removed the portal named \"" + args[0] + "\"");
-        return true;
+		int w = plugin.getWarp(args[0]);
+		if (w == -1)
+		{
+			sender.sendMessage("§4There is no portal with the name \"" + args[0] + "\"");
+			return true;
+		}
+		this.plugin.warpLocations.remove(w);
+		this.plugin.savedata();
+		sender.sendMessage("§2You have successfully removed the portal named \"" + args[0] + "\"");
+		return true;
 	}
-	
+
 	/**
 	 * Get information about an existing portal.
 	 * @param sender The entity that sent the command.
@@ -498,64 +498,64 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean info(CommandSender sender, String[] args)
 	{
-        if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.info"))
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.info"))
 		{
 			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-        int w = -1;
-        if (args.length > 0)
-        {
-            w = plugin.getWarp(args[0]);
-            if (w == -1) {
-                sender.sendMessage("§4There is no portal with that name.");
-                return true;
-            }
-        } else {
-        	if (!(sender instanceof Player))
-        	{
-        		sender.sendMessage("You need to provide the name of a portal.");
-        		return true;
-        	}
-        	
-            w = plugin.getWarpFromLocation(((Player)sender).getWorld().getName(), ((Player)sender).getLocation().getBlockX(), ((Player)sender).getLocation().getBlockY(), ((Player)sender).getLocation().getBlockZ());
-            if (w == -1) {
-                sender.sendMessage("§4You must provide a portal name, or stand in front of one.");
-                return true;
-            }
-        }
-        
-        String n = plugin.warpLocations.get(w).getName();
-        String d = plugin.warpLocations.get(w).getDestination();
-        String o = plugin.warpLocations.get(w).getOwner();
-        String l = plugin.warpLocations.get(w).getWorld();
-        if (l == null || l.length() == 0)
-        	l = "(Unknown)";
-        
-    	if (n.equals(""))
-            n = "has no name";
-        else
-        	n = "is named " + n;
-    	
-        int m = plugin.getWarp(d);
-        if (m == -1 && !d.equals(""))
-            d = "warps to §c" + d + "§3 in world §c"+l+"§3";
-        else if (d.equals(""))
-        	d = "has no destination";
-        else if (plugin.warpLocations.get(m).getHidden())
-            d = "warps to §9?????§";
-        else
-            d = "warps to " + d + "§3 in world "+l;
-        if (o.equals(""))
-        	o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
-        else
-        	o = "It is owned by " + o + ".";
-        sender.sendMessage("§3This portal " + n + " and " + d + ".");
-        sender.sendMessage("§3" + o);
-       
-        return true;
+		int w = -1;
+		if (args.length > 0)
+		{
+			w = plugin.getWarp(args[0]);
+			if (w == -1) {
+				sender.sendMessage("§4There is no portal with that name.");
+				return true;
+			}
+		} else {
+			if (!(sender instanceof Player))
+			{
+				sender.sendMessage("You need to provide the name of a portal.");
+				return true;
+			}
+
+			w = plugin.getWarpFromLocation(((Player)sender).getWorld().getName(), ((Player)sender).getLocation().getBlockX(), ((Player)sender).getLocation().getBlockY(), ((Player)sender).getLocation().getBlockZ());
+			if (w == -1) {
+				sender.sendMessage("§4You must provide a portal name, or stand in front of one.");
+				return true;
+			}
+		}
+
+		String n = plugin.warpLocations.get(w).getName();
+		String d = plugin.warpLocations.get(w).getDestination();
+		String o = plugin.warpLocations.get(w).getOwner();
+		String l = plugin.warpLocations.get(w).getWorld();
+		if (l == null || l.length() == 0)
+			l = "(Unknown)";
+
+		if (n.equals(""))
+			n = "has no name";
+		else
+			n = "is named " + n;
+
+		int m = plugin.getWarp(d);
+		if (m == -1 && !d.equals(""))
+			d = "warps to §c" + d + "§3 in world §c"+l+"§3";
+		else if (d.equals(""))
+			d = "has no destination";
+		else if (plugin.warpLocations.get(m).getHidden())
+			d = "warps to §9?????§";
+		else
+			d = "warps to " + d + "§3 in world "+l;
+		if (o.equals(""))
+			o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
+		else
+			o = "It is owned by " + o + ".";
+		sender.sendMessage("§3This portal " + n + " and " + d + ".");
+		sender.sendMessage("§3" + o);
+
+		return true;
 	}
-	
+
 	/**
 	 * Claim a portal for the sender, or a specified person.
 	 * @param sender The entity responsible for sending this command.
@@ -567,31 +567,31 @@ public class PortalCommandSet extends CommandSet
 		if (!(sender instanceof Player))
 			return notAccessibleFromConsole(sender);
 		Player player = (Player) sender;
-		
+
 		if (!plugin.permissions.hasPermission(player, "travelportals.command.claim"))
 		{
 			sender.sendMessage("§4You do not have permission to use this command.");
 			return true;
 		}
-		
+
 		int w = -1;
 		w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
 		if (w == -1) 
 		{
 			player.sendMessage("§4No portal found! (You must be within one block of a portal.)");
-		    return true;
+			return true;
 		}
-		
+
 		if (plugin.warpLocations.get(w).getOwner().equals("") || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
 		{
 			if (args.length > 0)
 				plugin.warpLocations.get(w).setOwner(args[0]);
 			else
 				plugin.warpLocations.get(w).setOwner(player.getName());
-			
+
 			plugin.savedata();
 			player.sendMessage("§2You have successfully claimed this portal"+(args.length>0?" for " + args[0]:"")+"!");
-			
+
 			return true;
 		} 
 		else 
@@ -603,15 +603,15 @@ public class PortalCommandSet extends CommandSet
 			} 
 			else 
 			{
-		    	player.sendMessage("§4This portal is already owned by "+plugin.warpLocations.get(w).getOwner()+"!");
-		    	return true;
+				player.sendMessage("§4This portal is already owned by "+plugin.warpLocations.get(w).getOwner()+"!");
+				return true;
 			}
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	/**
 	 * Rename a world.
 	 * @param sender The entity responsible for sending the command.
@@ -622,7 +622,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.renameworld", false))
 			return noPermissionForAction(sender);
-		
+
 		if (args.length < 2)
 		{
 			sender.sendMessage("§4You need to include the name of the old world and the name of the new world.");
@@ -632,7 +632,7 @@ public class PortalCommandSet extends CommandSet
 		sender.sendMessage("§2The world \"" + args[0] + "\" has been renamed to \"" + args[1] + "\".");
 		return true;
 	}
-	
+
 	/**
 	 * Rename a world.
 	 * @param sender The entity responsible for sending the command.
@@ -643,7 +643,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.renameworld", false))
 			return noPermissionForAction(sender);
-		
+
 		if (args.length < 1)
 		{
 			sender.sendMessage("§4You need to include the name of the deleted world.");
@@ -661,7 +661,7 @@ public class PortalCommandSet extends CommandSet
 		return true;
 	}
 
-	
+
 	/**
 	 * Fix all blank world names in portals
 	 * @param sender The entity which sent the command.
@@ -672,7 +672,7 @@ public class PortalCommandSet extends CommandSet
 	{
 		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.fixworld", false))
 			return this.noPermissionForAction(sender);
-			
+
 		if (args.length < 1)
 		{
 			sender.sendMessage("§4You need to include the name of a default world to use.");
@@ -682,60 +682,60 @@ public class PortalCommandSet extends CommandSet
 		sender.sendMessage("§2All portals without a saved world now point to world \"" + args[0] + "\"");
 		return true;
 	}
-	
-    // Thank you tkelly
-    /**
-     * Cut a string down to fit in a set area using MCFWC
-     * @param name The name to cut down to size.
-     * @param left The amount of space to make it take up.
-     * @return The string cut down to the given size.
-     */
-    private String substring(String name, int left) {
-        while(MinecraftFontWidthCalculator.getStringWidth(name) > left) {
-            name = name.substring(0, name.length()-1);
-        }
-        return name;
-    }
 
-    // Thank you again tkelly
-    /**
-     * Get some whitespace that fills up the desired amount of space.
-     * @param length The amount of space that needs to be filled
-     * @return A string of spaces that fills the required area.
-     */
-    private String whitespace(int length) {
-        int spaceWidth = MinecraftFontWidthCalculator.getStringWidth(" ");
+	// Thank you tkelly
+	/**
+	 * Cut a string down to fit in a set area using MCFWC
+	 * @param name The name to cut down to size.
+	 * @param left The amount of space to make it take up.
+	 * @return The string cut down to the given size.
+	 */
+	private String substring(String name, int left) {
+		while(MinecraftFontWidthCalculator.getStringWidth(name) > left) {
+			name = name.substring(0, name.length()-1);
+		}
+		return name;
+	}
 
-        StringBuilder ret = new StringBuilder();
+	// Thank you again tkelly
+	/**
+	 * Get some whitespace that fills up the desired amount of space.
+	 * @param length The amount of space that needs to be filled
+	 * @return A string of spaces that fills the required area.
+	 */
+	private String whitespace(int length) {
+		int spaceWidth = MinecraftFontWidthCalculator.getStringWidth(" ");
 
-        for(int i = 0; i < length; i+=spaceWidth) {
-            ret.append(" ");
-        }
+		StringBuilder ret = new StringBuilder();
 
-        return ret.toString();
-    }
-    
-    /**
-     * Tell the console user that this method is not available from the console, and return true because we handled this.
-     * @param sender The entity (console) responsible for sending this request.
-     * @return true
-     */
-    private boolean notAccessibleFromConsole(CommandSender sender)
-    {
-    	sender.sendMessage("This method is not available from the console.");
-    	return true;
-    }
-    
-    /**
-     * Tell the user that they do not have permission for this action.
-     * @param sender The entity (player) responsible for sending this request.
-     * @return true
-     */
-    private boolean noPermissionForAction(CommandSender sender)
-    {
-    	sender.sendMessage("§4You do not have permission to use this command.");
-    	return true;
-    }
-	
-	
+		for(int i = 0; i < length; i+=spaceWidth) {
+			ret.append(" ");
+		}
+
+		return ret.toString();
+	}
+
+	/**
+	 * Tell the console user that this method is not available from the console, and return true because we handled this.
+	 * @param sender The entity (console) responsible for sending this request.
+	 * @return true
+	 */
+	private boolean notAccessibleFromConsole(CommandSender sender)
+	{
+		sender.sendMessage("This method is not available from the console.");
+		return true;
+	}
+
+	/**
+	 * Tell the user that they do not have permission for this action.
+	 * @param sender The entity (player) responsible for sending this request.
+	 * @return true
+	 */
+	private boolean noPermissionForAction(CommandSender sender)
+	{
+		sender.sendMessage("§4You do not have permission to use this command.");
+		return true;
+	}
+
+
 }

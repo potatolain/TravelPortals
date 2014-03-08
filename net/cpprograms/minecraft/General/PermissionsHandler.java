@@ -13,12 +13,12 @@ public class PermissionsHandler
 	 * Whether to actually use this. To make life easier if we allow the user to disable permissions.
 	 */
 	public boolean usePermissions = true;
-	
+
 	/**
 	 * Default constructor. Assumes we want to use permissions.
 	 */
 	public PermissionsHandler() {}
-	
+
 	/**
 	 * Constructor for if we let the user choose to use permissions.
 	 * @param useme Whether to use permissions.
@@ -27,7 +27,7 @@ public class PermissionsHandler
 	{
 		usePermissions = useme;
 	}
-	
+
 	/**
 	 * Find out if a player has a permission, using the default if we're not using permissions. 
 	 * @param player The player.
@@ -41,7 +41,7 @@ public class PermissionsHandler
 			return defaultResult;
 		return player.hasPermission(permission);
 	}
-	
+
 	/**
 	 * Find out if a user has a permission. 
 	 * @param player The player.

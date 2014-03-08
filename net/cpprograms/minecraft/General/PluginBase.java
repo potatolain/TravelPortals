@@ -22,43 +22,43 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author cppchriscpp
  */
 public class PluginBase extends JavaPlugin {
-	
+
 	/**
 	 * The name of this plugin.
 	 */
 	String pluginName = "";
-	
+
 	/**
 	 * The version of this plugin.
 	 */
 	String pluginVersion = "";
-	
+
 	/**
 	 * Debugging mode - determines whether to send debugging messages.
 	 */
 	boolean debugMode = false;
-	
+
 	/**
 	 * Whether to automatically load and use the built in configuration stuff. 
 	 * Set this to be false in your onLoad before calling super() if you do not want it.
 	 */
 	boolean useConfig = true;
-	
+
 	/**
 	 * Logging component.
 	 */
 	public static final Logger log = Logger.getLogger("Minecraft");
-	
+
 	/**
 	 * Permissions handler.
 	 */
 	public PermissionsHandler permissions;
-	
+
 	/**
 	 * Handle our commands!
 	 */
 	public CommandHandler commandHandler;
-	
+
 	/**
 	 * Constructor. Do some setup stuff.
 	 */
@@ -83,7 +83,7 @@ public class PluginBase extends JavaPlugin {
 				}
 			}
 	}
-	
+
 	/**
 	 * What to do when the plugin is enabled. 
 	 * If nothing else, this will show that the plugin was loaded.
@@ -93,8 +93,8 @@ public class PluginBase extends JavaPlugin {
 	{
 		commandHandler = new CommandHandler();
 		showLoadedMessage();
-    }
-	
+	}
+
 	/**
 	 * What to do when the plugin is disabled.
 	 */
@@ -103,16 +103,16 @@ public class PluginBase extends JavaPlugin {
 	{
 		showUnloadedMessage();
 	}
-	
+
 	/**
 	 * Show the message that the plugin is loaded.
 	 */
 	public void showLoadedMessage() 
 	{
-        logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
-        logDebug("Debugging mode is active.");
+		logInfo( pluginName + " version " + pluginVersion + " is enabled!" );
+		logDebug("Debugging mode is active.");
 	}
-	
+
 	/**
 	 * Show the message when the plugin is unloaded.
 	 */
@@ -120,8 +120,8 @@ public class PluginBase extends JavaPlugin {
 	{
 		logInfo( pluginName + " version " + pluginVersion + " has been disabled.");
 	}
-	
-	
+
+
 	/**
 	 * Log a warning message
 	 * @param message The message to log.
@@ -130,7 +130,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		log(message, Level.WARNING);
 	}
-	
+
 	/**
 	 * Log an info message
 	 * @param message The message to log.
@@ -139,7 +139,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		log(message, Level.INFO);
 	}
-	
+
 	/**
 	 * Log a severe message
 	 * @param message The message to log.
@@ -148,7 +148,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		log(message, Level.SEVERE);
 	}
-	
+
 	/**
 	 * Log a debug message (if debugging is on.)
 	 * @param message The message to log.
@@ -158,7 +158,7 @@ public class PluginBase extends JavaPlugin {
 		if (this.debugMode)
 			log(message, Level.INFO);
 	}
-	
+
 	/**
 	 * Check if we're debugging with this plugin.
 	 * @return true if we're debugging; false otherwise.
@@ -167,7 +167,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		return debugMode;
 	}
-	
+
 	/**
 	 * Log a message
 	 * @param message message The message to log.
@@ -177,7 +177,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		log.log(level, "[" + pluginName +"] " + message);
 	}
-	
+
 	/**
 	 * Run a command with our CommandSender.
 	 * @param sender Our sender; entity or otherwise.
@@ -191,7 +191,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		return commandHandler.HandleCommand(sender, command, label, args);
 	}
-	
+
 	/**
 	 * Gets the name of this plugin.
 	 * @return The name of the plugin.
@@ -200,7 +200,7 @@ public class PluginBase extends JavaPlugin {
 	{
 		return pluginName;
 	}
-	
+
 	/**
 	 * Gets the version of the plugin.
 	 * @return The version of the plugin.
@@ -209,19 +209,19 @@ public class PluginBase extends JavaPlugin {
 	{
 		return pluginVersion;
 	}
-	
+
 	/**
 	 * Load our default config.yml, or alternatively, create and load the default one.
 	 * @return
 	 */
 	protected boolean loadConfig()
 	{
-    	try
-    	{
-    		if (!getDataFolder().exists())
-    			getDataFolder().mkdirs();
-    		getConfig().load(new File(getDataFolder(), "config.yml"));
-    	} catch (FileNotFoundException e) {
+		try
+		{
+			if (!getDataFolder().exists())
+				getDataFolder().mkdirs();
+			getConfig().load(new File(getDataFolder(), "config.yml"));
+		} catch (FileNotFoundException e) {
 			logInfo("No config file found. Creating a default configuration file: " + getPluginName() + "/config.yml");
 			return this.saveDefaultConfiguration();
 		} catch (IOException e) {
@@ -237,7 +237,7 @@ public class PluginBase extends JavaPlugin {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Save a default configuration file if ours does not exist.
 	 * @return true if the save was successful; false otherwise.
@@ -247,12 +247,12 @@ public class PluginBase extends JavaPlugin {
 		try
 		{
 			File conf = new File(this.getDataFolder(), "config.yml");
-			
+
 			InputStream is = this.getClass().getResourceAsStream("/config.yml");
 			if (!conf.exists())
 				conf.createNewFile();
 			OutputStream os = new FileOutputStream(conf);
-			
+
 			byte[] buf = new byte[1024];
 			int len;
 			while ((len = is.read(buf)) > 0)
@@ -275,10 +275,10 @@ public class PluginBase extends JavaPlugin {
 				e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Just allows us to generate worlds ourselves. Does nothing otherwise.
 	 * @param name The world to gen for.
@@ -289,6 +289,6 @@ public class PluginBase extends JavaPlugin {
 	public ChunkGenerator getDefaultWorldGenerator(String name, String id) {
 		return super.getDefaultWorldGenerator(name, id);
 	}
-	
+
 }
 

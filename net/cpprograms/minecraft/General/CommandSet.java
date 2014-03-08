@@ -36,9 +36,9 @@ import org.bukkit.command.CommandSender;
  */
 public abstract class CommandSet 
 {
-	
+
 	PluginBase plugin;
-	
+
 	/**
 	 * Override this to store a copy of the plugin in your class.
 	 * If you really don't need it, just make it a stub...
@@ -47,7 +47,7 @@ public abstract class CommandSet
 	public void setPlugin(PluginBase plugin) {
 		this.plugin = plugin;	
 	}
-	
+
 	/**
 	 * What to do if the user does not send any parameters in. (Override this)
 	 * @param sender The entity responsible for the command.
@@ -58,7 +58,7 @@ public abstract class CommandSet
 		sender.sendMessage("You did not specify an action. Please specify an action.");
 		return true;
 	}
-	
+
 	/**
 	 * Stub for the help method. (Override this)
 	 * @param sender The entity that send the command.
@@ -70,7 +70,7 @@ public abstract class CommandSet
 		sender.sendMessage("No help available for this command.");
 		return true;
 	}
-	
+
 	/**
 	 * What to do if an unknown method is called. (Override this)
 	 * @param sender The entity responsible for the command.
@@ -83,7 +83,7 @@ public abstract class CommandSet
 		sender.sendMessage("The method " + method + " does not exist!");
 		return true;
 	}
-	
+
 	/**
 	 * Reports an internal error trying to call a method here. (Not a noSuchMethod exception, but the rest...)
 	 * Turn on debugging for more information.
@@ -103,5 +103,5 @@ public abstract class CommandSet
 			e.printStackTrace();
 		return true;
 	}
-	
+
 }
