@@ -4,8 +4,6 @@ Version 2.2.6
 Introduction 
 ------------
 
-Hello, and thank you for downloading my Bukkit plugin.
-
 This mod allows you to make simple portals that can transport you between locations.
 You make them by making a border around a 2x1 space with obsidian and a wooden or iron
 door. You will require 6 obsidian, a door, and a redstone torch.
