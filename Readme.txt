@@ -1,5 +1,5 @@
 TravelPortals Plugin
-Version 2.2.1
+Version 2.2.6
 
 Introduction 
 ------------
@@ -56,11 +56,14 @@ The Commands:
 - /portal list [page number] gives a list of existing portals. 
 - /portal export dumps the current portals to travelportals.txt in the data folder.
   Format: x,y,z,name,destination,hidden
+- /portal reimport [file name] can import a list of portals dumped with /portal export.
 - /portal claim claims a portal that does not currently have an owner. It will also
   unclaim an existing portal, if you own it. You can also include a name to claim a
   portal for someone else.
 - /portal renameworld [old world name] [new world name] Run this after renaming a world
   or the portals in that world will not point to the right place.
+- /portal deleteworld [old world name] Run this after deleting a world to clean up any
+  remaining portals.
 - /portal fixworld [world name] This will fix any portals that are not linked to a world
   to be linked to the world specified. You most likely do not need to run this command,
   unless you've been running this plugin since before multiworld was supported. If you
