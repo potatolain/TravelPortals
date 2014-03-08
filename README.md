@@ -8,9 +8,12 @@ This mod allows you to make simple portals that can transport you between locati
 You make them by making a border around a 2x1 space with obsidian and a wooden or iron
 door. You will require 6 obsidian, a door, and a redstone torch.
 It should look like this from above:
+
+```
  o
 oRo     o: stack of 2 obsidian on ground; d: door. 
  d      R: a redstone torch
+```
 
 If you are successful, the game will tell you that you have created a portal, and the inside will 
 fill with water. (This would be the nether portal texture, but Minecraft did not like that idea.)
