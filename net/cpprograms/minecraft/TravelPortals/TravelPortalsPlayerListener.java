@@ -1,6 +1,8 @@
 package net.cpprograms.minecraft.TravelPortals;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -38,6 +40,10 @@ public class TravelPortalsPlayerListener implements Listener {
 		// Pre-load the chunk we're headed for...
 		if (!locy.getBlock().getChunk().isLoaded())
 			locy.getBlock().getChunk().load();
+		
+		// Shove a block under them.
+		Block below = locy.getBlock().getRelative(BlockFace.DOWN);
+		event.getPlayer().sendBlockChange(below.getLocation(), below.getType(), below.getData());
 
 		// Warp the user!
 		event.getPlayer().teleport(locy);

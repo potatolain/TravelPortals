@@ -5,6 +5,7 @@ Change Log
 -----
 
 * Water in portals will no longer flow downward if the block below them is broken. Should prevent portals from being able to create infinite lava in the nether.
+* Make yet another attempt to prevent the player from seeing infinite falling when teleporting.
 
 2.2.6
 -----
