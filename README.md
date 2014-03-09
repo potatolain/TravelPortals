@@ -1,5 +1,5 @@
 TravelPortals Plugin
-Version 2.2.6
+Version 2.2.7
 
 Introduction 
 ------------

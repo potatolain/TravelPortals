@@ -1,10 +1,12 @@
 package net.cpprograms.minecraft.TravelPortals;
 
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 
@@ -168,8 +170,8 @@ public class TravelPortalsBlockListener implements Listener {
 					}
 					// They hit an important warping block..destroy the warp point.
 					// Remove the blocks
-					player.getWorld().getBlockAt(w.getX(), w.getY(), w.getZ()).setTypeId(0); //Material.Air);
-					player.getWorld().getBlockAt(w.getX(), w.getY() + 1, w.getZ()).setTypeId(0); //Material.Air);
+					player.getWorld().getBlockAt(w.getX(), w.getY(), w.getZ()).setType(Material.AIR);
+					player.getWorld().getBlockAt(w.getX(), w.getY() + 1, w.getZ()).setType(Material.AIR);
 					// Remove it from the list of warps
 					this.plugin.warpLocations.remove(plugin.warpLocations.indexOf(w));
 					this.plugin.savedata();
@@ -180,5 +182,32 @@ public class TravelPortalsBlockListener implements Listener {
 			}
 
 		}
+	}
+	
+	/**
+	 * Handle when water tries to flow from a portal.
+	 * @param event The BlockFromTo event we want to prevent. 
+	 */
+	@EventHandler
+	public void onBlockFromTo(BlockFromToEvent event) 
+	{
+		if (event.isCancelled() || event.getFace() != BlockFace.DOWN)
+			return;
+		
+		int typeId = event.getBlock().getTypeId();
+		
+		if (typeId == Material.STATIONARY_WATER.getId())
+		{
+			if (typeId != Material.STATIONARY_WATER.getId() && typeId != Material.WATER.getId())
+				return;
+		} 
+		else 
+		{
+			if (typeId != plugin.portaltype)
+				return;
+		}
+		
+		if (plugin.getWarpFromLocation(event.getBlock().getWorld().getName(), event.getBlock().getX(), event.getBlock().getY(),event.getBlock().getZ()) != -1)
+			event.setCancelled(true);
 	}
 }

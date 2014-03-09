@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+2.2.7
+-----
+
+* Water in portals will no longer flow downward if the block below them is broken. Should prevent portals from being able to create infinite lava in the nether.
+
 2.2.6
 -----
 * Adds a deleteworld feature
