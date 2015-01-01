@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+2.2.8
+-----
+
+* Fixes a permissions bug where .nopermissions would not prevent users from actually using portals. 
+
 2.2.7
 -----
 
