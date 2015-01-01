@@ -10,7 +10,7 @@ permissions:
     description: Give users no permissions. This may become the new default. Base off of this.
     children: 
       travelportals.portal.create: false
-      travelportals.portaluse: false
+      travelportals.portal.use: false
       travelportals.portal.destroy: false
       travelportals.command.help: false
       travelportals.command.hide: false
