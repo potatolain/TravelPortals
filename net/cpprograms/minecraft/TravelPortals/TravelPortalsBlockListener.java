@@ -1,5 +1,6 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.Material;
@@ -110,7 +111,7 @@ public class TravelPortalsBlockListener implements Listener {
 				player.getWorld().getBlockAt(x, y+1, z).setTypeId(plugin.portaltype);
 				player.getWorld().getBlockAt(x, y+1, z).setData((byte)0);
 
-				player.sendMessage("�4You have created a portal! Type /portal help for help using it.");
+				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
 
 				this.plugin.addWarp(new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName()));
 				this.plugin.savedata();
@@ -164,7 +165,7 @@ public class TravelPortalsBlockListener implements Listener {
 					this.plugin.warpLocations.remove(plugin.warpLocations.indexOf(w));
 					this.plugin.savedata();
 					// Let the user know he's done a bad, bad thing. :<
-					player.sendMessage("�4You just broke a portal.");
+					player.sendMessage(ChatColor.DARK_RED + "You just broke a portal.");
 					break;
 				}
 			}

@@ -7,14 +7,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -565,7 +561,7 @@ public class TravelPortals extends PluginBase {
 			{
 				if (!permissions.hasPermission(player, "travelportals.portal.use")) 
 				{
-					player.sendMessage("�4You do not have permission to use portals.");
+					player.sendMessage(ChatColor.DARK_RED + "You do not have permission to use portals.");
 					return null;
 				}
 
@@ -573,7 +569,7 @@ public class TravelPortals extends PluginBase {
 				{
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
-						player.sendMessage("�4You do not own this portal, so you cannot use it.");
+						player.sendMessage(ChatColor.DARK_RED + "You do not own this portal, so you cannot use it.");
 						return null;
 					}
 				}
@@ -584,12 +580,12 @@ public class TravelPortals extends PluginBase {
 			{
 				if ((!permissions.hasPermission(player, "travelportals.command.warp") || (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))))
 				{
-					player.sendMessage("�4This portal has no destination.");
+					player.sendMessage(ChatColor.DARK_RED + "This portal has no destination.");
 				}
 				else
 				{
-					player.sendMessage("�4You need to set this portal's destination first!");
-					player.sendMessage("�2See /portal help for more information.");
+					player.sendMessage(ChatColor.DARK_RED + "You need to set this portal's destination first!");
+					player.sendMessage(ChatColor.DARK_GREEN + "See /portal help for more information.");
 				}
 				warpLocations.get(w).setLastUsed();
 				return null;
@@ -601,9 +597,9 @@ public class TravelPortals extends PluginBase {
 
 				if (loc == -1)
 				{
-					player.sendMessage("�4This portal's destination (" + warpLocations.get(w).getDestination() + ") does not exist.");
+					player.sendMessage(ChatColor.DARK_RED + "This portal's destination (" + warpLocations.get(w).getDestination() + ") does not exist.");
 					if (!(permissions.hasPermission(player, "travelportals.command.warp")))
-						player.sendMessage("�2See /portal help for more information.");
+						player.sendMessage(ChatColor.DARK_GREEN + "See /portal help for more information.");
 
 					warpLocations.get(w).setLastUsed();
 					return null;
@@ -617,7 +613,7 @@ public class TravelPortals extends PluginBase {
 
 						if (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))
 						{
-							player.sendMessage("�4You do not own the destination portal, and do not have permission to use it.");
+							player.sendMessage(ChatColor.DARK_RED + "You do not own the destination portal, and do not have permission to use it.");
 							return null;
 						}
 					}
