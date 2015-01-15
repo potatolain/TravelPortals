@@ -196,7 +196,7 @@ public class PortalUseTask implements Runnable {
 		playerLoc.setX(playerLoc.getX() - 1.0);
 
 		// Is the user actually in portal material?
-		if (bid == plugin.doortype || bid == plugin.doortype2 || bid == plugin.blocktype)
+		if (plugin.doortypes.contains(bid) || bid == plugin.blocktype)
 		{
 			// Find nearby warp.
 			int w = plugin.getWarpFromLocation(world.getName(),playerLoc.getBlockX(),playerLoc.getBlockY(), playerLoc.getBlockZ());
