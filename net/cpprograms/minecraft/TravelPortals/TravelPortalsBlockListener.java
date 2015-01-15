@@ -54,11 +54,8 @@ public class TravelPortalsBlockListener implements Listener {
 					player.getWorld().getBlockAt(x + 1, y + 1, z).getTypeId() == plugin.blocktype)
 				numwalls++;
 			else if (
-					(player.getWorld().getBlockAt(x + 1, y, z).getTypeId() == plugin.doortype &&
-					player.getWorld().getBlockAt(x + 1, y + 1, z).getTypeId() == plugin.doortype)
-					||
-					(player.getWorld().getBlockAt(x + 1, y, z).getTypeId() == plugin.doortype2 &&
-					player.getWorld().getBlockAt(x + 1, y + 1, z).getTypeId() == plugin.doortype2)
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getTypeId())
+							&& plugin.doortypes.contains(player.getWorld().getBlockAt(x + 1, y + 1, z).getTypeId())
 					)
 			{
 				numwalls += 10;
@@ -70,11 +67,8 @@ public class TravelPortalsBlockListener implements Listener {
 					player.getWorld().getBlockAt(x - 1, y + 1, z).getTypeId() == plugin.blocktype)
 				numwalls++;
 			else if (
-					(player.getWorld().getBlockAt(x - 1, y, z).getTypeId() == plugin.doortype &&
-					player.getWorld().getBlockAt(x - 1, y + 1, z).getTypeId() == plugin.doortype)
-					||
-					(player.getWorld().getBlockAt(x - 1, y, z).getTypeId() == plugin.doortype2 &&
-					player.getWorld().getBlockAt(x - 1, y + 1, z).getTypeId() == plugin.doortype2)
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getTypeId()) &&
+							plugin.doortypes.contains(player.getWorld().getBlockAt(x - 1, y + 1, z).getTypeId())
 					)
 			{
 				numwalls += 10;
@@ -86,11 +80,8 @@ public class TravelPortalsBlockListener implements Listener {
 					player.getWorld().getBlockAt(x, y + 1, z + 1).getTypeId() == plugin.blocktype)
 				numwalls++;
 			else if (
-					(player.getWorld().getBlockAt(x, y, z + 1).getTypeId() == plugin.doortype &&
-					player.getWorld().getBlockAt(x, y + 1, z + 1).getTypeId() == plugin.doortype)
-					||
-					(player.getWorld().getBlockAt(x, y, z + 1).getTypeId() == plugin.doortype2 &&
-					player.getWorld().getBlockAt(x, y + 1, z + 1).getTypeId() == plugin.doortype2)
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x, y, z + 1).getTypeId()) &&
+									plugin.doortypes.contains(player.getWorld().getBlockAt(x, y + 1, z + 1).getTypeId())
 					)
 			{
 				numwalls += 10;
@@ -102,11 +93,8 @@ public class TravelPortalsBlockListener implements Listener {
 					player.getWorld().getBlockAt(x, y + 1, z - 1).getTypeId() == plugin.blocktype)
 				numwalls++;
 			else if (
-					(player.getWorld().getBlockAt(x, y, z - 1).getTypeId() == plugin.doortype &&
-					player.getWorld().getBlockAt(x, y + 1, z - 1).getTypeId() == plugin.doortype)
-					||
-					(player.getWorld().getBlockAt(x, y, z - 1).getTypeId() == plugin.doortype2 &&
-					player.getWorld().getBlockAt(x, y + 1, z - 1).getTypeId() == plugin.doortype2)
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x, y, z - 1).getTypeId()) &&
+									plugin.doortypes.contains(player.getWorld().getBlockAt(x, y + 1, z - 1).getTypeId())
 					)
 			{
 				numwalls += 10;
@@ -122,7 +110,7 @@ public class TravelPortalsBlockListener implements Listener {
 				player.getWorld().getBlockAt(x, y+1, z).setTypeId(plugin.portaltype);
 				player.getWorld().getBlockAt(x, y+1, z).setData((byte)0);
 
-				player.sendMessage("§4You have created a portal! Type /portal help for help using it.");
+				player.sendMessage("ï¿½4You have created a portal! Type /portal help for help using it.");
 
 				this.plugin.addWarp(new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName()));
 				this.plugin.savedata();
@@ -146,7 +134,7 @@ public class TravelPortalsBlockListener implements Listener {
 		}
 
 		// Is this block important to us?
-		if (event.getBlock().getTypeId() == plugin.blocktype || event.getBlock().getTypeId() == plugin.doortype || event.getBlock().getTypeId() == plugin.doortype2)
+		if (event.getBlock().getTypeId() == plugin.blocktype || plugin.doortypes.contains(event.getBlock().getTypeId()))
 		{
 			Player player = event.getPlayer();
 			Block block = event.getBlock();
@@ -176,7 +164,7 @@ public class TravelPortalsBlockListener implements Listener {
 					this.plugin.warpLocations.remove(plugin.warpLocations.indexOf(w));
 					this.plugin.savedata();
 					// Let the user know he's done a bad, bad thing. :<
-					player.sendMessage("§4You just broke a portal.");
+					player.sendMessage("ï¿½4You just broke a portal.");
 					break;
 				}
 			}
