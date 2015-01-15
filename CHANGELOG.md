@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+2.2.9
+-----
+
+* Fixes another bug where we try to set the water value to an invalid value. I'm not sure how this ever worked...
+
+2.2.8
+-----
+
+* Fixes a permissions bug where .nopermissions would not prevent users from actually using portals. 
+
 2.2.7
 -----
 
