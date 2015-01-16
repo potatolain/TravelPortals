@@ -238,8 +238,8 @@ public class PortalCommandSet extends CommandSet
 				cl = substring(cl, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
 			}
 			// Now make an arrow, and then the destination, with the same padding/trimming from above.
-			cl += ChatColor.WHITE + " --> " + ChatColor.WHITE + substring(dest, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
-			sender.sendMessage(ChatColor.DARK_AQUA + "" + cl);
+			cl += ChatColor.WHITE + " --> " + ChatColor.DARK_AQUA + substring(dest, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
+			sender.sendMessage(ChatColor.DARK_AQUA + cl);
 		}
 		return true;
 	}
@@ -540,7 +540,7 @@ public class PortalCommandSet extends CommandSet
 
 		int m = plugin.getWarp(d);
 		if (m == -1 && !d.equals(""))
-			d = "warps to " + ChatColor.RED + d + ChatColor.DARK_AQUA + " in world " + ChatColor.RED +l+ ChatColor.DARK_AQUA + "";
+			d = "warps to " + ChatColor.RED + d + ChatColor.DARK_AQUA + " in world " + ChatColor.RED +l;
 		else if (d.equals(""))
 			d = "has no destination";
 		else if (plugin.warpLocations.get(m).getHidden())
@@ -551,8 +551,8 @@ public class PortalCommandSet extends CommandSet
 			o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
 		else
 			o = "It is owned by " + o + ".";
-		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + n + " and " + d + ".");
-		sender.sendMessage(ChatColor.DARK_AQUA + "" + o);
+		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + n + ChatColor.DARK_AQUA + " and " + d + ChatColor.DARK_AQUA + ".");
+		sender.sendMessage(ChatColor.DARK_AQUA  + o);
 
 		return true;
 	}
