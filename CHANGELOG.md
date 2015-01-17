@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+2.2.10
+-----
+
+* Allow multiple door types for 1.8. Thanks @Phoenix616!
+
 2.2.9
 -----
 

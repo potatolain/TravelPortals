@@ -151,8 +151,11 @@ public class TravelPortals extends PluginBase {
 				if (conf.contains("door2")) {
 					doortypes.add(conf.getInt("door2"));
 				}
-				this.getConfig().set("doorlist", doortypes);
-				this.saveConfig();
+				// Yes, this is a bit lame. I'd like to save updated config, but at the same time I don't want to wipe out comments and make
+				// the file extremely unclear. 
+				logWarning("Old style door configuration found. Config loaded correctly, but you may want to update it.");
+				logWarning("The plugin now supports an integer list \"doorlist\", to allow use of the new wooden door types.");
+				logWarning("Example configuration here: https://github.com/cppchriscpp/TravelPortals/blob/master/config.yml");
 			}
 			if (conf.contains("doorname"))
 				strDoortype = conf.getString("doorname");
@@ -241,7 +244,7 @@ public class TravelPortals extends PluginBase {
 		}
 		catch (java.lang.ClassNotFoundException i) 
 		{
-			logSevere("TravelPortals: Something has gone very wrong. Please contact owner@cpprograms.net!");
+			logSevere("TravelPortals: Something has gone very wrong. Please contact admin@cpprograms.net!");
 			return;
 		}
 
