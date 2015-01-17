@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -65,14 +67,9 @@ public class TravelPortals extends PluginBase {
 	protected int portaltype = 8;
 
 	/**
-	 * The type of block used for the doorway
+	 * The list of types of blocks used for the doorway
 	 */
-	protected int doortype = 64;
-
-	/**
-	 * The second type of block to be used for the doorway
-	 */
-	protected int doortype2 = 71;
+	protected List<Integer> doortypes = new ArrayList<Integer>();
 
 	/**
 	 *  A friendly name for the door block type.
@@ -145,10 +142,18 @@ public class TravelPortals extends PluginBase {
 				strBlocktype = conf.getString("framename");
 			if (conf.contains("fill"))
 				portaltype = conf.getInt("fill");
-			if (conf.contains("door"))
-				doortype = conf.getInt("door");
-			if (conf.contains("door2"))
-				doortype2 = conf.getInt("door2");
+			if (conf.contains("doorlist")) {
+				doortypes = conf.getIntegerList("doorlist");
+			} else {
+				if (conf.contains("door")) {
+					doortypes.add(conf.getInt("door"));
+				}
+				if (conf.contains("door2")) {
+					doortypes.add(conf.getInt("door2"));
+				}
+				this.getConfig().set("doorlist", doortypes);
+				this.saveConfig();
+			}
 			if (conf.contains("doorname"))
 				strDoortype = conf.getString("doorname");
 			if (conf.contains("torch"))
@@ -543,7 +548,7 @@ public class TravelPortals extends PluginBase {
 
 		int bid = player.getWorld().getBlockAt(playerLoc).getTypeId();
 		// Is the user actually in portal material?
-		if (bid == blocktype || bid == doortype || bid == doortype2)
+		if (bid == blocktype || doortypes.contains(bid))
 		{
 			// Find nearby warp.
 			int w = getWarpFromLocation(player.getWorld().getName(), blk.getLocation().getBlockX(), blk.getLocation().getBlockY(), blk.getLocation().getBlockZ());
@@ -560,7 +565,7 @@ public class TravelPortals extends PluginBase {
 			{
 				if (!permissions.hasPermission(player, "travelportals.portal.use")) 
 				{
-					player.sendMessage("§4You do not have permission to use portals.");
+					player.sendMessage(ChatColor.DARK_RED + "You do not have permission to use portals.");
 					return null;
 				}
 
@@ -568,7 +573,7 @@ public class TravelPortals extends PluginBase {
 				{
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
-						player.sendMessage("§4You do not own this portal, so you cannot use it.");
+						player.sendMessage(ChatColor.DARK_RED + "You do not own this portal, so you cannot use it.");
 						return null;
 					}
 				}
@@ -579,12 +584,12 @@ public class TravelPortals extends PluginBase {
 			{
 				if ((!permissions.hasPermission(player, "travelportals.command.warp") || (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))))
 				{
-					player.sendMessage("§4This portal has no destination.");
+					player.sendMessage(ChatColor.DARK_RED + "This portal has no destination.");
 				}
 				else
 				{
-					player.sendMessage("§4You need to set this portal's destination first!");
-					player.sendMessage("§2See /portal help for more information.");
+					player.sendMessage(ChatColor.DARK_RED + "You need to set this portal's destination first!");
+					player.sendMessage(ChatColor.DARK_GREEN + "See /portal help for more information.");
 				}
 				warpLocations.get(w).setLastUsed();
 				return null;
@@ -596,9 +601,9 @@ public class TravelPortals extends PluginBase {
 
 				if (loc == -1)
 				{
-					player.sendMessage("§4This portal's destination (" + warpLocations.get(w).getDestination() + ") does not exist.");
+					player.sendMessage(ChatColor.DARK_RED + "This portal's destination (" + warpLocations.get(w).getDestination() + ") does not exist.");
 					if (!(permissions.hasPermission(player, "travelportals.command.warp")))
-						player.sendMessage("§2See /portal help for more information.");
+						player.sendMessage(ChatColor.DARK_GREEN + "See /portal help for more information.");
 
 					warpLocations.get(w).setLastUsed();
 					return null;
@@ -612,7 +617,7 @@ public class TravelPortals extends PluginBase {
 
 						if (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))
 						{
-							player.sendMessage("§4You do not own the destination portal, and do not have permission to use it.");
+							player.sendMessage(ChatColor.DARK_RED + "You do not own the destination portal, and do not have permission to use it.");
 							return null;
 						}
 					}
@@ -636,22 +641,22 @@ public class TravelPortals extends PluginBase {
 							rotation = 180.0f;
 					}
 					// Guess.
-					else if (player.getWorld().getBlockAt(x + 1, y, z).getTypeId() == doortype)
+					else if (doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getTypeId()))
 					{
 						rotation = 270.0f;
 						warpLocations.get(loc).setDoorPosition(1);
 					}
-					else if (player.getWorld().getBlockAt(x, y, z+1).getTypeId() == doortype)
+					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z+1).getTypeId()))
 					{
 						rotation = 0.0f;
 						warpLocations.get(loc).setDoorPosition(2);
 					}
-					else if (player.getWorld().getBlockAt(x - 1, y, z).getTypeId() == doortype)
+					else if (doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getTypeId()))
 					{
 						rotation = 90.0f;
 						warpLocations.get(loc).setDoorPosition(3);
 					}
-					else if (player.getWorld().getBlockAt(x, y, z-1).getTypeId() == doortype)
+					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z-1).getTypeId()))
 					{
 						rotation = 180.0f;
 						warpLocations.get(loc).setDoorPosition(4);
