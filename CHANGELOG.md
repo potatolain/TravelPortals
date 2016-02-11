@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+2.2.12
+-----
+* We skipped 2.2.11! Go us! 
+* Fix a bug with portal permissions. Another Thanks to @Phoenix616.
+
 2.2.10
 -----
 
