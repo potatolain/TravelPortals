@@ -98,10 +98,9 @@ public class PortalUseTask implements Runnable {
 			return;
 
 		Server server = Bukkit.getServer();
-		Player[] players = server.getOnlinePlayers();
 		int n = 0; // cleanup heuristic (if 0 , can clear map of lastDestinations).
 
-		for (Player player : players)
+		for (Player player : server.getOnlinePlayers())
 		{
 			int w = isInPortal(player);
 			String playerName = player.getName();
