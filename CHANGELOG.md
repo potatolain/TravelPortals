@@ -3,7 +3,7 @@ Change Log
 
 2.2.13
 -----
-* Fix compatibility with Craftbukkit 1.9.
+* Fix compatibility with Craftbukkit 1.9. (Yet another good catch by Phoenix616!)
 
 2.2.12
 -----
