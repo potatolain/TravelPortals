@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+2.2.13
+-----
+* Fix compatibility with Craftbukkit 1.9.
+
 2.2.12
 -----
 * We skipped 2.2.11! Go us! 
