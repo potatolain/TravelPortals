@@ -1,9 +1,14 @@
 Change Log
 ==========
 
+2.2.14-pre
+-----
+* Show more info about hidden portals to the owner of a portal in the `/portal info` command
+* Fix `/portal info` displaying the wrong world for destinations
+
 2.2.13
 -----
-* Fix compatibility with Craftbukkit 1.9. (Yet another good catch by Phoenix616!)
+* Fix compatibility with Craftbukkit after 1.9. (Yet another good catch by Phoenix616!)
 
 2.2.12
 -----
