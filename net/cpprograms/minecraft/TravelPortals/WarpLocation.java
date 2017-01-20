@@ -9,6 +9,9 @@ package net.cpprograms.minecraft.TravelPortals;
  * @version 1.10
  */
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 /**
  * A quick serializable storage medium for warping points.
  * REPLACES WarpPoint
@@ -292,7 +295,7 @@ public class WarpLocation implements java.io.Serializable {
 	 * Figure out whether this warp is hidden.
 	 * @return true to suppress name, false otherwise.
 	 */
-	public boolean getHidden()
+	public boolean isHidden()
 	{
 		return hidden;
 	}
@@ -323,6 +326,16 @@ public class WarpLocation implements java.io.Serializable {
 	public boolean isUsable(int cooldown)
 	{
 		return (lastused+cooldown < System.currentTimeMillis());
+	}
+
+	/**
+	 * Checks whether or not someone has access to this portals information.
+	 * @param sender The sender
+	 * @return true if the sender has access to the portal (like the owner); false if not
+	 */
+	public boolean hasAccess(CommandSender sender)
+	{
+		return owner.isEmpty() || !(sender instanceof Player) || sender.getName().equals(owner);
 	}
 
 }

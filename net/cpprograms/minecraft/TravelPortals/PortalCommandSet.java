@@ -184,12 +184,12 @@ public class PortalCommandSet extends CommandSet
 		TreeMap<String, String> allp = new TreeMap<String, String>();
 		int tmp = -1;
 		for (WarpLocation w : plugin.warpLocations)
-			if (w.hasName() && !w.getHidden())
+			if (w.hasName() && !w.isHidden())
 			{
 				tmp = this.plugin.getWarp(w.getDestination());
 				if (tmp == -1)
 					allp.put(w.getName(), ChatColor.RED + "" + w.getDestination());
-				else if (plugin.warpLocations.get(tmp).getHidden())
+				else if (plugin.warpLocations.get(tmp).isHidden())
 					allp.put(w.getName(), ChatColor.BLUE + "?????");
 				else
 					allp.put(w.getName(), w.getDestination());
@@ -392,8 +392,8 @@ public class PortalCommandSet extends CommandSet
 					}
 				}
 			}
-			this.plugin.warpLocations.get(w).setHidden(!plugin.warpLocations.get(w).getHidden());
-			if (plugin.warpLocations.get(w).getHidden())
+			this.plugin.warpLocations.get(w).setHidden(!plugin.warpLocations.get(w).isHidden());
+			if (plugin.warpLocations.get(w).isHidden())
 				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + args[0] + " has been hidden.");
 			else
 				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + args[0] + " has been unhidden.");
@@ -526,33 +526,49 @@ public class PortalCommandSet extends CommandSet
 			}
 		}
 
-		String n = plugin.warpLocations.get(w).getName();
-		String d = plugin.warpLocations.get(w).getDestination();
-		String o = plugin.warpLocations.get(w).getOwner();
-		String l = plugin.warpLocations.get(w).getWorld();
-		if (l == null || l.length() == 0)
-			l = "(Unknown)";
+		WarpLocation portal = plugin.warpLocations.get(w);
+		String name = portal.getName();
+		String dest = portal.getDestination();
+		String owner = portal.getOwner();
+		String world = portal.getWorld();
 
-		if (n.equals(""))
-			n = "has no name";
-		else
-			n = "is named " + n;
+		if (world == null || world.isEmpty())
+			world = "(Unknown)";
 
-		int m = plugin.getWarp(d);
-		if (m == -1 && !d.equals(""))
-			d = "warps to " + ChatColor.RED + d + ChatColor.DARK_AQUA + " in world " + ChatColor.RED +l;
-		else if (d.equals(""))
-			d = "has no destination";
-		else if (plugin.warpLocations.get(m).getHidden())
-			d = "warps to " + ChatColor.BLUE + "?????";
+		if (name.isEmpty())
+			name = "has no name";
+		else {
+			name = "is named " + name;
+			if (portal.isHidden())
+				if (portal.hasAccess(sender))
+					name += ChatColor.BLUE + " (hidden)";
+				else
+					name = "is hidden";
+		}
+
+		int m = plugin.getWarp(dest);
+
+		if (m == -1 && !dest.isEmpty())
+			dest = "warps to " + ChatColor.RED + dest + ChatColor.DARK_AQUA + " in world " + ChatColor.RED + world;
+		else if (dest.isEmpty())
+			dest = "has no destination";
+		else {
+			WarpLocation destination = plugin.warpLocations.get(m);
+			dest = "warps to " + dest + ChatColor.DARK_AQUA + " in world " + destination.getWorld();
+			if (destination.isHidden())
+				if (destination.hasAccess(sender))
+					dest += ChatColor.BLUE + " (hidden)";
+				else
+					dest = "warps to " + ChatColor.BLUE + "?????";
+		}
+
+		if (owner.isEmpty())
+			owner = "This portal does not have an owner. If is yours, claim it with /portal claim.";
 		else
-			d = "warps to " + d + ChatColor.DARK_AQUA + " in world "+l;
-		if (o.equals(""))
-			o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
-		else
-			o = "It is owned by " + o + ".";
-		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + n + ChatColor.DARK_AQUA + " and " + d + ChatColor.DARK_AQUA + ".");
-		sender.sendMessage(ChatColor.DARK_AQUA  + o);
+			owner = "It is owned by " + owner + ".";
+
+		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + name + ChatColor.DARK_AQUA + " and " + dest + ChatColor.DARK_AQUA + ".");
+		sender.sendMessage(ChatColor.DARK_AQUA  + owner);
 
 		return true;
 	}

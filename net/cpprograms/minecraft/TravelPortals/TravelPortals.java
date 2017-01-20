@@ -546,7 +546,7 @@ public class TravelPortals extends PluginBase {
 			FileOutputStream fOut = new FileOutputStream(new File(this.getDataFolder(), "travelportals.txt"));
 			PrintStream pOut = new PrintStream(fOut);
 			for (WarpLocation w : this.warpLocations)
-				pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.getHidden() +"," + w.getWorld() + "," + w.getOwner());
+				pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.isHidden() +"," + w.getWorld() + "," + w.getOwner());
 
 			pOut.close();
 			fOut.close();
