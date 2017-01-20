@@ -198,8 +198,8 @@ public class TravelPortals extends PluginBase {
 		{
 
 			// Save backup directory?
-			if (!(new File(this.getDataFolder() + "/backups")).exists())
-				(new File(this.getDataFolder() + "/backups")).mkdir();
+			if (!(new File(this.getDataFolder(), "backups")).exists())
+				(new File(this.getDataFolder(), "backups")).mkdir();
 
 			// Move the save file to where it belongs.
 			// if it's done the old way.
@@ -348,15 +348,13 @@ public class TravelPortals extends PluginBase {
 	{
 		try
 		{
-			String name = this.getDataFolder() + "/TravelPortals.ser";
+			File file = new File(this.getDataFolder(), "TravelPortals.ser");
 			if (backup)
 			{
-				name = this.getDataFolder() + "/backups/TravelPortals--";
 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd--kk_mm");
-				name = name + df.format(Calendar.getInstance().getTime());
-
+				file = new File(this.getDataFolder(), "backups/TravelPortals--" + df.format(Calendar.getInstance().getTime()));
 			}
-			FileOutputStream fOut = new FileOutputStream(name);
+			FileOutputStream fOut = new FileOutputStream(file);
 			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
 			oOut.writeObject(warpLocations);
 			oOut.close();
@@ -382,17 +380,18 @@ public class TravelPortals extends PluginBase {
 	{
 		try
 		{
-			File dir = new File(this.getDataFolder() + "/backups");
+			File dir = new File(this.getDataFolder(), "backups");
 			if (!dir.isDirectory())
 			{
 				logSevere("Cannot save backups!");
+				return;
 			}
 			String[] list = dir.list();
 			if (numsaves > 0 && list.length+1 > numsaves)
 			{
 				java.util.Arrays.sort(list);
 				for (int i = 0; i < list.length+1-numsaves; i++)
-					(new File(this.getDataFolder() + "/backups", list[i])).delete();
+					(new File(dir, list[i])).delete();
 			}
 
 		}
