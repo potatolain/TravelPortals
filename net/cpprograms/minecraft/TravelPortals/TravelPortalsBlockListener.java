@@ -39,7 +39,7 @@ public class TravelPortalsBlockListener implements Listener {
 			return;
 		}
 
-		if (event.getBlock().getTypeId() == plugin.torchtype)
+		if (event.getBlock().getType() == plugin.torchtype)
 		{
 			if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.portal.create"))
 				return;
@@ -51,12 +51,12 @@ public class TravelPortalsBlockListener implements Listener {
 			int doordir = 0;
 
 			// Test the area to the right of the portal
-			if (player.getWorld().getBlockAt(x + 1, y, z).getTypeId() == plugin.blocktype &&
-					player.getWorld().getBlockAt(x + 1, y + 1, z).getTypeId() == plugin.blocktype)
+			if (player.getWorld().getBlockAt(x + 1, y, z).getType() == plugin.blocktype &&
+					player.getWorld().getBlockAt(x + 1, y + 1, z).getType() == plugin.blocktype)
 				numwalls++;
 			else if (
-					plugin.doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getTypeId())
-							&& plugin.doortypes.contains(player.getWorld().getBlockAt(x + 1, y + 1, z).getTypeId())
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getType())
+							&& plugin.doortypes.contains(player.getWorld().getBlockAt(x + 1, y + 1, z).getType())
 					)
 			{
 				numwalls += 10;
@@ -64,12 +64,12 @@ public class TravelPortalsBlockListener implements Listener {
 			}
 
 			// Test the area to the left of the portal
-			if (player.getWorld().getBlockAt(x - 1, y, z).getTypeId() == plugin.blocktype &&
-					player.getWorld().getBlockAt(x - 1, y + 1, z).getTypeId() == plugin.blocktype)
+			if (player.getWorld().getBlockAt(x - 1, y, z).getType() == plugin.blocktype &&
+					player.getWorld().getBlockAt(x - 1, y + 1, z).getType() == plugin.blocktype)
 				numwalls++;
 			else if (
-					plugin.doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getTypeId()) &&
-							plugin.doortypes.contains(player.getWorld().getBlockAt(x - 1, y + 1, z).getTypeId())
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getType()) &&
+							plugin.doortypes.contains(player.getWorld().getBlockAt(x - 1, y + 1, z).getType())
 					)
 			{
 				numwalls += 10;
@@ -77,12 +77,12 @@ public class TravelPortalsBlockListener implements Listener {
 			}
 
 			// Test the area in front of the portal
-			if (player.getWorld().getBlockAt(x, y, z + 1).getTypeId() == plugin.blocktype &&
-					player.getWorld().getBlockAt(x, y + 1, z + 1).getTypeId() == plugin.blocktype)
+			if (player.getWorld().getBlockAt(x, y, z + 1).getType() == plugin.blocktype &&
+					player.getWorld().getBlockAt(x, y + 1, z + 1).getType() == plugin.blocktype)
 				numwalls++;
 			else if (
-					plugin.doortypes.contains(player.getWorld().getBlockAt(x, y, z + 1).getTypeId()) &&
-									plugin.doortypes.contains(player.getWorld().getBlockAt(x, y + 1, z + 1).getTypeId())
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x, y, z + 1).getType()) &&
+									plugin.doortypes.contains(player.getWorld().getBlockAt(x, y + 1, z + 1).getType())
 					)
 			{
 				numwalls += 10;
@@ -90,12 +90,12 @@ public class TravelPortalsBlockListener implements Listener {
 			}
 
 			// Test the area behind the portal
-			if (player.getWorld().getBlockAt(x, y, z - 1).getTypeId() == plugin.blocktype &&
-					player.getWorld().getBlockAt(x, y + 1, z - 1).getTypeId() == plugin.blocktype)
+			if (player.getWorld().getBlockAt(x, y, z - 1).getType() == plugin.blocktype &&
+					player.getWorld().getBlockAt(x, y + 1, z - 1).getType() == plugin.blocktype)
 				numwalls++;
 			else if (
-					plugin.doortypes.contains(player.getWorld().getBlockAt(x, y, z - 1).getTypeId()) &&
-									plugin.doortypes.contains(player.getWorld().getBlockAt(x, y + 1, z - 1).getTypeId())
+					plugin.doortypes.contains(player.getWorld().getBlockAt(x, y, z - 1).getType()) &&
+									plugin.doortypes.contains(player.getWorld().getBlockAt(x, y + 1, z - 1).getType())
 					)
 			{
 				numwalls += 10;
@@ -106,9 +106,9 @@ public class TravelPortalsBlockListener implements Listener {
 			// This is what we want. (x, y-1, z) is the coordinate above the torch, and needs to be empty.
 			if (numwalls == 13 && player.getWorld().getBlockAt(x, y+1, z).getType() == Material.AIR)
 			{
-				player.getWorld().getBlockAt(x, y, z).setTypeId(plugin.portaltype);
+				player.getWorld().getBlockAt(x, y, z).setType(plugin.portaltype);
 				player.getWorld().getBlockAt(x,y,z).setData((byte)0);
-				player.getWorld().getBlockAt(x, y+1, z).setTypeId(plugin.portaltype);
+				player.getWorld().getBlockAt(x, y+1, z).setType(plugin.portaltype);
 				player.getWorld().getBlockAt(x, y+1, z).setData((byte)0);
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
@@ -135,7 +135,7 @@ public class TravelPortalsBlockListener implements Listener {
 		}
 
 		// Is this block important to us?
-		if (event.getBlock().getTypeId() == plugin.blocktype || plugin.doortypes.contains(event.getBlock().getTypeId()))
+		if (event.getBlock().getType() == plugin.blocktype || plugin.doortypes.contains(event.getBlock().getType()))
 		{
 			Player player = event.getPlayer();
 			Block block = event.getBlock();
@@ -183,16 +183,16 @@ public class TravelPortalsBlockListener implements Listener {
 		if (event.isCancelled() || event.getFace() != BlockFace.DOWN)
 			return;
 		
-		int typeId = event.getBlock().getTypeId();
+		Material type = event.getBlock().getType();
 		
-		if (typeId == Material.STATIONARY_WATER.getId())
+		if (type == Material.STATIONARY_WATER)
 		{
-			if (typeId != Material.STATIONARY_WATER.getId() && typeId != Material.WATER.getId())
+			if (type != Material.STATIONARY_WATER && type != Material.WATER)
 				return;
 		} 
 		else 
 		{
-			if (typeId != plugin.portaltype)
+			if (type != plugin.portaltype)
 				return;
 		}
 		

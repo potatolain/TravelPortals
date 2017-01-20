@@ -7,11 +7,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -44,7 +46,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * The type of block portals must be made from. (Default is 49 (Obsidian))
 	 */
-	protected int blocktype = 49;
+	protected Material blocktype = Material.OBSIDIAN;
 
 	/**
 	 * A friendly name for the construction block type.
@@ -64,12 +66,20 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * The numerical type of block used inside the portal. This would be 90, but portal blocks stink.
 	 */
-	protected int portaltype = 8;
+	protected Material portaltype = Material.WATER;
 
 	/**
 	 * The list of types of blocks used for the doorway
 	 */
-	protected List<Integer> doortypes = new ArrayList<Integer>();
+	protected List<Material> doortypes = Arrays.asList(
+			Material.WOODEN_DOOR,
+			Material.IRON_DOOR_BLOCK,
+			Material.ACACIA_DOOR,
+			Material.BIRCH_DOOR,
+			Material.DARK_OAK_DOOR,
+			Material.JUNGLE_DOOR,
+			Material.SPRUCE_DOOR
+	);
 
 	/**
 	 *  A friendly name for the door block type.
@@ -84,7 +94,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * The type of block used for the torch at the bottom.
 	 */
-	protected int torchtype = 76;
+	protected Material torchtype = Material.REDSTONE_TORCH_ON;
 
 	/**
 	 * Do we want to use the permissions plugin?
@@ -136,20 +146,54 @@ public class TravelPortals extends PluginBase {
 		try
 		{
 			FileConfiguration conf = getConfig();
-			if (conf.contains("frame"))
-				blocktype = conf.getInt("frame");
+			if (conf.contains("frame")) {
+				int frameId = conf.getInt("frame");
+				if (frameId != 0) {
+					blocktype = Material.getMaterial(frameId);
+				} else {
+					blocktype = Material.valueOf(conf.getString("frame").toUpperCase());
+				}
+			}
 			if (conf.contains("framename"))
 				strBlocktype = conf.getString("framename");
-			if (conf.contains("fill"))
-				portaltype = conf.getInt("fill");
+			if (conf.contains("fill")) {
+				int fillId = conf.getInt("fill");
+				if (fillId != 0) {
+					portaltype = Material.getMaterial(fillId);
+				} else {
+					portaltype = Material.valueOf(conf.getString("fill").toUpperCase());
+				}
+			}
 			if (conf.contains("doorlist")) {
-				doortypes = conf.getIntegerList("doorlist");
+				List<Material> doorList = new ArrayList<Material>();
+				for (int doorId : conf.getIntegerList("doorlist")) {
+					Material door = Material.getMaterial(doorId);
+					if (door != null) {
+						doorList.add(door);
+					}
+				}
+				for (String doorType : conf.getStringList("doorlist")) {
+					doorList.add(Material.valueOf(doorType.toUpperCase()));
+				}
+				if (!doorList.isEmpty()) {
+					doortypes = doorList;
+				}
 			} else {
 				if (conf.contains("door")) {
-					doortypes.add(conf.getInt("door"));
+					int doorId = conf.getInt("door");
+					if (doorId != 0) {
+						doortypes.add(Material.getMaterial(doorId));
+					} else {
+						doortypes.add(Material.valueOf(conf.getString("door").toUpperCase()));
+					}
 				}
 				if (conf.contains("door2")) {
-					doortypes.add(conf.getInt("door2"));
+					int doorId = conf.getInt("door2");
+					if (doorId != 0) {
+						doortypes.add(Material.getMaterial(doorId));
+					} else {
+						doortypes.add(Material.valueOf(conf.getString("door2").toUpperCase()));
+					}
 				}
 				// Yes, this is a bit lame. I'd like to save updated config, but at the same time I don't want to wipe out comments and make
 				// the file extremely unclear. 
@@ -159,8 +203,14 @@ public class TravelPortals extends PluginBase {
 			}
 			if (conf.contains("doorname"))
 				strDoortype = conf.getString("doorname");
-			if (conf.contains("torch"))
-				torchtype = conf.getInt("torch");
+			if (conf.contains("torch")) {
+				int torchId = conf.getInt("torch");
+				if (torchId != 0) {
+					torchtype = Material.getMaterial(torchId);
+				} else {
+					torchtype = Material.valueOf(conf.getString("torch").toUpperCase());
+				}
+			}
 			if (conf.contains("torchname"))
 				strTorchtype = conf.getString("torchname");
 			if (conf.contains("permissions"))
@@ -183,6 +233,11 @@ public class TravelPortals extends PluginBase {
 		catch (java.lang.NumberFormatException i)
 		{
 			logSevere("An exception occurred when trying to read your config file.");
+			logSevere("Check your config.yml!");
+			return;
+		}
+		catch (java.lang.IllegalArgumentException e) {
+			logSevere("An exception occurred when trying to read a block type from your config file.");
 			logSevere("Check your config.yml!");
 			return;
 		}
@@ -548,9 +603,9 @@ public class TravelPortals extends PluginBase {
 		playerLoc.setY(player.getLocation().getY());
 		Block blk = player.getWorld().getBlockAt(player.getLocation());
 
-		int bid = player.getWorld().getBlockAt(playerLoc).getTypeId();
+		Material blockType = player.getWorld().getBlockAt(playerLoc).getType();
 		// Is the user actually in portal material?
-		if (bid == blocktype || doortypes.contains(bid))
+		if (blockType == blocktype || doortypes.contains(blockType))
 		{
 			// Find nearby warp.
 			int w = getWarpFromLocation(player.getWorld().getName(), blk.getLocation().getBlockX(), blk.getLocation().getBlockY(), blk.getLocation().getBlockZ());

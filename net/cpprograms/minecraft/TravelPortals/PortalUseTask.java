@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -191,11 +192,11 @@ public class PortalUseTask implements Runnable {
 		World world = player.getWorld();
 
 		playerLoc.setX(playerLoc.getX() + 1.0);
-		int bid = world.getBlockAt(playerLoc).getTypeId();
+		Material blockType = world.getBlockAt(playerLoc).getType();
 		playerLoc.setX(playerLoc.getX() - 1.0);
 
 		// Is the user actually in portal material?
-		if (plugin.doortypes.contains(bid) || bid == plugin.blocktype)
+		if (plugin.doortypes.contains(blockType) || blockType == plugin.blocktype)
 		{
 			// Find nearby warp.
 			int w = plugin.getWarpFromLocation(world.getName(),playerLoc.getBlockX(),playerLoc.getBlockY(), playerLoc.getBlockZ());
