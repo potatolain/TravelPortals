@@ -698,22 +698,22 @@ public class TravelPortals extends PluginBase {
 							rotation = 180.0f;
 					}
 					// Guess.
-					else if (doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getTypeId()))
+					else if (doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getType()))
 					{
 						rotation = 270.0f;
 						warpLocations.get(loc).setDoorPosition(1);
 					}
-					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z+1).getTypeId()))
+					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z+1).getType()))
 					{
 						rotation = 0.0f;
 						warpLocations.get(loc).setDoorPosition(2);
 					}
-					else if (doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getTypeId()))
+					else if (doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getType()))
 					{
 						rotation = 90.0f;
 						warpLocations.get(loc).setDoorPosition(3);
 					}
-					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z-1).getTypeId()))
+					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z-1).getType()))
 					{
 						rotation = 180.0f;
 						warpLocations.get(loc).setDoorPosition(4);

@@ -3,6 +3,7 @@ Change Log
 
 2.2.14-pre
 -----
+* Add support for Material enums in the config
 * Show more info about hidden portals to the owner of a portal in the `/portal info` command
 * Fix `/portal info` displaying the wrong world for destinations
 
