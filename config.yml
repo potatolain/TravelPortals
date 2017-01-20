@@ -8,7 +8,7 @@ framename: obsidian
 # The type of block to fill the portal with. Default: WATER
 fill: WATER
 
-# The types of blocks used for the door. Default: All wodden doors and iron doors
+# The types of blocks used for the door. Default: All wooden doors and iron doors
 
 doorlist:
 - WOODEN_DOOR
