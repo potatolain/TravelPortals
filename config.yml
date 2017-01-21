@@ -1,5 +1,9 @@
 # TravelPortals configuration file
 
+# Define which storage the plugin should use for the portal data
+# Available options are YAML and LEGACY
+storagetype: YAML
+
 # The type of block used for the frame of the portal. Default: OBSIDIAN
 frame: OBSIDIAN
 # The name for the type of block being used for the frame. Default: obsidian

@@ -329,11 +329,21 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
-	 * Checks whether or not someone has access to this portals information.
+	 * Checks whether or not someone can see this portal's information.
 	 * @param sender The sender
 	 * @return true if the sender has access to the portal (like the owner); false if not
 	 */
-	public boolean hasAccess(CommandSender sender)
+	public boolean canSee(CommandSender sender)
+	{
+		return !hidden || canAccess(sender);
+	}
+
+	/**
+	 * Checks whether or not someone has administrative access to the portal
+	 * @param sender The sender
+	 * @return true if the sender has access to the portal (like the owner); false if not
+	 */
+	public boolean canAccess(CommandSender sender)
 	{
 		return owner.isEmpty() || !(sender instanceof Player) || sender.getName().equals(owner);
 	}

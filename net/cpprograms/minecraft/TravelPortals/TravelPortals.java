@@ -5,19 +5,19 @@ import net.cpprograms.minecraft.General.PermissionsHandler;
 import net.cpprograms.minecraft.General.PluginBase;
 import java.io.*;
 import java.util.ArrayList;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
+import net.cpprograms.minecraft.TravelPortals.storage.LegacyStorage;
+import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
+import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
+import net.cpprograms.minecraft.TravelPortals.storage.YamlStorage;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -39,9 +39,14 @@ public class TravelPortals extends PluginBase {
 	private final TravelPortalsBlockListener blockListener = new TravelPortalsBlockListener(this);
 
 	/**
-	 * All user warp points
+	 * The type of storage that should be used for the portal data
 	 */
-	public ArrayList<WarpLocation> warpLocations = new ArrayList<WarpLocation>();
+	protected StorageType storageType = StorageType.LEGACY;
+
+	/**
+	 * Here we store the portals
+	 */
+	protected PortalStorage portalStorage;
 
 	/**
 	 * The type of block portals must be made from. (Default is 49 (Obsidian))
@@ -56,7 +61,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * Whether to automatically export the list of portals to travelportals.txt.
 	 */
-	protected boolean autoExport = false;
+	private boolean autoExport = false;
 
 	/**
 	 * Server access!
@@ -109,7 +114,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * How many backup saves should there be? (3)
 	 */
-	protected int numsaves = 3;
+	private int numsaves = 3;
 
 	/**
 	 * Ticks for a sync repeated task to check all players for if they are in a portal.
@@ -146,6 +151,26 @@ public class TravelPortals extends PluginBase {
 		try
 		{
 			FileConfiguration conf = getConfig();
+			if (conf.contains("storagetype")) {
+				try {
+					storageType = StorageType.valueOf(conf.getString("storagetype").toUpperCase());
+				} catch (IllegalArgumentException e) {
+					logSevere(conf.getString("storagetype") + " is not a valid storage type? Valid types are " + Arrays.toString(StorageType.values()) + ".");
+					logSevere("Aborting plugin load");
+					return;
+				}
+			}
+
+			if (storageType == StorageType.LEGACY)
+				portalStorage = new LegacyStorage(this);
+			else if (storageType == StorageType.YAML)
+				portalStorage = new YamlStorage(this);
+			else {
+				logSevere("The storage type " + storageType + " is not properly supported yet! Please choose a different one!");
+				logSevere("Aborting plugin load");
+				return;
+			}
+
 			if (conf.contains("frame")) {
 				int frameId = conf.getInt("frame");
 				if (frameId != 0) {
@@ -230,124 +255,23 @@ public class TravelPortals extends PluginBase {
 				followTicks = conf.getInt("polling-followticks");
 
 		}
-		catch (java.lang.NumberFormatException i)
+		catch (NumberFormatException i)
 		{
 			logSevere("An exception occurred when trying to read your config file.");
 			logSevere("Check your config.yml!");
 			return;
 		}
-		catch (java.lang.IllegalArgumentException e) {
+		catch (IllegalArgumentException e)
+		{
 			logSevere("An exception occurred when trying to read a block type from your config file.");
 			logSevere("Check your config.yml!");
 			return;
 		}
 
-		if (!this.getDataFolder().exists())
+		if (!portalStorage.load())
 		{
-			logSevere("Could not read plugin's data folder! Please put the TravelPortals folder in the plugins folder with the plugin!");
 			logSevere("Aborting plugin load");
 			return;
-		}
-
-		try
-		{
-
-			// Save backup directory?
-			if (!(new File(this.getDataFolder(), "backups")).exists())
-				(new File(this.getDataFolder(), "backups")).mkdir();
-
-			// Move the save file to where it belongs.
-			// if it's done the old way.
-			if (!(new File(this.getDataFolder(), "TravelPortals.ser").exists()))
-			{
-				// Moving time. Otherwise we just need a new file.
-				if ((new File("TravelPortals.ser")).exists())
-				{
-					(new File("TravelPortals.ser")).renameTo(new File(this.getDataFolder(), "TravelPortals.ser"));
-				}
-			}
-		}
-		catch (SecurityException i)
-		{
-			logSevere("Could not read/write TravelPortals data folder! Aborting.");
-			return;
-		}
-
-
-
-		// Attempt to read in the current version's save data.
-		try
-		{
-			FileInputStream fIn = new FileInputStream(new File(this.getDataFolder(), "TravelPortals.ser"));
-			ObjectInputStream oIn = new ObjectInputStream(fIn);
-			warpLocations = (ArrayList<net.cpprograms.minecraft.TravelPortals.WarpLocation>)oIn.readObject();
-			oIn.close();
-			fIn.close();
-
-			doBackup();
-		}
-		catch (IOException i)
-		{
-			logWarning("Could not load TravelPortals location file!");
-			logWarning("If this is your first time running the plugin, you can ignore this message.");
-			logWarning("If this is not your first run, STOP YOUR SERVER NOW! You could lose your portals!");
-			logWarning("The file plugins/TravelPortals/TravelPortals.ser is missing or unreadable.");
-			logWarning("Please check that this file exists and is in the right directory.");
-			logWarning("If it is not, there should be a backup in the plugins/TravelPortals/backups folder.");
-			logWarning("Copy this, place it in the plugins/TravelPortals folder, and rename it to TravelPortals.ser and restart the server.");
-			logWarning("If this does not fix the problem, or if something strange went wrong, please report this issue.");
-		}
-		catch (java.lang.ClassNotFoundException i) 
-		{
-			logSevere("TravelPortals: Something has gone very wrong. Please contact admin@cpprograms.net!");
-			return;
-		}
-
-		// Test to see if we need to do conversion.
-		try 
-		{
-			if (!warpLocations.isEmpty()) {
-				WarpLocation w = warpLocations.get(0);
-				w.getName();
-			}
-		} 
-		catch (java.lang.ClassCastException i)
-		{
-			{
-				logInfo("Importing old pre-2.0 portals...");
-				try 
-				{
-					warpLocations = new ArrayList<net.cpprograms.minecraft.TravelPortals.WarpLocation>();
-					FileInputStream fIn = new FileInputStream(new File(this.getDataFolder(), "TravelPortals.ser"));
-					ObjectInputStream oIn = new ObjectInputStream(fIn);
-					ArrayList<com.bukkit.cppchriscpp.TravelPortals.WarpLocation> oldloc = (ArrayList<com.bukkit.cppchriscpp.TravelPortals.WarpLocation>)oIn.readObject();
-					for (com.bukkit.cppchriscpp.TravelPortals.WarpLocation wl : oldloc) 
-					{
-						// Yes, this blows.
-						net.cpprograms.minecraft.TravelPortals.WarpLocation temp = new WarpLocation(wl.getX(), wl.getY(), wl.getZ(), wl.getDoorPosition(), wl.getWorld(), wl.getOwner());
-						temp.setName(wl.getName());
-						temp.setDestination(wl.getDestination());
-						temp.setHidden(wl.getHidden());
-						warpLocations.add(temp);
-					}
-					oIn.close();
-					fIn.close();
-
-					this.savedata();
-
-					this.doBackup();
-					logInfo("Imported old portals sucecessfully!");
-				} 
-				catch (IOException e) {
-					logWarning("Importing old portals failed.");
-					return;
-				}
-				catch (ClassNotFoundException e) 
-				{
-					logSevere("Something has gone horribly wrong. Contact owner@cpprograms.net!");
-					return;
-				}
-			}
 		}
 
 		// Register our events
@@ -389,151 +313,81 @@ public class TravelPortals extends PluginBase {
 
 	/**
 	 * Saves all door warp stuff to disk.
+	 * @deprecated Use {@link PortalStorage#save()}
 	 */
+	@Deprecated
 	public void savedata()
 	{
-		savedata(false);
+		portalStorage.save();
 	}
 
 	/**
 	 * Saves all portals to disk.
 	 * @param backup Whether to save to a backup file or not.
+	 * @deprecated Use {@link PortalStorage#save(boolean)}
 	 */
+	@Deprecated
 	public void savedata(boolean backup)
 	{
-		try
-		{
-			File file = new File(this.getDataFolder(), "TravelPortals.ser");
-			if (backup)
-			{
-				DateFormat df = new SimpleDateFormat("yyyy-MM-dd--kk_mm");
-				file = new File(this.getDataFolder(), "backups/TravelPortals--" + df.format(Calendar.getInstance().getTime()));
-			}
-			FileOutputStream fOut = new FileOutputStream(file);
-			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
-			oOut.writeObject(warpLocations);
-			oOut.close();
-			fOut.close();
-		}
-		catch (IOException i)
-		{
-			logWarning("Could not save TravelPortals data!");
-		}
-
-		if (autoExport)
-			dumpPortalList();
-		if (!backup)
-			doBackup();
-	}
-
-	/**
-	 * Makes a backup of the TravelPortals file in case something goes wrong.
-	 * - This is for the paranoid, though there are a few isolated cases of files disappearing.
-	 *   I can't find a source, so this is at least a quick fix.
-	 */
-	public void doBackup()
-	{
-		try
-		{
-			File dir = new File(this.getDataFolder(), "backups");
-			if (!dir.isDirectory())
-			{
-				logSevere("Cannot save backups!");
-				return;
-			}
-			String[] list = dir.list();
-			if (numsaves > 0 && list.length+1 > numsaves)
-			{
-				java.util.Arrays.sort(list);
-				for (int i = 0; i < list.length+1-numsaves; i++)
-					(new File(dir, list[i])).delete();
-			}
-
-		}
-		catch (SecurityException i)
-		{
-			logWarning("Saving a backup of the TravelPortals file failed.");
-		}
-		savedata(true);
+		portalStorage.save(backup);
 	}
 
 	/**
 	 * Quick helper function to add warp points.
 	 * @param w The warp point to add to warpLocations.
+	 * @deprecated Use {@link PortalStorage#addPortal(WarpLocation)}
 	 */
+	@Deprecated
 	public void addWarp(WarpLocation w)
 	{
-		warpLocations.add(w);
+		portalStorage.addPortal(w);
 	}
 
 	/**
 	 * Get the index of a warp object from its name.
 	 * @param name The name of the portal to find.
-	 * @return The index of the portal in plugin.warpLocations, or -1 if it is not found.
+	 * @return The portal info or null if none was found
+	 * @deprecated Use {@link PortalStorage#getPortal(String)}
 	 */
-	public int getWarp(String name)
+	@Deprecated
+	public WarpLocation getWarp(String name)
 	{
-		// Test all warps to see if they have the name we're looking for.
-		for (int i = 0; i < this.warpLocations.size(); i++)
-		{
-			if (this.warpLocations.get(i).getName().equals(name))
-				return i;
-		}
-		return -1;
+		return portalStorage.getPortal(name);
 	}
 
 	/**
 	 * Find a warp point from a relative location. (Within 1 block)
-	 * @param worldname The world name to get the warp from.
-	 * @param x X coordinate to search near.
-	 * @param y Y coordinate to search near.
-	 * @param z Z coordinate to search near.
+	 * @param location The location that is near the portal
 	 * @return The index of a nearby portal in plugin.warpLocations, or -1 if it is not found.
+	 * @deprecated Use {@link PortalStorage#getPortal(Location)}
 	 */
-	public int getWarpFromLocation(String worldname, int x, int y, int z)
+	@Deprecated
+	public WarpLocation getWarpFromLocation(Location location)
 	{
-		// Iterate through all warps and check how close they are
-		for (int i = 0; i < this.warpLocations.size(); i++)
-		{
-			WarpLocation wd = this.warpLocations.get(i);
-			if (wd.getY() == y && wd.getWorld().equals(worldname))
-			{
-				// We found one!!
-				if (Math.abs(wd.getX() - x) <= 1 && Math.abs(wd.getZ() - z) <= 1)
-					return i;
-			}
-		}
-		return -1;
+		return portalStorage.getPortal(location);
 	}
 
 	/**
-	 * This is a function to rename a world for all existing portals. 
-	 * @param oldworld The name of the old world.
-	 * @param newworld The name of the new world.
+	 * Rename a world for all existing portals.
+	 * @param oldWorld The name of the old world.
+	 * @param newWorld The name of the new world.
+	 * @deprecated Use {@link PortalStorage#renameWorld(String, String)}
 	 */
-	public void renameWorld(String oldworld, String newworld)
+	@Deprecated
+	public void renameWorld(String oldWorld, String newWorld)
 	{
-		for (int i = 0; i < this.warpLocations.size(); i++) 
-		{
-			if (this.warpLocations.get(i).getWorld().equals(oldworld))
-				this.warpLocations.get(i).setWorld(newworld);
-		}
+		portalStorage.renameWorld(oldWorld, newWorld);
 	}
 
 	/**
 	 * Delete all portals linking to a world.
-	 * @param oldworld The world to delete all portals to.
+	 * @param oldWorld The world to delete all portals to.
+	 * @deprecated Use {@link PortalStorage#deleteWorld}
 	 */
-	public void deleteWorld(String oldworld) 
+	@Deprecated
+	public void deleteWorld(String oldWorld)
 	{
-		for (int i = 0; i < this.warpLocations.size(); i++)
-		{
-			if (this.warpLocations.get(i).getWorld().equals(oldworld))
-			{
-				this.warpLocations.remove(i);
-				i--;
-			}
-		}
+		portalStorage.deleteWorld(oldWorld);
 	}
 
 	/**
@@ -545,7 +399,7 @@ public class TravelPortals extends PluginBase {
 		{
 			FileOutputStream fOut = new FileOutputStream(new File(this.getDataFolder(), "travelportals.txt"));
 			PrintStream pOut = new PrintStream(fOut);
-			for (WarpLocation w : this.warpLocations)
+			for (WarpLocation w : portalStorage.getPortals())
 				pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.isHidden() +"," + w.getWorld() + "," + w.getOwner());
 
 			pOut.close();
@@ -564,7 +418,7 @@ public class TravelPortals extends PluginBase {
 	{
 		try
 		{
-			this.warpLocations = new ArrayList<WarpLocation>();
+			portalStorage.clearCache();
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line;
 			while ((line = br.readLine()) != null)
@@ -573,10 +427,10 @@ public class TravelPortals extends PluginBase {
 				if (data.length != 8)
 					continue;
 				WarpLocation warp = new WarpLocation(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), 0, data[6], data[7]);
-				warp.setHidden(data[5] == "1");
+				warp.setHidden("1".equals(data[5]));
 				warp.setDestination(data[4]);
 				warp.setName(data[3]);
-				this.warpLocations.add(warp);
+				portalStorage.addPortal(warp);
 			}
 			br.close();
 		}
@@ -601,18 +455,17 @@ public class TravelPortals extends PluginBase {
 		Location playerLoc = player.getLocation();
 		playerLoc = playerLoc.add(playerLoc.getDirection());
 		playerLoc.setY(player.getLocation().getY());
-		Block blk = player.getWorld().getBlockAt(player.getLocation());
 
 		Material blockType = player.getWorld().getBlockAt(playerLoc).getType();
 		// Is the user actually in portal material?
 		if (blockType == blocktype || doortypes.contains(blockType))
 		{
 			// Find nearby warp.
-			int w = getWarpFromLocation(player.getWorld().getName(), blk.getLocation().getBlockX(), blk.getLocation().getBlockY(), blk.getLocation().getBlockZ());
-			if (w == -1)
+			WarpLocation portal = portalStorage.getPortal(player.getLocation());
+			if (portal == null)
 				return null;
 
-			if (!warpLocations.get(w).isUsable(cooldown))
+			if (!portal.isUsable(cooldown))
 			{
 				return null;
 			}
@@ -626,7 +479,7 @@ public class TravelPortals extends PluginBase {
 					return null;
 				}
 
-				if (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))
+				if (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))
 				{
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
@@ -637,9 +490,9 @@ public class TravelPortals extends PluginBase {
 			}
 
 			// Complain if this isn't usable
-			if (!warpLocations.get(w).hasDestination())
+			if (!portal.hasDestination())
 			{
-				if ((!permissions.hasPermission(player, "travelportals.command.warp") || (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))))
+				if ((!permissions.hasPermission(player, "travelportals.command.warp") || (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))))
 				{
 					player.sendMessage(ChatColor.DARK_RED + "This portal has no destination.");
 				}
@@ -648,21 +501,21 @@ public class TravelPortals extends PluginBase {
 					player.sendMessage(ChatColor.DARK_RED + "You need to set this portal's destination first!");
 					player.sendMessage(ChatColor.DARK_GREEN + "See /portal help for more information.");
 				}
-				warpLocations.get(w).setLastUsed();
+				portal.setLastUsed();
 				return null;
 			}
 			else // send the user on his way!
 			{
 				// Find the warp this one points to
-				int loc = getWarp(warpLocations.get(w).getDestination());
+				WarpLocation destionation = portalStorage.getPortal(portal.getDestination());
 
-				if (loc == -1)
+				if (destionation == null)
 				{
-					player.sendMessage(ChatColor.DARK_RED + "This portal's destination (" + warpLocations.get(w).getDestination() + ") does not exist.");
+					player.sendMessage(ChatColor.DARK_RED + "This portal's destination (" + portal.getDestination() + ") does not exist.");
 					if (!(permissions.hasPermission(player, "travelportals.command.warp")))
 						player.sendMessage(ChatColor.DARK_GREEN + "See /portal help for more information.");
 
-					warpLocations.get(w).setLastUsed();
+					portal.setLastUsed();
 					return null;
 				}
 				else
@@ -672,19 +525,19 @@ public class TravelPortals extends PluginBase {
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
 
-						if (!warpLocations.get(w).getOwner().equals("") && !warpLocations.get(w).getOwner().equals(player.getName()))
+						if (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))
 						{
 							player.sendMessage(ChatColor.DARK_RED + "You do not own the destination portal, and do not have permission to use it.");
 							return null;
 						}
 					}
-					int x = warpLocations.get(loc).getX();
-					int y = warpLocations.get(loc).getY();
-					int z = warpLocations.get(loc).getZ();
+					int x = destionation.getX();
+					int y = destionation.getY();
+					int z = destionation.getZ();
 					float rotation = 180.0f; // c
 
 					// Use rotation to place the player correctly.
-					int d = warpLocations.get(loc).getDoorPosition();
+					int d = destionation.getDoorPosition();
 
 					if (d > 0)
 					{
@@ -701,22 +554,22 @@ public class TravelPortals extends PluginBase {
 					else if (doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getType()))
 					{
 						rotation = 270.0f;
-						warpLocations.get(loc).setDoorPosition(1);
+						destionation.setDoorPosition(1);
 					}
 					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z+1).getType()))
 					{
 						rotation = 0.0f;
-						warpLocations.get(loc).setDoorPosition(2);
+						destionation.setDoorPosition(2);
 					}
 					else if (doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getType()))
 					{
 						rotation = 90.0f;
-						warpLocations.get(loc).setDoorPosition(3);
+						destionation.setDoorPosition(3);
 					}
 					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z-1).getType()))
 					{
 						rotation = 180.0f;
-						warpLocations.get(loc).setDoorPosition(4);
+						destionation.setDoorPosition(4);
 					}
 					else
 					{
@@ -724,14 +577,14 @@ public class TravelPortals extends PluginBase {
 					}
 					// Create the location for the user to warp to
 					Location locy = new Location(player.getWorld(), x + 0.50, y + 0.1, z + 0.50, rotation, 0);
-					if (warpLocations.get(loc).getWorld() != null && !warpLocations.get(loc).getWorld().equals(""))
+					if (destionation.getWorld() != null && !destionation.getWorld().equals(""))
 					{
-						World wo = WorldCreator.name(warpLocations.get(loc).getWorld()).createWorld();
+						World wo = WorldCreator.name(destionation.getWorld()).createWorld();
 						locy.setWorld(wo);
 					}
 					else
 					{
-						logWarning("World name not set for portal " + warpLocations.get(loc).getName() + " - consider running the following command from the console:");
+						logWarning("World name not set for portal " + destionation.getName() + " - consider running the following command from the console:");
 						logWarning("portal fixworld " + TravelPortals.server.getWorlds().get(0).getName());
 						logWarning("Replacing the world name with the world this portal should link to, if it is incorrect.");
 						locy.setWorld(TravelPortals.server.getWorlds().get(0));
@@ -739,8 +592,8 @@ public class TravelPortals extends PluginBase {
 
 					if (disablePortal)
 					{
-						warpLocations.get(loc).setLastUsed();
-						warpLocations.get(w).setLastUsed();
+						destionation.setLastUsed();
+						portal.setLastUsed();
 					}
 
 					return locy;
@@ -758,6 +611,27 @@ public class TravelPortals extends PluginBase {
 	public Location getWarpLocationIfAllowed(Player player) 
 	{ 
 		return getWarpLocationIfAllowed(player, true); 
+	}
+
+	/**
+	 * Whether to automatically export the list of portals to travelportals.txt.
+	 */
+	public boolean isAutoExport() {
+		return autoExport;
+	}
+
+	/**
+	 * How many backup saves should there be? (Default is 3)
+	 */
+	public int getNumSaves() {
+		return numsaves;
+	}
+
+	/**
+	 * Get the portal storage used by this plugin
+	 */
+	public PortalStorage getPortalStorage() {
+		return portalStorage;
 	}
 }
 
