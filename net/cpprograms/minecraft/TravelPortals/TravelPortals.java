@@ -151,7 +151,7 @@ public class TravelPortals extends PluginBase {
 		try
 		{
 			FileConfiguration conf = getConfig();
-			if (conf.contains("storagetype")) {
+			if (conf.get("storagetype", null) != null) {
 				try {
 					storageType = StorageType.valueOf(conf.getString("storagetype").toUpperCase());
 				} catch (IllegalArgumentException e) {
@@ -171,7 +171,7 @@ public class TravelPortals extends PluginBase {
 				return;
 			}
 
-			if (conf.contains("frame")) {
+			if (conf.get("frame", null) != null) {
 				int frameId = conf.getInt("frame");
 				if (frameId != 0) {
 					blocktype = Material.getMaterial(frameId);
@@ -179,9 +179,9 @@ public class TravelPortals extends PluginBase {
 					blocktype = Material.valueOf(conf.getString("frame").toUpperCase());
 				}
 			}
-			if (conf.contains("framename"))
+			if (conf.get("framename", null) != null)
 				strBlocktype = conf.getString("framename");
-			if (conf.contains("fill")) {
+			if (conf.get("fill", null) != null) {
 				int fillId = conf.getInt("fill");
 				if (fillId != 0) {
 					portaltype = Material.getMaterial(fillId);
@@ -189,22 +189,23 @@ public class TravelPortals extends PluginBase {
 					portaltype = Material.valueOf(conf.getString("fill").toUpperCase());
 				}
 			}
-			if (conf.contains("doorlist")) {
+			if (conf.get("doorlist", null) != null) {
 				List<Material> doorList = new ArrayList<Material>();
-				for (int doorId : conf.getIntegerList("doorlist")) {
-					Material door = Material.getMaterial(doorId);
-					if (door != null) {
-						doorList.add(door);
-					}
-				}
 				for (String doorType : conf.getStringList("doorlist")) {
-					doorList.add(Material.valueOf(doorType.toUpperCase()));
+					try {
+						Material door = Material.getMaterial(Integer.parseInt(doorType));
+						if (door != null) {
+							doorList.add(door);
+						}
+					} catch (NumberFormatException e) {
+						doorList.add(Material.valueOf(doorType.toUpperCase()));
+					}
 				}
 				if (!doorList.isEmpty()) {
 					doortypes = doorList;
 				}
 			} else {
-				if (conf.contains("door")) {
+				if (conf.get("door", null) != null) {
 					int doorId = conf.getInt("door");
 					if (doorId != 0) {
 						doortypes.add(Material.getMaterial(doorId));
@@ -212,7 +213,7 @@ public class TravelPortals extends PluginBase {
 						doortypes.add(Material.valueOf(conf.getString("door").toUpperCase()));
 					}
 				}
-				if (conf.contains("door2")) {
+				if (conf.get("door2", null) != null) {
 					int doorId = conf.getInt("door2");
 					if (doorId != 0) {
 						doortypes.add(Material.getMaterial(doorId));
@@ -223,12 +224,12 @@ public class TravelPortals extends PluginBase {
 				// Yes, this is a bit lame. I'd like to save updated config, but at the same time I don't want to wipe out comments and make
 				// the file extremely unclear. 
 				logWarning("Old style door configuration found. Config loaded correctly, but you may want to update it.");
-				logWarning("The plugin now supports an integer list \"doorlist\", to allow use of the new wooden door types.");
+				logWarning("The plugin now supports a list \"doorlist\", to allow use of the new wooden door types.");
 				logWarning("Example configuration here: https://github.com/cppchriscpp/TravelPortals/blob/master/config.yml");
 			}
-			if (conf.contains("doorname"))
+			if (conf.get("doorname", null) != null)
 				strDoortype = conf.getString("doorname");
-			if (conf.contains("torch")) {
+			if (conf.get("torch", null) != null) {
 				int torchId = conf.getInt("torch");
 				if (torchId != 0) {
 					torchtype = Material.getMaterial(torchId);
@@ -236,36 +237,34 @@ public class TravelPortals extends PluginBase {
 					torchtype = Material.valueOf(conf.getString("torch").toUpperCase());
 				}
 			}
-			if (conf.contains("torchname"))
+			if (conf.get("torchname", null) != null)
 				strTorchtype = conf.getString("torchname");
-			if (conf.contains("permissions"))
+			if (conf.get("permissions", null) != null)
 				usepermissions = conf.getBoolean("permissions");
-			if (conf.contains("autoexport"))
+			if (conf.get("autoexport", null) != null)
 				autoExport = conf.getBoolean("autoexport");
-			if (conf.contains("cooldown"))
+			if (conf.get("cooldown", null) != null)
 				cooldown = 1000 * conf.getInt("cooldown");
-			if (conf.contains("numsaves"))
+			if (conf.get("numsaves", null) != null)
 				numsaves = conf.getInt("numsaves");
 
-			if (conf.contains("useplayermove"))
+			if (conf.get("useplayermove", null) != null)
 				usePlayerMove = conf.getBoolean("useplayermove");
-			if (conf.contains("polling-mainticks"))
+			if (conf.get("polling-mainticks", null) != null)
 				mainTicks = conf.getInt("polling-mainticks");
-			if (conf.contains("polling-followticks"))
+			if (conf.get("polling-followticks", null) != null)
 				followTicks = conf.getInt("polling-followticks");
 
 		}
 		catch (NumberFormatException i)
 		{
-			logSevere("An exception occurred when trying to read your config file.");
+			logSevere("An exception occurred when trying to read your config file. "  + i.getMessage());
 			logSevere("Check your config.yml!");
-			return;
 		}
 		catch (IllegalArgumentException e)
 		{
-			logSevere("An exception occurred when trying to read a block type from your config file.");
+			logSevere("An exception occurred when trying to read a block type from your config file. " + e.getMessage());
 			logSevere("Check your config.yml!");
-			return;
 		}
 
 		if (!portalStorage.load())
