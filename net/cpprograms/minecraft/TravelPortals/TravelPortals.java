@@ -507,9 +507,9 @@ public class TravelPortals extends PluginBase {
 			else // send the user on his way!
 			{
 				// Find the warp this one points to
-				WarpLocation destionation = portalStorage.getPortal(portal.getDestination());
+				WarpLocation destination = portalStorage.getPortal(portal.getDestination());
 
-				if (destionation == null)
+				if (destination == null)
 				{
 					player.sendMessage(ChatColor.DARK_RED + "This portal's destination (" + portal.getDestination() + ") does not exist.");
 					if (!(permissions.hasPermission(player, "travelportals.command.warp")))
@@ -531,13 +531,13 @@ public class TravelPortals extends PluginBase {
 							return null;
 						}
 					}
-					int x = destionation.getX();
-					int y = destionation.getY();
-					int z = destionation.getZ();
+					int x = destination.getX();
+					int y = destination.getY();
+					int z = destination.getZ();
 					float rotation = 180.0f; // c
 
 					// Use rotation to place the player correctly.
-					int d = destionation.getDoorPosition();
+					int d = destination.getDoorPosition();
 
 					if (d > 0)
 					{
@@ -554,22 +554,22 @@ public class TravelPortals extends PluginBase {
 					else if (doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getType()))
 					{
 						rotation = 270.0f;
-						destionation.setDoorPosition(1);
+						destination.setDoorPosition(1);
 					}
 					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z+1).getType()))
 					{
 						rotation = 0.0f;
-						destionation.setDoorPosition(2);
+						destination.setDoorPosition(2);
 					}
 					else if (doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getType()))
 					{
 						rotation = 90.0f;
-						destionation.setDoorPosition(3);
+						destination.setDoorPosition(3);
 					}
 					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z-1).getType()))
 					{
 						rotation = 180.0f;
-						destionation.setDoorPosition(4);
+						destination.setDoorPosition(4);
 					}
 					else
 					{
@@ -577,14 +577,14 @@ public class TravelPortals extends PluginBase {
 					}
 					// Create the location for the user to warp to
 					Location locy = new Location(player.getWorld(), x + 0.50, y + 0.1, z + 0.50, rotation, 0);
-					if (destionation.getWorld() != null && !destionation.getWorld().equals(""))
+					if (destination.getWorld() != null && !destination.getWorld().equals(""))
 					{
-						World wo = WorldCreator.name(destionation.getWorld()).createWorld();
+						World wo = WorldCreator.name(destination.getWorld()).createWorld();
 						locy.setWorld(wo);
 					}
 					else
 					{
-						logWarning("World name not set for portal " + destionation.getName() + " - consider running the following command from the console:");
+						logWarning("World name not set for portal " + destination.getName() + " - consider running the following command from the console:");
 						logWarning("portal fixworld " + TravelPortals.server.getWorlds().get(0).getName());
 						logWarning("Replacing the world name with the world this portal should link to, if it is incorrect.");
 						locy.setWorld(TravelPortals.server.getWorlds().get(0));
@@ -592,7 +592,7 @@ public class TravelPortals extends PluginBase {
 
 					if (disablePortal)
 					{
-						destionation.setLastUsed();
+						destination.setLastUsed();
 						portal.setLastUsed();
 					}
 
