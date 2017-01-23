@@ -182,7 +182,7 @@ public class PortalCommandSet extends CommandSet
 
 		// This will load all of the portals in alphabetical order
 		TreeMap<String, String> allp = new TreeMap<String, String>();
-		for (WarpLocation w : plugin.getPortalStorage().getPortals())
+		for (WarpLocation w : plugin.getPortalStorage().getPortals().values())
 			if (w.hasName() && w.canSee(sender))
 			{
 				WarpLocation tmp = this.plugin.getPortalStorage().getPortal(w.getDestination());
@@ -294,8 +294,7 @@ public class PortalCommandSet extends CommandSet
 				}
 				else
 				{
-					portal.setName(args[0]);
-					this.plugin.savedata();
+					plugin.getPortalStorage().namePortal(portal, args[0]);
 					player.sendMessage(ChatColor.DARK_GREEN + "This portal is now known as " + args[0] + ".");
 				}
 			}

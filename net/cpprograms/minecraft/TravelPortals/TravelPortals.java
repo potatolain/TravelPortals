@@ -161,6 +161,8 @@ public class TravelPortals extends PluginBase {
 				}
 			}
 
+			logDebug("Storage type is " + storageType);
+
 			if (storageType == StorageType.LEGACY)
 				portalStorage = new LegacyStorage(this);
 			else if (storageType == StorageType.YAML)
@@ -273,6 +275,8 @@ public class TravelPortals extends PluginBase {
 			return;
 		}
 
+		logInfo("Loaded " + portalStorage.getPortals().size() + " portals!");
+
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
 
@@ -318,28 +322,6 @@ public class TravelPortals extends PluginBase {
 	public void savedata()
 	{
 		portalStorage.save();
-	}
-
-	/**
-	 * Saves all portals to disk.
-	 * @param backup Whether to save to a backup file or not.
-	 * @deprecated Use {@link PortalStorage#save(boolean)}
-	 */
-	@Deprecated
-	public void savedata(boolean backup)
-	{
-		portalStorage.save(backup);
-	}
-
-	/**
-	 * Quick helper function to add warp points.
-	 * @param w The warp point to add to warpLocations.
-	 * @deprecated Use {@link PortalStorage#addPortal(WarpLocation)}
-	 */
-	@Deprecated
-	public void addWarp(WarpLocation w)
-	{
-		portalStorage.addPortal(w);
 	}
 
 	/**
@@ -398,7 +380,7 @@ public class TravelPortals extends PluginBase {
 		{
 			FileOutputStream fOut = new FileOutputStream(new File(this.getDataFolder(), "travelportals.txt"));
 			PrintStream pOut = new PrintStream(fOut);
-			for (WarpLocation w : portalStorage.getPortals())
+			for (WarpLocation w : portalStorage.getPortals().values())
 				pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.isHidden() +"," + w.getWorld() + "," + w.getOwner());
 
 			pOut.close();
@@ -431,6 +413,7 @@ public class TravelPortals extends PluginBase {
 				warp.setName(data[3]);
 				portalStorage.addPortal(warp);
 			}
+			portalStorage.save();
 			br.close();
 		}
 		catch (Exception e)

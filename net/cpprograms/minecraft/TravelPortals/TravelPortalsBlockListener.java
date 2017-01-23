@@ -113,8 +113,10 @@ public class TravelPortalsBlockListener implements Listener {
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
 
-				this.plugin.addWarp(new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName()));
-				this.plugin.savedata();
+				plugin.getPortalStorage().addPortal(new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName()));
+				if (!plugin.getPortalStorage().save()) {
+					plugin.logWarning("Error while saving the portal storage!");
+				}
 			}
 
 		}
@@ -139,7 +141,7 @@ public class TravelPortalsBlockListener implements Listener {
 		{
 			Player player = event.getPlayer();
 			Block block = event.getBlock();
-			for (WarpLocation w : plugin.warpLocations)
+			for (WarpLocation w : plugin.getPortalStorage().getPortals().values())
 			{
 				// Check if the user actually hit one of them.
 				if (((Math.abs(w.getX() - block.getX()) < 2 && Math.abs(w.getZ() - block.getZ()) < 1) || (Math.abs(w.getZ() - block.getZ()) < 2 && Math.abs(w.getX() - block.getX()) < 1)) && (block.getY() - w.getY() < 2 && block.getY() - w.getY() >= 0))
@@ -162,8 +164,8 @@ public class TravelPortalsBlockListener implements Listener {
 					player.getWorld().getBlockAt(w.getX(), w.getY(), w.getZ()).setType(Material.AIR);
 					player.getWorld().getBlockAt(w.getX(), w.getY() + 1, w.getZ()).setType(Material.AIR);
 					// Remove it from the list of warps
-					this.plugin.warpLocations.remove(plugin.warpLocations.indexOf(w));
-					this.plugin.savedata();
+					this.plugin.getPortalStorage().removePortal(w);
+					this.plugin.getPortalStorage().save();
 					// Let the user know he's done a bad, bad thing. :<
 					player.sendMessage(ChatColor.DARK_RED + "You just broke a portal.");
 					break;
@@ -196,7 +198,7 @@ public class TravelPortalsBlockListener implements Listener {
 				return;
 		}
 		
-		if (plugin.getWarpFromLocation(event.getBlock().getWorld().getName(), event.getBlock().getX(), event.getBlock().getY(),event.getBlock().getZ()) != -1)
+		if (plugin.getPortalStorage().getPortal(event.getBlock().getLocation()) != null)
 			event.setCancelled(true);
 	}
 }

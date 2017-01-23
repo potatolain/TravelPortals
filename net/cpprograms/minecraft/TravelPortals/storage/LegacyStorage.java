@@ -17,14 +17,9 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-public class LegacyStorage implements PortalStorage {
+public class LegacyStorage extends PortalStorage {
 
     private final TravelPortals plugin;
-
-    /**
-     * All user warp points TODO: Use a name -> portal map
-     */
-    public ArrayList<WarpLocation> warpLocations = new ArrayList<WarpLocation>();
 
     public LegacyStorage(TravelPortals plugin)
     {
@@ -64,7 +59,7 @@ public class LegacyStorage implements PortalStorage {
             return false;
         }
 
-
+        List<WarpLocation> warpLocations = new ArrayList<>();
 
         // Attempt to read in the current version's save data.
         try
@@ -140,6 +135,10 @@ public class LegacyStorage implements PortalStorage {
                 }
             }
         }
+
+        for (WarpLocation portal : warpLocations) {
+            addPortal(portal);
+        }
         return true;
     }
 
@@ -149,12 +148,13 @@ public class LegacyStorage implements PortalStorage {
         return save(false);
     }
 
-    @Override
-    public boolean save(boolean backup)
+    private boolean save(boolean backup)
     {
         boolean error = false;
         try
         {
+            List<WarpLocation> warpLocations = new ArrayList<>(getPortals().values());
+
             File file = new File(plugin.getDataFolder(), "TravelPortals.ser");
             if (backup)
             {
@@ -179,68 +179,6 @@ public class LegacyStorage implements PortalStorage {
             doBackup();
 
         return !error;
-    }
-
-    @Override
-    public List<WarpLocation> getPortals()
-    {
-        return warpLocations;
-    }
-
-    @Override
-    public void addPortal(WarpLocation location)
-    {
-        warpLocations.add(location);
-    }
-
-    @Override
-    public WarpLocation getPortal(String name)
-    {
-        // Test all warps to see if they have the name we're looking for.
-        for (WarpLocation warpLocation : warpLocations)
-            if (warpLocation.getName().equalsIgnoreCase(name))
-                return warpLocation;
-        // No portal with that name found
-        return null;
-    }
-
-    @Override
-    public WarpLocation getPortal(Location location)
-    {
-        // Iterate through all warps and check how close they are
-        for (WarpLocation warpLocation : warpLocations)
-            if (warpLocation.getY() == location.getBlockY() && warpLocation.getWorld().equals(location.getWorld().getName()))
-                if (Math.abs(warpLocation.getX() - location.getBlockX()) <= 1 && Math.abs(warpLocation.getZ() - location.getBlockZ()) <= 1)
-                    return warpLocation;
-        // No portal with that name found
-        return null;
-    }
-
-    @Override
-    public void removePortal(WarpLocation portal) {
-        warpLocations.remove(portal);
-    }
-
-    @Override
-    public void renameWorld(String oldWorld, String newWorld)
-    {
-        for (WarpLocation warpLocation : warpLocations)
-            if (warpLocation.getWorld().equalsIgnoreCase(oldWorld))
-                warpLocation.setWorld(newWorld);
-    }
-
-    @Override
-    public void deleteWorld(String oldWorld)
-    {
-        Iterator<WarpLocation> locIt = warpLocations.iterator();
-        while (locIt.hasNext())
-            if (locIt.next().getWorld().equalsIgnoreCase(oldWorld))
-                locIt.remove();
-    }
-
-    @Override
-    public void clearCache() {
-        warpLocations = new ArrayList<WarpLocation>();
     }
 
     /**

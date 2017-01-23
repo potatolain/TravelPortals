@@ -9,8 +9,12 @@ package net.cpprograms.minecraft.TravelPortals;
  * @version 1.10
  */
 
+import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A quick serializable storage medium for warping points.
@@ -134,7 +138,7 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean isValid()
 	{
-		return (!(name.equals("") && destination.equals("")));
+		return (!(name != null && name.isEmpty() && destination != null && destination.isEmpty()));
 	}
 	/**
 	 * Get the X coordinate of this point.
@@ -173,7 +177,8 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
-	 * Sets the name of this point.
+	 * Sets the name of this point.<br />
+	 * <strong>Do not use this to change the name of an existing portal! Use {@link PortalStorage#namePortal(WarpLocation, String)}</strong>
 	 * @param n The new name for this point.
 	 */
 	public void setName(String n)
@@ -202,6 +207,14 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
+	 * Checks if this portal has an owner.
+	 */
+	public boolean hasOwner()
+	{
+		return owner != null && !owner.isEmpty();
+	}
+
+	/**
 	 * Gets the name of the destination portal for this point.
 	 * @return The name of the destination portal.
 	 */
@@ -225,7 +238,7 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean hasDestination()
 	{
-		return !destination.equals("");
+		return destination != null && !destination.isEmpty();
 	}
 
 	/**
@@ -234,7 +247,7 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean hasName()
 	{
-		return !name.equals("");
+		return name != null && !name.isEmpty();
 	}
 
 	/**
@@ -345,7 +358,47 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean canAccess(CommandSender sender)
 	{
-		return owner.isEmpty() || !(sender instanceof Player) || sender.getName().equals(owner);
+		return !hasOwner() || !(sender instanceof Player) || sender.getName().equals(owner);
 	}
 
+	public static WarpLocation deserialize(Map<?, ?> map)
+	{
+		WarpLocation portal = new WarpLocation(
+				(Integer) map.get("x"),
+				(Integer) map.get("y"),
+				(Integer) map.get("z"),
+				(String) map.get("world")
+		);
+		if (map.containsKey("name"))
+			portal.setName((String) map.get("name"));
+		if (map.containsKey("owner"))
+			portal.setOwner((String) map.get("owner"));
+		if (map.containsKey("destination"))
+			portal.setDestination((String) map.get("destination"));
+		if (map.containsKey("hidden"))
+			portal.setHidden((Boolean) map.get("hidden"));
+		if (map.containsKey("direction"))
+			portal.setDoorPosition((Integer) map.get("direction"));
+		return portal;
+	}
+
+	public Map<String, Object> serialize()
+	{
+		Map<String, Object> map  = new LinkedHashMap<>();
+		map.put("x", getX());
+		map.put("y", getY());
+		map.put("z", getZ());
+		map.put("world", getWorld());
+		if (hasName())
+			map.put("name", getName());
+		if (hasOwner())
+			map.put("owner", getOwner());
+		if (hasDestination())
+			map.put("destination", getDestination());
+		if (isHidden())
+			map.put("hidden", isHidden());
+		if (getDoorPosition() != 0)
+			map.put("direction", getDoorPosition());
+		return map;
+	}
 }
