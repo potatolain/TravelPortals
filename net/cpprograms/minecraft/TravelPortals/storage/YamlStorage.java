@@ -97,7 +97,7 @@ public class YamlStorage extends PortalStorage {
     private boolean deleteWorldFile(String world) {
         File oldConfigFile = getIgnoreCaseFile(worldsFolder, world + ".yml");
         if (oldConfigFile == null) {
-            plugin.logWarning("Could not remove " + oldConfigFile.getName() + " as it doesn't seem to exist? ");
+            plugin.logWarning("Could not remove " + world + ".yml as it doesn't seem to exist? ");
             return false;
         }
         return oldConfigFile.delete();
