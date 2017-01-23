@@ -65,10 +65,10 @@ public class YamlStorage extends PortalStorage {
 
     @Override
     public boolean save(String worldName) {
-        List<WarpLocation> portalList = new ArrayList<>();
+        List<Map<String, Object>> portalList = new ArrayList<>();
         for (WarpLocation portal : getPortals().values()) {
             if (worldName.equalsIgnoreCase(portal.getWorld())) {
-                portalList.add(portal);
+                portalList.add(portal.serialize());
             }
         }
 
