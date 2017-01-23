@@ -143,6 +143,16 @@ public class LegacyStorage extends PortalStorage {
     }
 
     @Override
+    public boolean save(WarpLocation portal) {
+        return save();
+    }
+
+    @Override
+    public boolean save(String worldName) {
+        return save();
+    }
+
+    @Override
     public boolean save()
     {
         return save(false);

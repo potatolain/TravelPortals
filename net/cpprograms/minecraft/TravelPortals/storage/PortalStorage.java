@@ -5,7 +5,6 @@ import com.google.common.cache.CacheBuilder;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
 import org.bukkit.Location;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,19 @@ public abstract class PortalStorage {
     public abstract boolean load();
 
     /**
-     * Save the data to the storage
+     * Save data of a portal to the storage
+     * @return true if it succeeded; false if it failed
+     */
+    public abstract boolean save(WarpLocation portal);
+
+    /**
+     * Save data of a all portals in a world
+     * @return true if it succeeded; false if it failed
+     */
+    public abstract boolean save(String worldName);
+
+    /**
+     * Save all data to the storage
      * @return true if it succeeded; false if it failed
      */
     public abstract boolean save();
@@ -89,7 +100,7 @@ public abstract class PortalStorage {
         portals.remove(portal.getName().toLowerCase());
         portal.setName(name);
         addPortal(portal);
-        save();
+        save(portal);
     }
 
     /**
@@ -105,26 +116,29 @@ public abstract class PortalStorage {
      * Rename a world for all existing portals.
      * @param oldWorld The name of the old world.
      * @param newWorld The name of the new world.
+     * @return true if it succeeded; false if it failed
      */
-    public void renameWorld(String oldWorld, String newWorld) {
+    public boolean renameWorld(String oldWorld, String newWorld) {
         for (WarpLocation portal : portals.values()) {
             if (oldWorld.equalsIgnoreCase(portal.getWorld())) {
                 portal.setWorld(newWorld);
             }
         }
+        return save(newWorld);
     }
 
     /**
      * Delete all portals linking to a world.
-     * @param oldWorld The world to delete all portals to.
+     * @param world The world to delete all portals to.
+     * @return true if it succeeded; false if it failed
      */
-    public void deleteWorld(String oldWorld) {
-        Iterator<WarpLocation> portalIt = portals.values().iterator();
-        while (portalIt.hasNext()) {
-            if (oldWorld.equalsIgnoreCase(portalIt.next().getWorld())) {
-                portalIt.remove();
+    public boolean deleteWorld(String world) {
+        for (WarpLocation portal : portals.values()) {
+            if (world.equalsIgnoreCase(portal.getWorld())) {
+                removePortal(portal);
             }
         }
+        return save(world);
     }
 
     /**

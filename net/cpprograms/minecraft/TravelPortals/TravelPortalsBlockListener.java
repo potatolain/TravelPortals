@@ -113,9 +113,10 @@ public class TravelPortalsBlockListener implements Listener {
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
 
-				plugin.getPortalStorage().addPortal(new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName()));
-				if (!plugin.getPortalStorage().save()) {
-					plugin.logWarning("Error while saving the portal storage!");
+				WarpLocation portal = new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName());
+				plugin.getPortalStorage().addPortal(portal);
+				if (!plugin.getPortalStorage().save(portal)) {
+					player.sendMessage(ChatColor.RED + "Error while saving your portal! Please contact an admin!");
 				}
 			}
 
@@ -164,8 +165,8 @@ public class TravelPortalsBlockListener implements Listener {
 					player.getWorld().getBlockAt(w.getX(), w.getY(), w.getZ()).setType(Material.AIR);
 					player.getWorld().getBlockAt(w.getX(), w.getY() + 1, w.getZ()).setType(Material.AIR);
 					// Remove it from the list of warps
-					this.plugin.getPortalStorage().removePortal(w);
-					this.plugin.getPortalStorage().save();
+					plugin.getPortalStorage().removePortal(w);
+					plugin.getPortalStorage().save(w);
 					// Let the user know he's done a bad, bad thing. :<
 					player.sendMessage(ChatColor.DARK_RED + "You just broke a portal.");
 					break;

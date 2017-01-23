@@ -485,7 +485,7 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 		this.plugin.getPortalStorage().removePortal(portal);
-		this.plugin.savedata();
+		this.plugin.getPortalStorage().save(portal);
 		sender.sendMessage(ChatColor.DARK_GREEN + "You have successfully removed the portal named \"" + args[0] + "\"");
 		return true;
 	}

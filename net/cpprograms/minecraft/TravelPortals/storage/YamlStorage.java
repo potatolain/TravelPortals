@@ -3,12 +3,12 @@ package net.cpprograms.minecraft.TravelPortals.storage;
 import com.google.common.io.Files;
 import net.cpprograms.minecraft.TravelPortals.TravelPortals;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,54 +50,57 @@ public class YamlStorage extends PortalStorage {
     }
 
     @Override
+    public boolean save(WarpLocation portal) {
+        return save(portal.getWorld());
+    }
+
+    @Override
     public boolean save() {
-        Map<String, List<WarpLocation>> worlds = new HashMap<>();
+        boolean success = true;
+        for (World world : plugin.getServer().getWorlds()) {
+            success = save(world.getName()) && success;
+        }
+        return success;
+    }
+
+    @Override
+    public boolean save(String worldName) {
+        List<WarpLocation> portalList = new ArrayList<>();
         for (WarpLocation portal : getPortals().values()) {
-            if (!worlds.containsKey(portal.getWorld())) {
-                worlds.put(portal.getWorld(), new ArrayList<>());
+            if (worldName.equalsIgnoreCase(portal.getWorld())) {
+                portalList.add(portal);
             }
-            worlds.get(portal.getWorld()).add(portal);
         }
 
-        for (Map.Entry<String, List<WarpLocation>> worldPortals : worlds.entrySet()) {
-            YamlConfiguration worldConfig = new YamlConfiguration();
-            List<Map> portalList = new ArrayList<>();
-            for (WarpLocation portal : worldPortals.getValue()) {
-                portalList.add(portal.serialize());
-            }
-            worldConfig.set("portals", portalList);
-            try {
-                worldConfig.save(new File(worldsFolder, worldPortals.getKey() + ".yml"));
-            } catch (IOException e) {
-                plugin.logWarning("Could not save the portals of world " + worldPortals.getKey() + " to the config file! " + e.getMessage());
-            }
+        if (portalList.isEmpty()) {
+            return deleteWorldFile(worldName);
+        }
+
+        YamlConfiguration worldConfig = new YamlConfiguration();
+        worldConfig.set("portals", portalList);
+        try {
+            worldConfig.save(new File(worldsFolder, worldName + ".yml"));
+        } catch (IOException e) {
+            plugin.logWarning("Could not save the portals of world " + worldName + " to the config file! " + e.getMessage());
+            return false;
         }
         return true;
     }
 
     @Override
-    public void renameWorld(String oldWorld, String newWorld) {
+    public boolean renameWorld(String oldWorld, String newWorld) {
         super.renameWorld(oldWorld, newWorld);
-        File oldConfigFile = getIgnoreCaseFile(worldsFolder, oldWorld + ".yml");
-        if (oldConfigFile == null) {
-            return;
-        }
-
-        File newConfigFile = new File(worldsFolder, newWorld + ".yml");
-        try {
-            Files.move(oldConfigFile, newConfigFile);
-        } catch (IOException e) {
-            plugin.logWarning("Error while moving " + oldConfigFile.getName() + " to " + newConfigFile.getName() + "! " + e.getMessage());
-        }
+        deleteWorldFile(oldWorld);
+        return false;
     }
 
-    @Override
-    public void deleteWorld(String oldWorld) {
-        super.deleteWorld(oldWorld);
-        File oldConfigFile = getIgnoreCaseFile(worldsFolder, oldWorld + ".yml");
-        if (oldConfigFile != null) {
-            oldConfigFile.delete();
+    private boolean deleteWorldFile(String world) {
+        File oldConfigFile = getIgnoreCaseFile(worldsFolder, world + ".yml");
+        if (oldConfigFile == null) {
+            plugin.logWarning("Could not remove " + oldConfigFile.getName() + " as it doesn't seem to exist? ");
+            return false;
         }
+        return oldConfigFile.delete();
     }
 
     private File getIgnoreCaseFile(File path, String fileName) {
