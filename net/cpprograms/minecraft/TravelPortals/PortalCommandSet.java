@@ -136,6 +136,9 @@ public class PortalCommandSet extends CommandSet
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport"))
 				player.sendMessage(ChatColor.RED + "You can import portals with /portal reimport [file name]");
 
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload"))
+				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
+
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 				player.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
 
@@ -152,7 +155,28 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld oldname newname to replace it");
 			sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
 			sender.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
+			sender.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 			sender.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
+		}
+		return true;
+	}
+
+	/**
+	 * Command to reload the config
+	 * @param sender The entity responsible for sending the command.
+	 * @param args The arguments passed in (none needed)
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean reload(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.reload"))
+			return noPermissionForAction(sender);
+
+		plugin.getPortalStorage().save(); // Force save before loading it again
+		if (plugin.load()) {
+			sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded the config!");
+		} else {
+			sender.sendMessage(ChatColor.DARK_RED + "Failed to reload the config!");
 		}
 		return true;
 	}

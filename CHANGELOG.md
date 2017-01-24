@@ -7,6 +7,7 @@ Change Log
 * Show more info about hidden portals to the owner of a portal in the `/portal info` command
 * Fix `/portal info` displaying the wrong world for destinations
 * Store portals in YAML configs (convert via exporting and importing)
+* Add `/portal reload` command (permission: travelportals.admin.command.reload)
 
 2.2.13
 -----

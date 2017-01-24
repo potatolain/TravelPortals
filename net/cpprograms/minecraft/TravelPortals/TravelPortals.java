@@ -31,7 +31,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * A Player listener
 	 */
-	private final TravelPortalsPlayerListener playerListener = new TravelPortalsPlayerListener(this);
+	private TravelPortalsPlayerListener playerListener = null;
 
 	/**
 	 * A Block listener.
@@ -147,17 +147,36 @@ public class TravelPortals extends PluginBase {
 
 		server = getServer();
 
-		// Read in the YAML config stuff
-		try
+		if (!load())
 		{
+			logSevere("Aborting plugin load");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+
+		getServer().getPluginManager().registerEvents(blockListener, this);
+
+		super.onEnable();
+
+		// Override PermissionsHandler with our variable. Have to do this after the parent method
+		permissions = new PermissionsHandler(usepermissions);
+		commandHandler = new CommandHandler(this, PortalCommandSet.class);
+	}
+
+	/**
+	 * Load the config
+	 * @return true if it was successfully loaded; false if an error occured
+	 */
+	public boolean load() {
+		// Read in the YAML config stuff
+		try {
 			FileConfiguration conf = getConfig();
 			if (conf.get("storagetype", null) != null) {
 				try {
 					storageType = StorageType.valueOf(conf.getString("storagetype").toUpperCase());
 				} catch (IllegalArgumentException e) {
 					logSevere(conf.getString("storagetype") + " is not a valid storage type? Valid types are " + Arrays.toString(StorageType.values()) + ".");
-					logSevere("Aborting plugin load");
-					return;
+					return false;
 				}
 			}
 
@@ -169,8 +188,7 @@ public class TravelPortals extends PluginBase {
 				portalStorage = new YamlStorage(this);
 			else {
 				logSevere("The storage type " + storageType + " is not properly supported yet! Please choose a different one!");
-				logSevere("Aborting plugin load");
-				return;
+				return false;
 			}
 
 			if (conf.get("frame", null) != null) {
@@ -224,7 +242,7 @@ public class TravelPortals extends PluginBase {
 					}
 				}
 				// Yes, this is a bit lame. I'd like to save updated config, but at the same time I don't want to wipe out comments and make
-				// the file extremely unclear. 
+				// the file extremely unclear.
 				logWarning("Old style door configuration found. Config loaded correctly, but you may want to update it.");
 				logWarning("The plugin now supports a list \"doorlist\", to allow use of the new wooden door types.");
 				logWarning("Example configuration here: https://github.com/cppchriscpp/TravelPortals/blob/master/config.yml");
@@ -257,52 +275,54 @@ public class TravelPortals extends PluginBase {
 			if (conf.get("polling-followticks", null) != null)
 				followTicks = conf.getInt("polling-followticks");
 
-		}
-		catch (NumberFormatException i)
-		{
-			logSevere("An exception occurred when trying to read your config file. "  + i.getMessage());
+		} catch (NumberFormatException i) {
+			logSevere("An exception occurred when trying to read your config file. " + i.getMessage());
 			logSevere("Check your config.yml!");
-		}
-		catch (IllegalArgumentException e)
-		{
+		} catch (IllegalArgumentException e) {
 			logSevere("An exception occurred when trying to read a block type from your config file. " + e.getMessage());
 			logSevere("Check your config.yml!");
 		}
 
-		if (!portalStorage.load())
-		{
-			logSevere("Aborting plugin load");
-			return;
+		if (!portalStorage.load()) {
+			return false;
 		}
 
 		logInfo("Loaded " + portalStorage.getPortals().size() + " portals!");
 
-		// Register our events
-		PluginManager pm = getServer().getPluginManager();
+		// Stop old move listener/task if there are some
 
-		if (this.usePlayerMove)
-			pm.registerEvents(playerListener, this);
+		if (playerListener != null)
+		{
+			playerListener.unregister();
+			playerListener = null;
+		}
+		if (useTask != null)
+		{
+			useTask.cancel();
+			useTask = null;
+		}
+
+		// Register our events
+
+		if (usePlayerMove)
+		{
+			playerListener = new TravelPortalsPlayerListener(this);
+			getServer().getPluginManager().registerEvents(playerListener, this);
+		}
 		else
 		{
-			if (this.useTask != null)
-				this.useTask.cancel();
-
-			this.useTask = new PortalUseTask(this);
-			if (!this.useTask.register())
+			useTask = new PortalUseTask(this);
+			if (!useTask.register())
 			{
 				logSevere("Failed to register portal use task. Falling back to old PlayerMove style.");
-				pm.registerEvents(playerListener, this);
-				this.useTask = null;
+				playerListener = new TravelPortalsPlayerListener(this);
+				getServer().getPluginManager().registerEvents(playerListener, this);
+				useTask = null;
 			}
 
 		}
-
-		pm.registerEvents(blockListener, this);
-
-		super.onEnable();
-		// Override PermissionsHandler with our variable. Have to do this after the parent method
 		permissions = new PermissionsHandler(usepermissions);
-		commandHandler = new CommandHandler(this, PortalCommandSet.class);
+		return true;
 	}
 
 	/**
