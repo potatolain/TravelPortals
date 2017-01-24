@@ -119,19 +119,22 @@ public class PortalCommandSet extends CommandSet
 				player.sendMessage(ChatColor.DARK_GREEN + "/portal claim claims (or gives up ownership of) a portal.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "/portal deactivate [name] deactivates a portal entirely.");
+				player.sendMessage(ChatColor.RED + "/portal deactivate [name] deactivates a portal entirely.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld"))
+				player.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld"))
+				sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld"))
-				player.sendMessage(ChatColor.DARK_GREEN + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
+				player.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "You can export to travelportals.txt with /portal export");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export"))
+				player.sendMessage(ChatColor.RED + "You can export to travelportals.txt with /portal export");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "You can import portals with /portal reimport [file name]");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport"))
+				player.sendMessage(ChatColor.RED + "You can import portals with /portal reimport [file name]");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 				player.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
@@ -143,11 +146,12 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.GRAY + "Note: Most commands aren't accessible from the command line.");
 			sender.sendMessage(ChatColor.DARK_GREEN + "portal info shows information about named or nearby portal.");
 			sender.sendMessage(ChatColor.DARK_GREEN + "portal hide hides or unhides a named portal.");
-			sender.sendMessage(ChatColor.DARK_GREEN + "portal deactivate [name] deactivates a portal entirely.");
-			sender.sendMessage(ChatColor.DARK_GREEN + "portal export exports all known portals to travelportals.txt");
-			sender.sendMessage(ChatColor.DARK_GREEN + "portal reimport [file name] imports a list of portals from a txt file");
-			sender.sendMessage(ChatColor.DARK_GREEN + "If you rename a world, use /portal renameworld oldname newname to replace it");
-			sender.sendMessage(ChatColor.DARK_GREEN + "You can set any portals without worlds with /portal fixworld world");
+			sender.sendMessage(ChatColor.RED + "portal deactivate [name] deactivates a portal entirely.");
+			sender.sendMessage(ChatColor.RED + "portal export exports all known portals to travelportals.txt");
+			sender.sendMessage(ChatColor.RED + "portal reimport [file name] imports a list of portals from a txt file");
+			sender.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld oldname newname to replace it");
+			sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
+			sender.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
 			sender.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
 		}
 		return true;
