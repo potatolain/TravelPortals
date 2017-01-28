@@ -125,13 +125,14 @@ Finally, some default groups have been implemented to make life easier:
 Support & Bug Reports
 ---------------------
 
-You have a few options for this. The first is by directly emailing me. My email address is owner@cpprograms.net. 
+You have a few options for this. The first is making an issue on Github - this is the easiest option and will 
+get it in front of the most people.
 
-Your other option is the thread on the Bukkit forums.
+Another option is to make a comment on the bukkitdev page.
 
-Either way, I will try to get back to you as soon as is reasonably possible.
+Someone will try to get back to you as soon as is reasonably possible.
 
 Latest Version
 --------------
 
-The latest version of this will always be available at http://www.cpprograms.net.
+The latest version of this will always be available at https://dev.bukkit.org/projects/travelportals.
