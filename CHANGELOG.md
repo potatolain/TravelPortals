@@ -8,6 +8,7 @@ Change Log
 * Fix `/portal info` displaying the wrong world for destinations
 * Store portals in YAML configs (convert via exporting and importing)
 * Add `/portal reload` command (permission: travelportals.admin.command.reload)
+* Moved project over to maven and added [jenkins dev build](https://ci.minebench.de/job/TravelPortals/)
 
 2.2.13
 -----
