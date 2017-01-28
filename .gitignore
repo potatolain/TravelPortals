@@ -1,3 +1,11 @@
-
 /bin/
 *.jar
+/target/
+
+.idea
+*.iml
+
+/.externalToolBuilders/
+
+.project
+.classpath

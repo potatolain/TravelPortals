@@ -1,6 +1,6 @@
 name: TravelPortals
 main: net.cpprograms.minecraft.TravelPortals.TravelPortals
-version: 2.3-pre
+version: '${minecraft.plugin.version}'
 commands:
   portal:
     description: Portals
