@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -52,7 +53,7 @@ public class PortalUseTask implements Runnable {
 		/**
 		 * Which warp we're checking against.
 		 */
-		int w;
+		WarpLocation w;
 
 		/**
 		 * Constructor for this.
@@ -60,7 +61,7 @@ public class PortalUseTask implements Runnable {
 		 * @param playerName The player we're following.
 		 * @param w The warp to check for.
 		 */
-		public FollowTask( PortalUseTask plugin, String playerName, int w)
+		public FollowTask( PortalUseTask plugin, String playerName, WarpLocation w)
 		{
 			this.useTask = plugin;
 			this.playerName = playerName;
@@ -102,14 +103,13 @@ public class PortalUseTask implements Runnable {
 
 		for (Player player : server.getOnlinePlayers())
 		{
-			int w = isInPortal(player);
+			WarpLocation portal = isInPortal(player);
 			String playerName = player.getName();
-			if (w == -1)
+			if (portal == null)
 			{
 				lastDestinations.remove(playerName);
 				continue;
 			}
-			WarpLocation portal = plugin.warpLocations.get(w);
 			if (!portal.isUsable(plugin.cooldown))
 			{
 				n++;
@@ -132,20 +132,19 @@ public class PortalUseTask implements Runnable {
 					}
 				}
 
-				int targetW = plugin.getWarp(destName);
+				WarpLocation targetW = plugin.getPortalStorage().getPortal(destName);
 
-				if (targetW == -1)
+				if (targetW == null)
 				{
 					lastDestinations.remove(playerName);
 				} 
 				else 
 				{
-					WarpLocation wl = plugin.warpLocations.get(targetW);
-					World world = plugin.getServer().getWorld(wl.getWorld());
+					World world = plugin.getServer().getWorld(targetW.getWorld());
 					if (world == null) 
 						continue;
 
-					lastDestinations.put(playerName, new Location(world, .5 + wl.getX(), wl.getY(), .5 + wl.getZ()));
+					lastDestinations.put(playerName, new Location(world, .5 + targetW.getX(), targetW.getY(), .5 + targetW.getZ()));
 				}
 			}
 			n++;
@@ -153,7 +152,7 @@ public class PortalUseTask implements Runnable {
 			if (plugin.followTicks > 0)
 			{
 				// register a simple repeated Task for checking he player then
-				server.getScheduler().scheduleSyncDelayedTask( plugin, new FollowTask(this, playerName, w));
+				server.getScheduler().scheduleSyncDelayedTask( plugin, new FollowTask(this, playerName, portal));
 			}
 			else
 			{
@@ -172,38 +171,40 @@ public class PortalUseTask implements Runnable {
 	 * @param l2 The second location.
 	 * @return True if they are the same; false otherwise.
 	 */
-	boolean sameLoc(Location l1, Location l2) {
-		return ( (l1.getWorld().getName().equals(l2.getWorld().getName())) && (l1.getX()==l2.getX())  && (l1.getY()==l2.getY()) && (l1.getZ()==l2.getZ()));
+	private boolean sameLoc(Location l1, Location l2) {
+		return l1.getWorld().equals(l2.getWorld())
+				&& l1.getBlockX() == l2.getBlockX()
+				&& l1.getBlockY() == l2.getBlockY()
+				&& l1.getBlockZ() == l2.getBlockZ();
 	}
 
 	/**
 	 * Check if a player is an a portal and has permission, return the "w" portal code.
 	 * BIT OF CODE CLONING, with adjustments (player.getLocation()), moved isUsable to outside .
 	 * @param player The player to test.
-	 * @return true if the player can be teleported from this portal; false otherwise.
+	 * @return The portal the player is in or null if he is in none
 	 */
-	int isInPortal(Player player)
+	private WarpLocation isInPortal(Player player)
 	{ 
 		// Permissions check
 		if (!plugin.permissions.hasPermission(player, "travelportals.portal.use"))
-			return -1;
+			return null;
 		Location playerLoc = player.getLocation();
 		World world = player.getWorld();
 
 		playerLoc.setX(playerLoc.getX() + 1.0);
-		int bid = world.getBlockAt(playerLoc).getTypeId();
+		Material blockType = world.getBlockAt(playerLoc).getType();
 		playerLoc.setX(playerLoc.getX() - 1.0);
 
 		// Is the user actually in portal material?
-		if (plugin.doortypes.contains(bid) || bid == plugin.blocktype)
+		if (plugin.doortypes.contains(blockType) || blockType == plugin.blocktype)
 		{
 			// Find nearby warp.
-			int w = plugin.getWarpFromLocation(world.getName(),playerLoc.getBlockX(),playerLoc.getBlockY(), playerLoc.getBlockZ());
+			WarpLocation w = plugin.getPortalStorage().getPortal(playerLoc);
 
 			return w;
-
 		}
-		return -1;
+		return null;
 	}
 
 	/**
@@ -211,7 +212,7 @@ public class PortalUseTask implements Runnable {
 	 * @param playerName The name of the player to check.
 	 * @param w The warp to test.
 	 */
-	void checkPlayer(String playerName, int w) 
+	void checkPlayer(String playerName, WarpLocation w)
 	{
 		Player player = Bukkit.getServer().getPlayer(playerName);
 		if ( player == null ) 
@@ -219,7 +220,7 @@ public class PortalUseTask implements Runnable {
 		// check if still in same portal
 		if (isInPortal(player) == w)
 		{
-			if ((plugin.warpLocations.get(w).isUsable(plugin.cooldown))) 
+			if (w.isUsable(plugin.cooldown))
 			{
 				Location loc = plugin.getWarpLocationIfAllowed(player);
 				if (loc != null)

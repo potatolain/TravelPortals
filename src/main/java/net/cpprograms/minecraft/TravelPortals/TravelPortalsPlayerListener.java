@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
@@ -50,5 +51,9 @@ public class TravelPortalsPlayerListener implements Listener {
 		event.setTo(locy);
 	}
 
+	public void unregister()
+	{
+		InventoryMoveItemEvent.getHandlerList().unregister(this);
+	}
 }
 

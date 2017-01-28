@@ -119,19 +119,25 @@ public class PortalCommandSet extends CommandSet
 				player.sendMessage(ChatColor.DARK_GREEN + "/portal claim claims (or gives up ownership of) a portal.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "/portal deactivate [name] deactivates a portal entirely.");
+				player.sendMessage(ChatColor.RED + "/portal deactivate [name] deactivates a portal entirely.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld"))
+				player.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld"))
+				sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld"))
-				player.sendMessage(ChatColor.DARK_GREEN + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
+				player.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "You can export to travelportals.txt with /portal export");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export"))
+				player.sendMessage(ChatColor.RED + "You can export to travelportals.txt with /portal export");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport", player.isOp()))
-				player.sendMessage(ChatColor.DARK_GREEN + "You can import portals with /portal reimport [file name]");
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport"))
+				player.sendMessage(ChatColor.RED + "You can import portals with /portal reimport [file name]");
+
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload"))
+				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 				player.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
@@ -143,12 +149,34 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.GRAY + "Note: Most commands aren't accessible from the command line.");
 			sender.sendMessage(ChatColor.DARK_GREEN + "portal info shows information about named or nearby portal.");
 			sender.sendMessage(ChatColor.DARK_GREEN + "portal hide hides or unhides a named portal.");
-			sender.sendMessage(ChatColor.DARK_GREEN + "portal deactivate [name] deactivates a portal entirely.");
-			sender.sendMessage(ChatColor.DARK_GREEN + "portal export exports all known portals to travelportals.txt");
-			sender.sendMessage(ChatColor.DARK_GREEN + "portal reimport [file name] imports a list of portals from a txt file");
-			sender.sendMessage(ChatColor.DARK_GREEN + "If you rename a world, use /portal renameworld oldname newname to replace it");
-			sender.sendMessage(ChatColor.DARK_GREEN + "You can set any portals without worlds with /portal fixworld world");
+			sender.sendMessage(ChatColor.RED + "portal deactivate [name] deactivates a portal entirely.");
+			sender.sendMessage(ChatColor.RED + "portal export exports all known portals to travelportals.txt");
+			sender.sendMessage(ChatColor.RED + "portal reimport [file name] imports a list of portals from a txt file");
+			sender.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld oldname newname to replace it");
+			sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
+			sender.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
+			sender.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 			sender.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
+		}
+		return true;
+	}
+
+	/**
+	 * Command to reload the config
+	 * @param sender The entity responsible for sending the command.
+	 * @param args The arguments passed in (none needed)
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean reload(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.reload"))
+			return noPermissionForAction(sender);
+
+		plugin.getPortalStorage().save(); // Force save before loading it again
+		if (plugin.load()) {
+			sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded the config!");
+		} else {
+			sender.sendMessage(ChatColor.DARK_RED + "Failed to reload the config!");
 		}
 		return true;
 	}
@@ -182,14 +210,13 @@ public class PortalCommandSet extends CommandSet
 
 		// This will load all of the portals in alphabetical order
 		TreeMap<String, String> allp = new TreeMap<String, String>();
-		int tmp = -1;
-		for (WarpLocation w : plugin.warpLocations)
-			if (w.hasName() && !w.getHidden())
+		for (WarpLocation w : plugin.getPortalStorage().getPortals().values())
+			if (w.hasName() && w.canSee(sender))
 			{
-				tmp = this.plugin.getWarp(w.getDestination());
-				if (tmp == -1)
+				WarpLocation tmp = this.plugin.getPortalStorage().getPortal(w.getDestination());
+				if (tmp == null)
 					allp.put(w.getName(), ChatColor.RED + "" + w.getDestination());
-				else if (plugin.warpLocations.get(tmp).getHidden())
+				else if (tmp.isHidden())
 					allp.put(w.getName(), ChatColor.BLUE + "?????");
 				else
 					allp.put(w.getName(), w.getDestination());
@@ -265,22 +292,22 @@ public class PortalCommandSet extends CommandSet
 
 		if (args.length < 1)
 			player.sendMessage(ChatColor.DARK_RED + "You have to include a name for the location!");
-		else if (this.plugin.getWarp(args[0]) != -1) // Is this name already taken?
+		else if (plugin.getPortalStorage().getPortal(args[0]) != null) // Is this name already taken?
 			player.sendMessage(ChatColor.DARK_RED + "There is already a portal named " + args[0] + ". Please pick another name.");
 		else
 		{
 			// Check to make sure the user is actually near a portal.
-			int loc = this.plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+			WarpLocation portal = plugin.getPortalStorage().getPortal(player.getLocation());
 
 
-			if (loc == -1)
+			if (portal == null)
 				player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of the portal.)");
 			else
 			{
 				// Ownership check
 				if (plugin.usepermissions)
 				{
-					if (!this.plugin.warpLocations.get(loc).getOwner().equals("") && !this.plugin.warpLocations.get(loc).getOwner().equals(player.getName())) 
+					if (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))
 					{
 						if (!plugin.permissions.hasPermission(player, "travelportals.admin.command.name"))
 						{
@@ -289,14 +316,13 @@ public class PortalCommandSet extends CommandSet
 						}
 					}
 				}
-				if (this.plugin.warpLocations.get(loc).getDestination() == args[0])
+				if (portal.getDestination().equals(args[0]))
 				{
-					player.sendMessage(ChatColor.DARK_RED + "You cannot set a portal to warp to itself!");
+					player.sendMessage(ChatColor.DARK_RED + "The portal was already named " + args[0] + "!");
 				}
 				else
 				{
-					this.plugin.warpLocations.get(loc).setName(args[0]);
-					this.plugin.savedata();
+					plugin.getPortalStorage().namePortal(portal, args[0]);
 					player.sendMessage(ChatColor.DARK_GREEN + "This portal is now known as " + args[0] + ".");
 				}
 			}
@@ -322,17 +348,17 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		int loc = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
+		WarpLocation portal = plugin.getPortalStorage().getPortal(player.getLocation());
 		if (args.length < 1)
 			player.sendMessage(ChatColor.DARK_RED + "You have to include a destination!");
-		else if (loc == -1)
+		else if (portal == null)
 			player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of a portal.)");
 		else
 		{
 			// Ownership check
 			if (plugin.usepermissions)
 			{
-				if (!this.plugin.warpLocations.get(loc).getOwner().equals("") && !this.plugin.warpLocations.get(loc).getOwner().equals(player.getName())) 
+				if (!portal.canAccess(sender))
 				{
 					if (!plugin.permissions.hasPermission(player, "travelportals.admin.command.warp"))
 					{
@@ -342,14 +368,14 @@ public class PortalCommandSet extends CommandSet
 				}
 			}
 
-			if (this.plugin.warpLocations.get(loc).getName() == args[0])
+			if (portal.getName() == args[0])
 			{
 				player.sendMessage(ChatColor.DARK_RED + "You cannot set a portal to warp to itself!");
 			}
 			else
 			{
-				this.plugin.warpLocations.get(loc).setDestination(args[0]);
-				this.plugin.savedata();
+				portal.setDestination(args[0]);
+				plugin.getPortalStorage().save();
 				player.sendMessage(ChatColor.DARK_GREEN + "This portal now points to " + args[0] + ".");
 			}
 		}
@@ -375,15 +401,16 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.DARK_RED + "You have to include portal name!");
 			return true;
 		}
-		int w = this.plugin.getWarp(args[0]);
-		if (w == -1) // Is this name already taken?
+
+		WarpLocation portal = plugin.getPortalStorage().getPortal(args[0]);
+		if (portal == null) // Is this name already taken?
 			sender.sendMessage(ChatColor.DARK_RED + "That portal does not exist!");
 		else
 		{
 			// Ownership check
 			if (sender instanceof Player && plugin.usepermissions)
 			{
-				if (!this.plugin.warpLocations.get(w).getOwner().equals("") && !this.plugin.warpLocations.get(w).getOwner().equals(sender.getName())) 
+				if (!portal.canAccess(sender))
 				{
 					if (!this.plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.hide"))
 					{
@@ -392,8 +419,8 @@ public class PortalCommandSet extends CommandSet
 					}
 				}
 			}
-			this.plugin.warpLocations.get(w).setHidden(!plugin.warpLocations.get(w).getHidden());
-			if (plugin.warpLocations.get(w).getHidden())
+			portal.setHidden(!portal.isHidden());
+			if (portal.isHidden())
 				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + args[0] + " has been hidden.");
 			else
 				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + args[0] + " has been unhidden.");
@@ -454,7 +481,7 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 		plugin.importPortalList(file);
-		sender.sendMessage(ChatColor.DARK_AQUA + "Portals imported successfully. "+plugin.warpLocations.size()+" warps imported");
+		sender.sendMessage(ChatColor.DARK_AQUA + "Portals imported successfully. "+plugin.getPortalStorage().getPortals().size()+" warps imported");
 
 		return true;
 	}
@@ -479,14 +506,14 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		int w = plugin.getWarp(args[0]);
-		if (w == -1)
+		WarpLocation portal = plugin.getWarp(args[0]);
+		if (portal == null)
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "There is no portal with the name \"" + args[0] + "\"");
 			return true;
 		}
-		this.plugin.warpLocations.remove(w);
-		this.plugin.savedata();
+		this.plugin.getPortalStorage().removePortal(portal);
+		this.plugin.getPortalStorage().save(portal);
 		sender.sendMessage(ChatColor.DARK_GREEN + "You have successfully removed the portal named \"" + args[0] + "\"");
 		return true;
 	}
@@ -504,11 +531,12 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
 		}
-		int w = -1;
+
+		WarpLocation portal = null;
 		if (args.length > 0)
 		{
-			w = plugin.getWarp(args[0]);
-			if (w == -1) {
+			portal = plugin.getPortalStorage().getPortal(args[0]);
+			if (portal == null) {
 				sender.sendMessage(ChatColor.DARK_RED + "There is no portal with that name.");
 				return true;
 			}
@@ -519,40 +547,54 @@ public class PortalCommandSet extends CommandSet
 				return true;
 			}
 
-			w = plugin.getWarpFromLocation(((Player)sender).getWorld().getName(), ((Player)sender).getLocation().getBlockX(), ((Player)sender).getLocation().getBlockY(), ((Player)sender).getLocation().getBlockZ());
-			if (w == -1) {
-				sender.sendMessage(ChatColor.DARK_RED + "You must provide a portal name, or stand in front of one.");
+			portal = plugin.getPortalStorage().getPortal(((Player)sender).getLocation());
+			if (portal == null) {
+				sender.sendMessage(ChatColor.DARK_RED + "You must provide a portal name or stand in front of one.");
 				return true;
 			}
 		}
 
-		String n = plugin.warpLocations.get(w).getName();
-		String d = plugin.warpLocations.get(w).getDestination();
-		String o = plugin.warpLocations.get(w).getOwner();
-		String l = plugin.warpLocations.get(w).getWorld();
-		if (l == null || l.length() == 0)
-			l = "(Unknown)";
+		String name = portal.getName();
+		String dest = portal.getDestination();
+		String owner = portal.getOwner();
+		String world = portal.getWorld();
 
-		if (n.equals(""))
-			n = "has no name";
-		else
-			n = "is named " + n;
+		if (world == null || world.isEmpty())
+			world = "(Unknown)";
 
-		int m = plugin.getWarp(d);
-		if (m == -1 && !d.equals(""))
-			d = "warps to " + ChatColor.RED + d + ChatColor.DARK_AQUA + " in world " + ChatColor.RED +l;
-		else if (d.equals(""))
-			d = "has no destination";
-		else if (plugin.warpLocations.get(m).getHidden())
-			d = "warps to " + ChatColor.BLUE + "?????";
+		if (name.isEmpty())
+			name = "has no name";
+		else {
+			name = "is named " + name;
+			if (portal.isHidden())
+				if (portal.canAccess(sender))
+					name += ChatColor.BLUE + " (hidden)";
+				else
+					name = "is hidden";
+		}
+
+		WarpLocation destination = plugin.getPortalStorage().getPortal(dest);
+
+		if (destination == null && !dest.isEmpty())
+			dest = "warps to " + ChatColor.RED + dest + ChatColor.DARK_AQUA + " in world " + ChatColor.RED + world;
+		else if (dest.isEmpty())
+			dest = "has no destination";
+		else {
+			dest = "warps to " + dest + ChatColor.DARK_AQUA + " in world " + destination.getWorld();
+			if (destination.isHidden())
+				if (destination.canAccess(sender))
+					dest += ChatColor.BLUE + " (hidden)";
+				else
+					dest = "warps to " + ChatColor.BLUE + "?????";
+		}
+
+		if (owner.isEmpty())
+			owner = "This portal does not have an owner. If is yours, claim it with /portal claim.";
 		else
-			d = "warps to " + d + ChatColor.DARK_AQUA + " in world "+l;
-		if (o.equals(""))
-			o = "This portal does not have an owner. If is yours, claim it with /portal claim.";
-		else
-			o = "It is owned by " + o + ".";
-		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + n + ChatColor.DARK_AQUA + " and " + d + ChatColor.DARK_AQUA + ".");
-		sender.sendMessage(ChatColor.DARK_AQUA  + o);
+			owner = "It is owned by " + owner + ".";
+
+		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + name + ChatColor.DARK_AQUA + " and " + dest + ChatColor.DARK_AQUA + ".");
+		sender.sendMessage(ChatColor.DARK_AQUA  + owner);
 
 		return true;
 	}
@@ -575,20 +617,19 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		int w = -1;
-		w = plugin.getWarpFromLocation(player.getWorld().getName(), player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-		if (w == -1) 
+		WarpLocation portal = plugin.getWarpFromLocation(player.getLocation());
+		if (portal == null) 
 		{
 			player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of a portal.)");
 			return true;
 		}
 
-		if (plugin.warpLocations.get(w).getOwner().equals("") || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
+		if (portal.getOwner().equals("") || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
 		{
 			if (args.length > 0)
-				plugin.warpLocations.get(w).setOwner(args[0]);
+				portal.setOwner(args[0]);
 			else
-				plugin.warpLocations.get(w).setOwner(player.getName());
+				portal.setOwner(player.getName());
 
 			plugin.savedata();
 			player.sendMessage(ChatColor.DARK_GREEN + "You have successfully claimed this portal"+(args.length>0?" for " + args[0]:"")+"!");
@@ -597,14 +638,14 @@ public class PortalCommandSet extends CommandSet
 		} 
 		else 
 		{
-			if (plugin.warpLocations.get(w).getOwner().equals(player.getName()) || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
+			if (portal.getOwner().equals(player.getName()) || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
 			{
-				plugin.warpLocations.get(w).setOwner("");
+				portal.setOwner("");
 				player.sendMessage(ChatColor.DARK_GREEN + "This portal no longer has an owner.");
 			} 
 			else 
 			{
-				player.sendMessage(ChatColor.DARK_RED + "This portal is already owned by "+plugin.warpLocations.get(w).getOwner()+"!");
+				player.sendMessage(ChatColor.DARK_RED + "This portal is already owned by "+portal.getOwner()+"!");
 				return true;
 			}
 		}

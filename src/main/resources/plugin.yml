@@ -1,6 +1,6 @@
 name: TravelPortals
 main: net.cpprograms.minecraft.TravelPortals.TravelPortals
-version: 2.2.13
+version: '${minecraft.plugin.version}'
 commands:
   portal:
     description: Portals
@@ -96,8 +96,11 @@ permissions:
       travelportals.admin.command.deactivate: true
       travelportals.admin.command.claim: true
       travelportals.admin.command.export: true
+      travelportals.admin.command.reimport: true
       travelportals.admin.command.renameworld: true
+      travelportals.admin.command.fixworld: true
       travelportals.admin.command.deleteworld: true
+      travelportals.admin.command.reload: true
   # Here be real permissions
   travelportals.portal.create:
     description: Allows the user to create portals.

@@ -25,13 +25,11 @@ Installation
 ------------
 
 Simply drop TravelPortals.jar into your plugins folder, restart the server, and you should be 
-set to go! (Get the jar on http://dev.bukkit.org/bukkit-plugins/travelportals/)
+set to go! (Get the jar on http://dev.bukkit.org/projects/travelportals/)
 
 If you want to configure the plugin or use permissions, you will need to set these
 things up. See the next two sections for details on how to do this.
 
-You don't need the source folder; you can just delete it unless you are interested in the source code
-to this plugin. 
 
 Configuration
 -------------
@@ -41,6 +39,7 @@ config.yml format. The options are explained in the file, and it is found in
 the TravelPortals folder within the plugins folder. All of the options are explained in
 the comments, which are the lines that begin with a # symbol.
 
+
 Usage
 -----
 
@@ -49,25 +48,27 @@ this command is explained in-game by typing /portal help. Instruct users to use 
 command using whatever help system you have in place. 
 
 The Commands:
-- /portal name [name] sets the name of the portal in front of you.
-- /portal warp [name] sets the name of the portal that the portal in front of you warps to.
-- /portal hide [name] hides or unhides the portal with the name given.
-- /portal info gives basic information about the portal in front of you.
-- /portal info [name] gives basic information about the portal in front of you.
-- /portal deactivate [name] deactivates a portal. 
+- /portal help - Show info on how to use the plugin.
+- /portal name [name] - Sets the name of the portal in front of you.
+- /portal warp [name] - Sets the name of the portal that the portal in front of you warps to.
+- /portal hide [name] - Hides or unhides the portal with the name given.
+- /portal info - Gives basic information about the portal in front of you.
+- /portal info [name] - Gives basic information about the portal in front of you.
+- /portal deactivate [name] - Deactivates a portal.
   (This is op-only. Breaking them manually is preferred)
-- /portal list [page number] gives a list of existing portals. 
-- /portal export dumps the current portals to travelportals.txt in the data folder.
+- /portal list [page number] - Gives a list of existing portals.
+- /portal export - Dumps the current portals to travelportals.txt in the data folder.
   Format: x,y,z,name,destination,hidden
-- /portal reimport [file name] can import a list of portals dumped with /portal export.
-- /portal claim claims a portal that does not currently have an owner. It will also
+- /portal reimport [file name] - Can import a list of portals dumped with /portal export.
+- /portal claim - Claims a portal that does not currently have an owner. It will also
   unclaim an existing portal, if you own it. You can also include a name to claim a
   portal for someone else.
-- /portal renameworld [old world name] [new world name] Run this after renaming a world
+- /portal reload - Run this to make the plugin reload the config and portals from storage
+- /portal renameworld [old world name] [new world name] - Run this after renaming a world
   or the portals in that world will not point to the right place.
-- /portal deleteworld [old world name] Run this after deleting a world to clean up any
+- /portal deleteworld [old world name] - Run this after deleting a world to clean up any
   remaining portals.
-- /portal fixworld [world name] This will fix any portals that are not linked to a world
+- /portal fixworld [world name] - This will fix any portals that are not linked to a world
   to be linked to the world specified. You most likely do not need to run this command,
   unless you've been running this plugin since before multiworld was supported. If you
   do, you only need to run it once.
@@ -101,6 +102,7 @@ travelportals.admin permission nodes. In addition, users with admin permissions
 to commands will be able to use these commands on any portals; not just ones that
 they own.
 
+- travelportals.admin.command.reload
 - travelportals.admin.command.name
 - travelportals.admin.command.warp
 - travelportals.admin.command.claim
@@ -112,6 +114,7 @@ they own.
 
 - travelportals.admin.command.deactivate
 - travelportals.admin.command.export
+- travelportals.admin.command.reimport
 
 Finally, some default groups have been implemented to make life easier: 
 
@@ -125,14 +128,24 @@ Finally, some default groups have been implemented to make life easier:
 Support & Bug Reports
 ---------------------
 
-You have a few options for this. The first is making an issue on Github - this is the easiest option and will 
-get it in front of the most people.
+If you have problems setting up the plugin then use the comments on the [project page](https://dev.bukkit.org/projects/travelportals) on BukkitDev.
 
-Another option is to make a comment on the bukkitdev page.
+If you want to report a bug or suggest an enhancement then you should open an [issue](https://github.com/cppchriscpp/TravelPortals/issues).
 
 Someone will try to get back to you as soon as is reasonably possible.
+
 
 Latest Version
 --------------
 
 The latest version of this will always be available at https://dev.bukkit.org/projects/travelportals.
+
+Development builds of the current code state can also be found at https://ci.minebench.de/job/TravelPortals/
+
+
+Building
+--------
+
+TravelPortals uses Maven to handle dependencies and can be build with it.
+
+To use it you need Maven 3.3.x and then run `mvn clean package`. Most modern IDEs already have support for maven projects.

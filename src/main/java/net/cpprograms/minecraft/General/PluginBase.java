@@ -45,11 +45,6 @@ public class PluginBase extends JavaPlugin {
 	boolean useConfig = true;
 
 	/**
-	 * Logging component.
-	 */
-	public static final Logger log = Logger.getLogger("Minecraft");
-
-	/**
 	 * Permissions handler.
 	 */
 	public PermissionsHandler permissions;
@@ -175,7 +170,7 @@ public class PluginBase extends JavaPlugin {
 	 */
 	public void log(String message, Level level)
 	{
-		log.log(level, "[" + pluginName +"] " + message);
+		getLogger().log(level, message);
 	}
 
 	/**
