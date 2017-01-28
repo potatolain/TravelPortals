@@ -114,6 +114,7 @@ they own.
 
 - travelportals.admin.command.deactivate
 - travelportals.admin.command.export
+- travelportals.admin.command.reimport
 
 Finally, some default groups have been implemented to make life easier: 
 

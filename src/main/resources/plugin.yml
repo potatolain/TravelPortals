@@ -96,6 +96,7 @@ permissions:
       travelportals.admin.command.deactivate: true
       travelportals.admin.command.claim: true
       travelportals.admin.command.export: true
+      travelportals.admin.command.reimport: true
       travelportals.admin.command.renameworld: true
       travelportals.admin.command.fixworld: true
       travelportals.admin.command.deleteworld: true
