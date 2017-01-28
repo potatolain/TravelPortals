@@ -140,6 +140,8 @@ Latest Version
 
 The latest version of this will always be available at https://dev.bukkit.org/projects/travelportals.
 
+Development builds of the current code state can also be found at https://ci.minebench.de/job/TravelPortals/
+
 
 Building
 --------
