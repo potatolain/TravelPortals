@@ -114,7 +114,6 @@ they own.
 
 - travelportals.admin.command.deactivate
 - travelportals.admin.command.export
-- travelportals.admin.command.import
 
 Finally, some default groups have been implemented to make life easier: 
 
@@ -132,10 +131,10 @@ If you have problems setting up the plugin then use the comments on the [project
 
 If you want to report a bug or suggest an enhancement then you should open an [issue](https://github.com/cppchriscpp/TravelPortals/issues).
 
-Either way, I will try to get back to you as soon as is reasonably possible.
+Someone will try to get back to you as soon as is reasonably possible.
 
 
 Latest Version
 --------------
 
-The latest version of this will always be available at http://dev.bukkit.org/projects/travelportals/ or http://www.cpprograms.net.
+The latest version of this will always be available at https://dev.bukkit.org/projects/travelportals.
