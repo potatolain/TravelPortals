@@ -139,3 +139,11 @@ Latest Version
 --------------
 
 The latest version of this will always be available at https://dev.bukkit.org/projects/travelportals.
+
+
+Building
+--------
+
+TravelPortals uses Maven to handle dependencies and can be build with it.
+
+To use it you need Maven 3.3.x and then run `mvn clean package`. Most modern IDEs already have support for maven projects.
