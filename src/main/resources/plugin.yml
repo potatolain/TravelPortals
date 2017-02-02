@@ -101,6 +101,7 @@ permissions:
       travelportals.admin.command.fixworld: true
       travelportals.admin.command.deleteworld: true
       travelportals.admin.command.reload: true
+      travelportals.admin.command.convert: true
   # Here be real permissions
   travelportals.portal.create:
     description: Allows the user to create portals.

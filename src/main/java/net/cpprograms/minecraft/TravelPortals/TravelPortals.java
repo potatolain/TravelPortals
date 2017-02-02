@@ -39,11 +39,6 @@ public class TravelPortals extends PluginBase {
 	private final TravelPortalsBlockListener blockListener = new TravelPortalsBlockListener(this);
 
 	/**
-	 * The type of storage that should be used for the portal data
-	 */
-	protected StorageType storageType = StorageType.LEGACY;
-
-	/**
 	 * Here we store the portals
 	 */
 	protected PortalStorage portalStorage;
@@ -171,6 +166,7 @@ public class TravelPortals extends PluginBase {
 		// Read in the YAML config stuff
 		try {
 			FileConfiguration conf = getConfig();
+			StorageType storageType = StorageType.LEGACY;
 			if (conf.get("storagetype", null) != null) {
 				try {
 					storageType = StorageType.valueOf(conf.getString("storagetype").toUpperCase());
@@ -182,13 +178,10 @@ public class TravelPortals extends PluginBase {
 
 			logDebug("Storage type is " + storageType);
 
-			if (storageType == StorageType.LEGACY)
-				portalStorage = new LegacyStorage(this);
-			else if (storageType == StorageType.YAML)
-				portalStorage = new YamlStorage(this);
-			else {
-				logSevere("The storage type " + storageType + " is not properly supported yet! Please choose a different one!");
-				return false;
+			try {
+				portalStorage = createStorage(storageType);
+			} catch (IllegalArgumentException e) {
+				logSevere(e.getMessage());
 			}
 
 			if (conf.get("frame", null) != null) {
@@ -444,6 +437,22 @@ public class TravelPortals extends PluginBase {
 	}
 
 	/**
+	 * Convert from one storage type to another
+	 * @param from The type to convert from
+	 * @param to The type to convert to
+	 * @return true if the conversation succeeded; false if it failed
+	 */
+	public boolean convertStorage(PortalStorage from, PortalStorage to)	{
+		if (from.load()) {
+			for (WarpLocation portal : from.getPortals().values()) {
+				to.addPortal(portal);
+			}
+			return to.save();
+		}
+		return false;
+	}
+
+	/**
 	 * Gets the destination of this teleport, but only if the user can use it.
 	 * @param player The player in question.
 	 * @param disablePortal Disable this portal (set its cooldown).
@@ -634,6 +643,23 @@ public class TravelPortals extends PluginBase {
 	 */
 	public PortalStorage getPortalStorage() {
 		return portalStorage;
+	}
+
+	/**
+	 * Create a new PortalStorage from of a certain type
+	 * @param type The type of storage
+	 * @return A new PortalStorage object
+	 * @throws IllegalArgumentException If the type is not supported
+	 */
+	public PortalStorage createStorage(StorageType type) throws IllegalArgumentException {
+		switch (type) {
+			case LEGACY:
+				return new LegacyStorage(this);
+			case YAML:
+				return new YamlStorage(this);
+			default:
+				throw new IllegalArgumentException("The storage type " + type + " is not properly supported yet! Please choose a different one!");
+		}
 	}
 }
 

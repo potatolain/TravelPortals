@@ -72,6 +72,7 @@ The Commands:
   to be linked to the world specified. You most likely do not need to run this command,
   unless you've been running this plugin since before multiworld was supported. If you
   do, you only need to run it once.
+- /portal convert from|to legacy|yaml - Convert your current storage from or to another storage
 
 
 Permissions
@@ -115,6 +116,7 @@ they own.
 - travelportals.admin.command.deactivate
 - travelportals.admin.command.export
 - travelportals.admin.command.reimport
+- travelportals.admin.command.convert
 
 Finally, some default groups have been implemented to make life easier: 
 

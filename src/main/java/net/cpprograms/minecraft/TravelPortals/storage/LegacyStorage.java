@@ -158,6 +158,11 @@ public class LegacyStorage extends PortalStorage {
         return save(false);
     }
 
+    @Override
+    public StorageType getType() {
+        return StorageType.LEGACY;
+    }
+
     private boolean save(boolean backup)
     {
         boolean error = false;

@@ -64,6 +64,11 @@ public class YamlStorage extends PortalStorage {
     }
 
     @Override
+    public StorageType getType() {
+        return StorageType.YAML;
+    }
+
+    @Override
     public boolean save(String worldName) {
         List<Map<String, Object>> portalList = new ArrayList<>();
         for (WarpLocation portal : getPortals().values()) {

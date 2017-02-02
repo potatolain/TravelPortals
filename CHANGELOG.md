@@ -6,9 +6,10 @@ Change Log
 * Add support for Material enums in the config
 * Show more info about hidden portals to the owner of a portal in the `/portal info` command
 * Fix `/portal info` displaying the wrong world for destinations
-* Store portals in YAML configs (convert via exporting and importing)
+* Store portals in YAML configs (convert via running `/portal convert`)
 * Add `/portal reload` command (permission: travelportals.admin.command.reload)
 * Moved project over to maven and added [jenkins dev build](https://ci.minebench.de/job/TravelPortals/)
+* Added `/portal convert from|to legacy|yaml` command to convert between different storage types. (The config option needs to be changed manually!)
 
 2.2.13
 -----

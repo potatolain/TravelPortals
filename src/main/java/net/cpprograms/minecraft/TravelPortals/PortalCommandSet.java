@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
+import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -139,6 +141,9 @@ public class PortalCommandSet extends CommandSet
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload"))
 				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.convert"))
+				sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to legacy|yaml");
+
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 				player.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
 
@@ -155,6 +160,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld oldname newname to replace it");
 			sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
 			sender.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
+			sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to legacy|yaml");
 			sender.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 			sender.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
 		}
@@ -722,6 +728,45 @@ public class PortalCommandSet extends CommandSet
 		}
 		plugin.renameWorld("", args[0]);
 		sender.sendMessage(ChatColor.DARK_GREEN + "All portals without a saved world now point to world \"" + args[0] + "\"");
+		return true;
+	}
+
+	/**
+	 * Convert from one storage option to another
+	 * @param sender The entity which sent the command.
+	 * @param args The arguments passed in.
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean convert(CommandSender sender, String[] args)
+	{
+		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.convert", false))
+			return this.noPermissionForAction(sender);
+
+		if (args.length < 2)
+		{
+			sender.sendMessage(ChatColor.DARK_RED + "Missing arguments. Correct usage: " + ChatColor.RED + "/portal convert from|to legacy|yaml");
+			return true;
+		}
+
+		try {
+			StorageType input = StorageType.valueOf(args[1].toUpperCase());
+			boolean success = false;
+			if ("from".equalsIgnoreCase(args[0])) {
+				success = plugin.convertStorage(plugin.createStorage(input), plugin.getPortalStorage());
+			} else if ("to".equalsIgnoreCase(args[0])) {
+				success = plugin.convertStorage(plugin.getPortalStorage(), plugin.createStorage(input));
+			} else {
+				sender.sendMessage(ChatColor.DARK_RED + "Please either insert " + ChatColor.RED + "from" + ChatColor.DARK_RED + " or " + ChatColor.RED + "to" + ChatColor.DARK_RED + " as a conversion direction!");
+				return true;
+			}
+			if (success) {
+				sender.sendMessage(ChatColor.DARK_GREEN + "Converted storage " + args[0].toLowerCase() + " " + input + "!");
+			} else {
+				sender.sendMessage(ChatColor.DARK_RED + "Error while trying to convert storage " + args[0].toLowerCase() + " " + input + "! Take a look at the console/logs for more info.");
+			}
+		} catch (IllegalArgumentException e) {
+			sender.sendMessage(ChatColor.RED + args[1] + ChatColor.DARK_RED + " is not a valid storage type. Valid types are " + ChatColor.RED + "legacy" + ChatColor.DARK_RED + " and " + ChatColor.RED + "yaml");
+		}
 		return true;
 	}
 

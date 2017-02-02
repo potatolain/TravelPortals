@@ -42,6 +42,12 @@ public abstract class PortalStorage {
     public abstract boolean save();
 
     /**
+     * Get the type of this storage
+     * @return The type of this storage
+     */
+    public abstract StorageType getType();
+
+    /**
      * This gets all portals
      * @return A list with all portals
      */
@@ -148,5 +154,4 @@ public abstract class PortalStorage {
         portals.clear();
         locationCache.invalidateAll();
     }
-
 }
