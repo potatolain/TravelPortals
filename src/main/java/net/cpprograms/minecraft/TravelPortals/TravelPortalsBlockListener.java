@@ -185,19 +185,9 @@ public class TravelPortalsBlockListener implements Listener {
 	{
 		if (event.isCancelled() || event.getFace() != BlockFace.DOWN)
 			return;
-		
-		Material type = event.getBlock().getType();
-		
-		if (type == Material.STATIONARY_WATER)
-		{
-			if (type != Material.STATIONARY_WATER && type != Material.WATER)
+
+		if ( event.getBlock().getType() != plugin.portaltype)
 				return;
-		} 
-		else 
-		{
-			if (type != plugin.portaltype)
-				return;
-		}
 		
 		if (plugin.getPortalStorage().getPortal(event.getBlock().getLocation()) != null)
 			event.setCancelled(true);

@@ -179,8 +179,7 @@ public class PortalUseTask implements Runnable {
 	}
 
 	/**
-	 * Check if a player is an a portal and has permission, return the "w" portal code.
-	 * BIT OF CODE CLONING, with adjustments (player.getLocation()), moved isUsable to outside .
+	 * Check if a player is an a portal and has permission
 	 * @param player The player to test.
 	 * @return The portal the player is in or null if he is in none
 	 */
@@ -199,10 +198,7 @@ public class PortalUseTask implements Runnable {
 		// Is the user actually in portal material?
 		if (plugin.doortypes.contains(blockType) || blockType == plugin.blocktype)
 		{
-			// Find nearby warp.
-			WarpLocation w = plugin.getPortalStorage().getPortal(playerLoc);
-
-			return w;
+			return plugin.getPortalStorage().getPortal(playerLoc);
 		}
 		return null;
 	}

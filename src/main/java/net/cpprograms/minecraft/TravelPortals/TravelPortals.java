@@ -353,12 +353,12 @@ public class TravelPortals extends PluginBase {
 	 * Find a warp point from a relative location. (Within 1 block)
 	 * @param location The location that is near the portal
 	 * @return The index of a nearby portal in plugin.warpLocations, or -1 if it is not found.
-	 * @deprecated Use {@link PortalStorage#getPortal(Location)}
+	 * @deprecated Use {@link PortalStorage#getNearbyPortal(Location, int)}
 	 */
 	@Deprecated
 	public WarpLocation getWarpFromLocation(Location location)
 	{
-		return portalStorage.getPortal(location);
+		return portalStorage.getNearbyPortal(location, 1);
 	}
 
 	/**
@@ -464,14 +464,12 @@ public class TravelPortals extends PluginBase {
 			return null;
 
 		Location playerLoc = player.getLocation();
-		playerLoc = playerLoc.add(playerLoc.getDirection());
-		playerLoc.setY(player.getLocation().getY());
-
+		playerLoc.setX(playerLoc.getX() + 1.0);
 		Material blockType = player.getWorld().getBlockAt(playerLoc).getType();
+		playerLoc.setX(playerLoc.getX() - 1.0);
 		// Is the user actually in portal material?
 		if (blockType == blocktype || doortypes.contains(blockType))
 		{
-			// Find nearby warp.
 			WarpLocation portal = portalStorage.getPortal(player.getLocation());
 			if (portal == null)
 				return null;

@@ -401,4 +401,23 @@ public class WarpLocation implements java.io.Serializable {
 			map.put("direction", getDoorPosition());
 		return map;
 	}
+
+	@Override
+	public String toString() {
+		return "WarpLocation{" +
+				"name=" + getName() + "," +
+				"world=" + getWorld() + "," +
+				"x=" + getX() + "," +
+				"y=" + getY() + "," +
+				"z=" + getZ() + "," +
+				"destination=" + getDestination() + "," +
+				"owner=" + getOwner() + "," +
+				"hidden=" + isHidden() + "," +
+				"direction=" + getDoorPosition();
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
 }

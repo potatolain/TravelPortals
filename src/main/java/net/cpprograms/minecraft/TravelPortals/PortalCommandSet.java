@@ -303,7 +303,7 @@ public class PortalCommandSet extends CommandSet
 		else
 		{
 			// Check to make sure the user is actually near a portal.
-			WarpLocation portal = plugin.getPortalStorage().getPortal(player.getLocation());
+			WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 2);
 
 
 			if (portal == null)
@@ -354,7 +354,7 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		WarpLocation portal = plugin.getPortalStorage().getPortal(player.getLocation());
+		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 2);
 		if (args.length < 1)
 			player.sendMessage(ChatColor.DARK_RED + "You have to include a destination!");
 		else if (portal == null)
@@ -553,7 +553,7 @@ public class PortalCommandSet extends CommandSet
 				return true;
 			}
 
-			portal = plugin.getPortalStorage().getPortal(((Player)sender).getLocation());
+			portal = plugin.getPortalStorage().getNearbyPortal(((Player)sender).getLocation(), 2);
 			if (portal == null) {
 				sender.sendMessage(ChatColor.DARK_RED + "You must provide a portal name or stand in front of one.");
 				return true;

@@ -1,20 +1,17 @@
 package net.cpprograms.minecraft.TravelPortals.storage;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
 import org.bukkit.Location;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 
 public abstract class PortalStorage {
 
     private Map<String, WarpLocation> portals = new LinkedHashMap<>();
-    private Cache<String, String> locationCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(60, TimeUnit.SECONDS)
-            .build();
+    private Map<String, String> portalLocations = new LinkedHashMap<>();
 
     /**
      * Load the data from the storage
@@ -60,6 +57,8 @@ public abstract class PortalStorage {
      */
     public void addPortal(WarpLocation portal) {
         portals.put(portal.getName().toLowerCase(), portal);
+        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ(), portal.getName().toLowerCase());
+        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ(), portal.getName().toLowerCase());
     }
 
     /**
@@ -72,37 +71,78 @@ public abstract class PortalStorage {
     }
 
     /**
-     * Get a nearby portal
-     * @param location
-     * @return
+     * Get a portal at that location
+     * @param location  The location to get a portal at
+     * @return          The Portal or null if none was found
      */
     public WarpLocation getPortal(Location location) {
-        String locStr = location.getWorld() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
-        String portalName = locationCache.getIfPresent(locStr);
-        if (portalName != null && !portals.containsKey(portalName)) {
-            locationCache.invalidate(locStr);
-            portalName = null;
-        }
+        String portalName = portalLocations.get(location.getWorld() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
         if (portalName == null) {
-            for (WarpLocation p : getPortals().values()) {
-                if (p.getWorld().isEmpty() || location.getWorld().getName().equals(p.getWorld())) {
-                    if (Math.abs(p.getX() - location.getBlockX()) <= 1 && Math.abs(p.getZ() - location.getBlockZ()) <= 1) {
-                        locationCache.put(locStr, p.getName());
-                        return p;
-                    }
-                }
+            portalName = portalLocations.get("," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+        }
+        if (portalName != null) {
+            if (portals.containsKey(portalName)) {
+                return portals.get(portalName);
+            } else {
+                portalLocations.remove(portalName);
             }
-            locationCache.put(locStr, "");
         }
         return null;
     }
+
+    /**
+     * Get the closest nearby portal
+     * @param location  The location to get a portal at
+     * @param radius    The radius in blocks to search in
+     * @return          The Portal or null if none was found
+     */
+    public WarpLocation getNearbyPortal(Location location, int radius) {
+        WarpLocation exact = getPortal(location);
+        if (exact != null) {
+            return exact;
+        }
+
+        Set<WarpLocation> nearbyPortals = new HashSet<>();
+        Location loopLocation = location.clone();
+        loopLocation.subtract(radius, radius, radius);
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                for (int y = -radius; y <= radius; y++) {
+                    WarpLocation portal = getPortal(loopLocation);
+                    if (portal != null && !nearbyPortals.contains(portal)) {
+                        nearbyPortals.add(portal);
+                    }
+                    loopLocation.add(0, 1, 0);
+                }
+                loopLocation.add(0, 0, 1);
+            }
+            loopLocation.add(1, 0, 0);
+        }
+
+        if (nearbyPortals.size() == 1) {
+            return nearbyPortals.iterator().next();
+        } else if (!nearbyPortals.isEmpty()){
+            WarpLocation closest = null;
+            int closestDist = -1;
+            for (WarpLocation portal : nearbyPortals) {
+                int distance = Math.abs((location.getBlockX() - portal.getX()) * (location.getBlockY() - portal.getY()) * (location.getBlockZ() - portal.getZ()));
+                if (closest == null || closestDist > distance) {
+                    closest = portal;
+                    closestDist = distance;
+                }
+            }
+            return closest;
+        }
+        return null;
+    }
+
 
     /**
      * Remove a portal
      * @param portal The portal to remove
      */
     public void namePortal(WarpLocation portal, String name) {
-        portals.remove(portal.getName().toLowerCase());
+        removePortal(portal);
         portal.setName(name);
         addPortal(portal);
         save(portal);
@@ -114,7 +154,8 @@ public abstract class PortalStorage {
      */
     public void removePortal(WarpLocation portal) {
         portals.remove(portal.getName().toLowerCase());
-        locationCache.invalidate(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ());
+        portalLocations.remove(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ());
+        portalLocations.remove(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ());
     }
 
     /**
@@ -151,6 +192,6 @@ public abstract class PortalStorage {
      */
     public void clearCache() {
         portals.clear();
-        locationCache.invalidateAll();
+        portalLocations.clear();
     }
 }
