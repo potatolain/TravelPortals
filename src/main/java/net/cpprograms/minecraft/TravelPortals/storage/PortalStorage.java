@@ -12,9 +12,8 @@ import java.util.concurrent.TimeUnit;
 public abstract class PortalStorage {
 
     private Map<String, WarpLocation> portals = new LinkedHashMap<>();
-    private Cache<String, WarpLocation> locationCache = CacheBuilder.newBuilder()
+    private Cache<String, String> locationCache = CacheBuilder.newBuilder()
             .expireAfterAccess(60, TimeUnit.SECONDS)
-            .weakValues()
             .build();
 
     /**
@@ -79,23 +78,23 @@ public abstract class PortalStorage {
      */
     public WarpLocation getPortal(Location location) {
         String locStr = location.getWorld() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
-        WarpLocation portal = locationCache.getIfPresent(locStr);
-        if (portal != null && !portals.containsValue(portal)) {
+        String portalName = locationCache.getIfPresent(locStr);
+        if (portalName != null && !portals.containsKey(portalName)) {
             locationCache.invalidate(locStr);
-            portal = null;
+            portalName = null;
         }
-        if (portal == null) {
+        if (portalName == null) {
             for (WarpLocation p : getPortals().values()) {
                 if (p.getWorld().isEmpty() || location.getWorld().getName().equals(p.getWorld())) {
                     if (Math.abs(p.getX() - location.getBlockX()) <= 1 && Math.abs(p.getZ() - location.getBlockZ()) <= 1) {
-                        portal = p;
-                        locationCache.put(locStr, portal);
-                        break;
+                        locationCache.put(locStr, p.getName());
+                        return p;
                     }
                 }
             }
+            locationCache.put(locStr, "");
         }
-        return portal;
+        return null;
     }
 
     /**
