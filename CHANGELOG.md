@@ -1,7 +1,11 @@
 Change Log
 ==========
 
-2.3-pre
+2.4-pre
+-----
+* 1.13 support
+
+2.3
 -----
 * Add support for Material enums in the config
 * Show more info about hidden portals to the owner of a portal in the `/portal info` command
