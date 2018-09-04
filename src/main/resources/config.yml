@@ -27,8 +27,8 @@ doorlist:
 doorname: door
 
 # The type of block that needs to be placed to make a portal. 
-# Default: REDSTONE_TORCH
-torch: REDSTONE_TORCH
+# Default: REDSTONE_TORCH_ON
+torch: REDSTONE_TORCH_ON
 #The name of the type of block that needs to be placed to make a portal
 # Default: redstone torch
 torchname: redstone torch
