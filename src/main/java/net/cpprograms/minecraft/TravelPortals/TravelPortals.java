@@ -72,8 +72,8 @@ public class TravelPortals extends PluginBase {
 	 * The list of types of blocks used for the doorway
 	 */
 	protected List<Material> doortypes = Arrays.asList(
-			Material.WOODEN_DOOR,
-			Material.IRON_DOOR_BLOCK,
+			Material.OAK_DOOR,
+			Material.IRON_DOOR,
 			Material.ACACIA_DOOR,
 			Material.BIRCH_DOOR,
 			Material.DARK_OAK_DOOR,
@@ -94,7 +94,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * The type of block used for the torch at the bottom.
 	 */
-	protected Material torchtype = Material.REDSTONE_TORCH_ON;
+	protected Material torchtype = Material.REDSTONE_TORCH;
 
 	/**
 	 * Do we want to use the permissions plugin?
@@ -185,54 +185,27 @@ public class TravelPortals extends PluginBase {
 			}
 
 			if (conf.get("frame", null) != null) {
-				int frameId = conf.getInt("frame");
-				if (frameId != 0) {
-					blocktype = Material.getMaterial(frameId);
-				} else {
-					blocktype = Material.valueOf(conf.getString("frame").toUpperCase());
-				}
+				blocktype = Material.valueOf(conf.getString("frame").toUpperCase());
 			}
 			if (conf.get("framename", null) != null)
 				strBlocktype = conf.getString("framename");
 			if (conf.get("fill", null) != null) {
-				int fillId = conf.getInt("fill");
-				if (fillId != 0) {
-					portaltype = Material.getMaterial(fillId);
-				} else {
-					portaltype = Material.valueOf(conf.getString("fill").toUpperCase());
-				}
+				portaltype = Material.valueOf(conf.getString("fill").toUpperCase());
 			}
 			if (conf.get("doorlist", null) != null) {
 				List<Material> doorList = new ArrayList<Material>();
 				for (String doorType : conf.getStringList("doorlist")) {
-					try {
-						Material door = Material.getMaterial(Integer.parseInt(doorType));
-						if (door != null) {
-							doorList.add(door);
-						}
-					} catch (NumberFormatException e) {
-						doorList.add(Material.valueOf(doorType.toUpperCase()));
-					}
+					doorList.add(Material.valueOf(doorType.toUpperCase()));
 				}
 				if (!doorList.isEmpty()) {
 					doortypes = doorList;
 				}
 			} else {
 				if (conf.get("door", null) != null) {
-					int doorId = conf.getInt("door");
-					if (doorId != 0) {
-						doortypes.add(Material.getMaterial(doorId));
-					} else {
-						doortypes.add(Material.valueOf(conf.getString("door").toUpperCase()));
-					}
+					doortypes.add(Material.valueOf(conf.getString("door").toUpperCase()));
 				}
 				if (conf.get("door2", null) != null) {
-					int doorId = conf.getInt("door2");
-					if (doorId != 0) {
-						doortypes.add(Material.getMaterial(doorId));
-					} else {
-						doortypes.add(Material.valueOf(conf.getString("door2").toUpperCase()));
-					}
+					doortypes.add(Material.valueOf(conf.getString("door2").toUpperCase()));
 				}
 				// Yes, this is a bit lame. I'd like to save updated config, but at the same time I don't want to wipe out comments and make
 				// the file extremely unclear.
@@ -243,12 +216,7 @@ public class TravelPortals extends PluginBase {
 			if (conf.get("doorname", null) != null)
 				strDoortype = conf.getString("doorname");
 			if (conf.get("torch", null) != null) {
-				int torchId = conf.getInt("torch");
-				if (torchId != 0) {
-					torchtype = Material.getMaterial(torchId);
-				} else {
-					torchtype = Material.valueOf(conf.getString("torch").toUpperCase());
-				}
+				torchtype = Material.valueOf(conf.getString("torch").toUpperCase());
 			}
 			if (conf.get("torchname", null) != null)
 				strTorchtype = conf.getString("torchname");

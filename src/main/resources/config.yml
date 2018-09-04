@@ -15,8 +15,8 @@ fill: WATER
 # The types of blocks used for the door. Default: All wooden doors and iron doors
 
 doorlist:
-- WOODEN_DOOR
-- IRON_DOOR_BLOCK
+- OAK_DOOR
+- IRON_DOOR
 - ACACIA_DOOR
 - BIRCH_DOOR,
 - DARK_OAK_DOOR
@@ -27,8 +27,8 @@ doorlist:
 doorname: door
 
 # The type of block that needs to be placed to make a portal. 
-# Default: REDSTONE_TORCH_ON
-torch: REDSTONE_TORCH_ON
+# Default: REDSTONE_TORCH
+torch: REDSTONE_TORCH
 #The name of the type of block that needs to be placed to make a portal
 # Default: redstone torch
 torchname: redstone torch

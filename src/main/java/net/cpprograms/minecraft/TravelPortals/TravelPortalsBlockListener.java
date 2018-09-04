@@ -107,9 +107,7 @@ public class TravelPortalsBlockListener implements Listener {
 			if (numwalls == 13 && player.getWorld().getBlockAt(x, y+1, z).getType() == Material.AIR)
 			{
 				player.getWorld().getBlockAt(x, y, z).setType(plugin.portaltype);
-				player.getWorld().getBlockAt(x,y,z).setData((byte)0);
 				player.getWorld().getBlockAt(x, y+1, z).setType(plugin.portaltype);
-				player.getWorld().getBlockAt(x, y+1, z).setData((byte)0);
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
 
