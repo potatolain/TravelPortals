@@ -78,7 +78,7 @@ public class WarpLocation implements java.io.Serializable {
 	 * Default constructor. I suggest against using this.
 	 */
 	public WarpLocation() {
-		x=0; y=0; z=0; name = "";
+		x=0; y=0; z=0; name = "UnnamedPortal";
 		lastused = 0;
 		world = "";
 	}
@@ -92,7 +92,8 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, String _world)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x; y = _y; z = _z; destination = "";
+		name = getDefaultName();
 		lastused = 0;
 		world = _world;
 	}
@@ -108,7 +109,8 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x; y = _y; z = _z; destination = "";
+		name = getDefaultName();
 		lastused = 0;
 		doorpos = _doorpos;
 		world = _world;
@@ -125,11 +127,20 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, String _owner)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x; y = _y; z = _z; destination = "";
+		name = getDefaultName();
 		lastused = 0;
 		doorpos = _doorpos;
 		world = _world;
 		owner = _owner;
+	}
+
+	/**
+	 * Gets the default name for this portal if one hasn't been provided. Includes X/Y/Z coordinates.
+	 * @return The name to use for this portal if one has not been defined.
+	 */
+	private String getDefaultName() {
+		return "Portal-X:" + Integer.toString(x) + "-Y:" + Integer.toString(y) + "-Z:" + Integer.toString(z);
 	}
 
 	/**
@@ -138,7 +149,7 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean isValid()
 	{
-		return (!(name != null && name.isEmpty() && destination != null && destination.isEmpty()));
+		return hasName() && hasDestination();
 	}
 	/**
 	 * Get the X coordinate of this point.
@@ -247,7 +258,8 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean hasName()
 	{
-		return name != null && !name.isEmpty();
+		// Newly-created portals shouldn't show up in the portal list until given a name.
+		return name != null && !name.isEmpty() && !name.equals(getDefaultName());
 	}
 
 	/**
