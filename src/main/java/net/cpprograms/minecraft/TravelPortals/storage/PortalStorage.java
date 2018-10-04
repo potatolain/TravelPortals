@@ -76,7 +76,7 @@ public abstract class PortalStorage {
      * @return          The Portal or null if none was found
      */
     public WarpLocation getPortal(Location location) {
-        String portalName = portalLocations.get(location.getWorld() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+        String portalName = portalLocations.get(location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
         if (portalName == null) {
             portalName = portalLocations.get("," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
         }
