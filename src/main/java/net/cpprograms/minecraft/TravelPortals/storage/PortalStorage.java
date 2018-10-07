@@ -11,6 +11,7 @@ import java.util.Set;
 public abstract class PortalStorage {
 
     private Map<String, WarpLocation> portals = new LinkedHashMap<>();
+    private Map<String, String> portalNames = new LinkedHashMap<>();
     private Map<String, String> portalLocations = new LinkedHashMap<>();
 
     /**
@@ -56,9 +57,12 @@ public abstract class PortalStorage {
      * @param portal The info of the portal
      */
     public void addPortal(WarpLocation portal) {
-        portals.put(portal.getName().toLowerCase(), portal);
-        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ(), portal.getName().toLowerCase());
-        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ(), portal.getName().toLowerCase());
+        portals.put(portal.getIdentifierString(), portal);
+        if (portal.hasName()) {
+            portalNames.put(portal.getName(), portal.getIdentifierString());
+        }
+        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ(), portal.getIdentifierString());
+        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ(), portal.getIdentifierString());
     }
 
     /**
@@ -67,7 +71,11 @@ public abstract class PortalStorage {
      * @return The portal info or null if none was found
      */
     public WarpLocation getPortal(String name) {
-        return portals.get(name.toLowerCase());
+        String identifier = portalNames.get(name);
+        if (identifier == null) {
+            return null;
+        }
+        return portals.get(identifier);
     }
 
     /**
@@ -76,15 +84,15 @@ public abstract class PortalStorage {
      * @return          The Portal or null if none was found
      */
     public WarpLocation getPortal(Location location) {
-        String portalName = portalLocations.get(location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
-        if (portalName == null) {
-            portalName = portalLocations.get("," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+        String portalIdentifier = portalLocations.get(location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+        if (portalIdentifier == null) {
+            portalIdentifier = portalLocations.get("," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
         }
-        if (portalName != null) {
-            if (portals.containsKey(portalName)) {
-                return portals.get(portalName);
+        if (portalIdentifier != null) {
+            if (portals.containsKey(portalIdentifier)) {
+                return portals.get(portalIdentifier);
             } else {
-                portalLocations.remove(portalName);
+                portalLocations.remove(portalIdentifier);
             }
         }
         return null;
@@ -153,7 +161,8 @@ public abstract class PortalStorage {
      * @param portal The portal to remove
      */
     public void removePortal(WarpLocation portal) {
-        portals.remove(portal.getName().toLowerCase());
+        portals.remove(portal.getIdentifierString());
+        portalNames.remove(portal.getName().toLowerCase());
         portalLocations.remove(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ());
         portalLocations.remove(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ());
     }

@@ -332,6 +332,15 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
+     * Returns a string that can uniquely identify this portal amongst other portals. 
+     * Contains the world, and its location in space.
+     * @return A string that can be used to uniquely identify this portal.
+     */
+    public String getIdentifierString() {
+        return world + "," + x + "," + y + "," + z;
+    }
+
+	/**
 	 * Check if this portal is usable. (Time limit)
 	 * @param cooldown How long this takes to cool down.
 	 * @return true if the portal can be used; false if it cannot.
