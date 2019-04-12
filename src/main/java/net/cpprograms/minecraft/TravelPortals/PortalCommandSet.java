@@ -182,6 +182,7 @@ public class PortalCommandSet extends CommandSet
 			return noPermissionForAction(sender);
 
 		plugin.getPortalStorage().save(); // Force save before loading it again
+		plugin.reloadConfig();
 		if (plugin.load()) {
 			sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded the config!");
 		} else {
