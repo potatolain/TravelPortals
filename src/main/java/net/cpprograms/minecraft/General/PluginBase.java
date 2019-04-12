@@ -58,25 +58,15 @@ public class PluginBase extends JavaPlugin {
 	 * Constructor. Do some setup stuff.
 	 */
 	@Override
-	public void onLoad() 
-	{	
+	public void onLoad()
+	{
 		// Grab a name and version from the plugin's description file.
 		PluginDescriptionFile pdfFile = this.getDescription();
 		pluginName = pdfFile.getName();
 		pluginVersion = pdfFile.getVersion();
 		permissions = new PermissionsHandler();
-		if (useConfig)
-			if (!loadConfig())
-			{
-				this.logSevere("Could not load configuration for " + getPluginName() + "! This may break the plugin!");
-			}
-			else
-			{
-				if (getConfig().contains("debug"))
-				{
-					debugMode = getConfig().getBoolean("debug");
-				}
-			}
+		if (useConfig && !loadConfig())
+			this.logSevere("Could not load configuration for " + getPluginName() + "! This may break the plugin!");
 	}
 
 	/**
@@ -216,6 +206,8 @@ public class PluginBase extends JavaPlugin {
 			if (!getDataFolder().exists())
 				getDataFolder().mkdirs();
 			getConfig().load(new File(getDataFolder(), "config.yml"));
+			if (getConfig().contains("debug"))
+				debugMode = getConfig().getBoolean("debug");
 		} catch (FileNotFoundException e) {
 			logInfo("No config file found. Creating a default configuration file: " + getPluginName() + "/config.yml");
 			return this.saveDefaultConfiguration();
