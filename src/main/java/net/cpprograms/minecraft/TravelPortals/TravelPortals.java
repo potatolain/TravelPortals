@@ -6,7 +6,9 @@ import net.cpprograms.minecraft.General.PluginBase;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import net.cpprograms.minecraft.TravelPortals.storage.LegacyStorage;
 import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
@@ -71,7 +73,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * The list of types of blocks used for the doorway
 	 */
-	protected List<Material> doortypes = Arrays.asList(
+	protected Set<Material> doortypes = EnumSet.of(
 			Material.OAK_DOOR,
 			Material.IRON_DOOR,
 			Material.ACACIA_DOOR,
@@ -198,7 +200,7 @@ public class TravelPortals extends PluginBase {
 					doorList.add(Material.valueOf(doorType.toUpperCase()));
 				}
 				if (!doorList.isEmpty()) {
-					doortypes = doorList;
+					doortypes = EnumSet.copyOf(doorList);
 				}
 			} else {
 				if (conf.get("door", null) != null) {

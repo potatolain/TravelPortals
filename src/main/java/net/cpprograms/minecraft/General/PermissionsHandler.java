@@ -1,6 +1,6 @@
 package net.cpprograms.minecraft.General;
 
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 /**
  * Handle permissions stuff, if needed.
@@ -30,26 +30,26 @@ public class PermissionsHandler
 
 	/**
 	 * Find out if a player has a permission, using the default if we're not using permissions. 
-	 * @param player The player.
+	 * @param sender The sender.
 	 * @param permission The permission.
 	 * @param defaultResult What to use if we're not using permissions.
 	 * @return true if the user has permission, false otherwise.
 	 */
-	public boolean hasPermission(Player player, String permission, boolean defaultResult)
+	public boolean hasPermission(CommandSender sender, String permission, boolean defaultResult)
 	{
 		if (!usePermissions)
 			return defaultResult;
-		return player.hasPermission(permission);
+		return sender.hasPermission(permission);
 	}
 
 	/**
 	 * Find out if a user has a permission. 
-	 * @param player The player.
+	 * @param sender The sender.
 	 * @param permission The permission
 	 * @return true if the user has permission; false otherwise.
 	 */
-	public boolean hasPermission(Player player, String permission) 
+	public boolean hasPermission(CommandSender sender, String permission)
 	{
-		return hasPermission(player, permission, true);
+		return hasPermission(sender, permission, true);
 	}
 }

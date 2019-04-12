@@ -2,12 +2,15 @@ package net.cpprograms.minecraft.TravelPortals;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeMap;
 
-import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
 import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +23,7 @@ import net.cpprograms.minecraft.General.PluginBase;
  * @author cppchriscpp
  *
  */
-public class PortalCommandSet extends CommandSet 
+public class PortalCommandSet extends CommandSet
 {
 	/**
 	 * Our plugin.
@@ -28,7 +31,7 @@ public class PortalCommandSet extends CommandSet
 	TravelPortals plugin;
 
 	/**
-	 * Set the plugin that we're using. 
+	 * Set the plugin that we're using.
 	 * @param plugin The plugin to use.
 	 */
 	@Override
@@ -285,51 +288,50 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean name(CommandSender sender, String[] args)
 	{
-		if (!(sender instanceof Player))
-			return notAccessibleFromConsole(sender);
 
-		Player player = (Player) sender;
-
-		if (!plugin.permissions.hasPermission(player, "travelportals.command.name"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.command.name"))
 		{
-			player.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
+			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
 		}
 
 		if (args.length < 1)
-			player.sendMessage(ChatColor.DARK_RED + "You have to include a name for the location!");
+			sender.sendMessage(ChatColor.DARK_RED + "You have to include a name for the location!");
 		else if (plugin.getPortalStorage().getPortal(args[0]) != null) // Is this name already taken?
-			player.sendMessage(ChatColor.DARK_RED + "There is already a portal named " + args[0] + ". Please pick another name.");
+			sender.sendMessage(ChatColor.DARK_RED + "There is already a portal named " + args[0] + ". Please pick another name.");
 		else
 		{
-			// Check to make sure the user is actually near a portal.
-			WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 2);
-
+			int nameIndex = args.length - 1;
+			WarpLocation portal = null;
+			if (nameIndex > 0)
+				portal = plugin.getPortalStorage().getPortal(args[0]);
+			else if (sender instanceof Player)
+				portal = getPortal((Player) sender);
 
 			if (portal == null)
-				player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of the portal.)");
+				sender.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of the portal.)");
 			else
 			{
 				// Ownership check
 				if (plugin.usepermissions)
 				{
-					if (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))
+					if (!portal.getOwner().equals("") && !portal.getOwner().equals(sender.getName()))
 					{
-						if (!plugin.permissions.hasPermission(player, "travelportals.admin.command.name"))
+						if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.name"))
 						{
-							player.sendMessage(ChatColor.DARK_RED + "You do not own this portal, and cannot change its name.");
+							sender.sendMessage(ChatColor.DARK_RED + "You do not own this portal, and cannot change its name.");
 							return true;
 						}
 					}
 				}
-				if (portal.getDestination().equals(args[0]))
+				if (portal.getName().equals(args[nameIndex]))
 				{
-					player.sendMessage(ChatColor.DARK_RED + "The portal was already named " + args[0] + "!");
+					sender.sendMessage(ChatColor.DARK_RED + "The portal was already named " + args[nameIndex] + "!");
 				}
 				else
 				{
-					plugin.getPortalStorage().namePortal(portal, args[0]);
-					player.sendMessage(ChatColor.DARK_GREEN + "This portal is now known as " + args[0] + ".");
+					plugin.getPortalStorage().namePortal(portal, args[nameIndex]);
+					sender.sendMessage(ChatColor.DARK_GREEN + "This portal is now known as " + args[nameIndex] + ".");
 				}
 			}
 		}
@@ -340,25 +342,30 @@ public class PortalCommandSet extends CommandSet
 	 * Set the location for a warp.
 	 * @param sender The entity responsible for this command
 	 * @param args The parameters passed in (the name of the portal to warp to.
-	 * @return true if this is handled; false otherwise. 
+	 * @return true if this is handled; false otherwise.
 	 */
 	public boolean warp(CommandSender sender, String[] args)
 	{
-		if (!(sender instanceof Player))
-			return notAccessibleFromConsole(sender);
-
-		Player player = (Player) sender;
-		if (!plugin.permissions.hasPermission(player, "travelportals.command.warp"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.command.warp"))
 		{
-			player.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
+			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
+			return true;
+		}
+		if (args.length < 1)
+		{
+			sender.sendMessage(ChatColor.DARK_RED + "You have to include a destination!");
 			return true;
 		}
 
-		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 2);
-		if (args.length < 1)
-			player.sendMessage(ChatColor.DARK_RED + "You have to include a destination!");
-		else if (portal == null)
-			player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of a portal.)");
+		int nameIndex = args.length - 1;
+		WarpLocation portal = null;
+		if (nameIndex > 0)
+			portal = plugin.getPortalStorage().getPortal(args[0]);
+		else if (sender instanceof Player)
+			portal = getPortal((Player) sender);
+
+		if (portal == null)
+			sender.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of a portal.)");
 		else
 		{
 			// Ownership check
@@ -366,23 +373,23 @@ public class PortalCommandSet extends CommandSet
 			{
 				if (!portal.canAccess(sender))
 				{
-					if (!plugin.permissions.hasPermission(player, "travelportals.admin.command.warp"))
+					if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.warp"))
 					{
-						player.sendMessage(ChatColor.DARK_RED + "You do not own this portal, and cannot change its destination.");
+						sender.sendMessage(ChatColor.DARK_RED + "You do not own this portal, and cannot change its destination.");
 						return true;
 					}
 				}
 			}
 
-			if (portal.getName() == args[0])
+			if (portal.getName().equals(args[nameIndex]))
 			{
-				player.sendMessage(ChatColor.DARK_RED + "You cannot set a portal to warp to itself!");
+				sender.sendMessage(ChatColor.DARK_RED + "You cannot set a portal to warp to itself!");
 			}
 			else
 			{
-				portal.setDestination(args[0]);
+				portal.setDestination(args[nameIndex]);
 				plugin.getPortalStorage().save();
-				player.sendMessage(ChatColor.DARK_GREEN + "This portal now points to " + args[0] + ".");
+				sender.sendMessage(ChatColor.DARK_GREEN + "This portal now points to " + args[nameIndex] + ".");
 			}
 		}
 		return true;
@@ -408,9 +415,15 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		WarpLocation portal = plugin.getPortalStorage().getPortal(args[0]);
+		int nameIndex = args.length - 1;
+		WarpLocation portal = null;
+		if (nameIndex > 0)
+			portal = plugin.getPortalStorage().getPortal(args[0]);
+		else if (sender instanceof Player)
+			portal = getPortal((Player) sender);
+
 		if (portal == null) // Is this name already taken?
-			sender.sendMessage(ChatColor.DARK_RED + "That portal does not exist!");
+			sender.sendMessage(ChatColor.DARK_RED + "No portal found!");
 		else
 		{
 			// Ownership check
@@ -418,7 +431,7 @@ public class PortalCommandSet extends CommandSet
 			{
 				if (!portal.canAccess(sender))
 				{
-					if (!this.plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.hide"))
+					if (!this.plugin.permissions.hasPermission(sender, "travelportals.admin.command.hide"))
 					{
 						sender.sendMessage(ChatColor.DARK_RED + "You do not own this portal, and thus you cannot hide it.");
 						return true;
@@ -436,7 +449,7 @@ public class PortalCommandSet extends CommandSet
 
 	/**
 	 * Export command - exports the portals to a text file.
-	 * @param sender The entity that sent this. 
+	 * @param sender The entity that sent this.
 	 * @param args Arguments (unused)
 	 * @return true if handled; false otherwise.
 	 */
@@ -512,10 +525,15 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		WarpLocation portal = plugin.getWarp(args[0]);
+		WarpLocation portal = null;
+		if (args.length > 0)
+			portal = plugin.getPortalStorage().getPortal(args[0]);
+		else if (sender instanceof Player)
+			portal = getPortal((Player) sender);
+
 		if (portal == null)
 		{
-			sender.sendMessage(ChatColor.DARK_RED + "There is no portal with the name \"" + args[0] + "\"");
+			sender.sendMessage(ChatColor.DARK_RED + "No portal found.");
 			return true;
 		}
 		this.plugin.getPortalStorage().removePortal(portal);
@@ -540,24 +558,14 @@ public class PortalCommandSet extends CommandSet
 
 		WarpLocation portal = null;
 		if (args.length > 0)
-		{
 			portal = plugin.getPortalStorage().getPortal(args[0]);
-			if (portal == null) {
-				sender.sendMessage(ChatColor.DARK_RED + "There is no portal with that name.");
-				return true;
-			}
-		} else {
-			if (!(sender instanceof Player))
-			{
-				sender.sendMessage("You need to provide the name of a portal.");
-				return true;
-			}
+		else if (sender instanceof Player)
+			portal = getPortal((Player) sender);
 
-			portal = plugin.getPortalStorage().getNearbyPortal(((Player)sender).getLocation(), 2);
-			if (portal == null) {
-				sender.sendMessage(ChatColor.DARK_RED + "You must provide a portal name or stand in front of one.");
-				return true;
-			}
+		if (portal == null)
+		{
+			sender.sendMessage(ChatColor.DARK_RED + "No portal found.");
+			return true;
 		}
 
 		String name = portal.getName();
@@ -623,14 +631,14 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		WarpLocation portal = plugin.getWarpFromLocation(player.getLocation());
-		if (portal == null) 
+		WarpLocation portal = getPortal(player);
+		if (portal == null)
 		{
-			player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be within one block of a portal.)");
+			player.sendMessage(ChatColor.DARK_RED + "No portal found! (You must be near the portal to claim it)");
 			return true;
 		}
 
-		if (portal.getOwner().equals("") || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
+		if (portal.getOwner().equals("") || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
 		{
 			if (args.length > 0)
 				portal.setOwner(args[0]);
@@ -641,15 +649,15 @@ public class PortalCommandSet extends CommandSet
 			player.sendMessage(ChatColor.DARK_GREEN + "You have successfully claimed this portal"+(args.length>0?" for " + args[0]:"")+"!");
 
 			return true;
-		} 
-		else 
+		}
+		else
 		{
-			if (portal.getOwner().equals(player.getName()) || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp())) 
+			if (portal.getOwner().equals(player.getName()) || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
 			{
 				portal.setOwner("");
 				player.sendMessage(ChatColor.DARK_GREEN + "This portal no longer has an owner.");
-			} 
-			else 
+			}
+			else
 			{
 				player.sendMessage(ChatColor.DARK_RED + "This portal is already owned by "+portal.getOwner()+"!");
 				return true;
@@ -822,6 +830,32 @@ public class PortalCommandSet extends CommandSet
 	{
 		sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 		return true;
+	}
+
+	/**
+	 * Utility method to get the portal that the sender  wants to edit
+	 * @param player The command sender
+	 * @return The portal location or null if none was found
+	 */
+	private WarpLocation getPortal(Player player)
+	{
+		// Get target block
+		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getTargetBlock(getTransparent(), 5).getLocation(), 2);
+		if (portal == null)
+			// Check see if the player is just near a portal
+			portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 2);
+		return portal;
+	}
+
+	private Set<Material> getTransparent() {
+		Set<Material> set = EnumSet.noneOf(Material.class);
+		set.addAll(plugin.doortypes);
+		Collections.addAll(set,
+				Material.AIR,
+				Material.CAVE_AIR,
+				Material.VOID_AIR
+		);
+		return set;
 	}
 
 
