@@ -57,7 +57,10 @@ public abstract class PortalStorage {
      * @param portal The info of the portal
      */
     public void addPortal(WarpLocation portal) {
-        portals.put(portal.getIdentifierString(), portal);
+        WarpLocation previous = portals.put(portal.getIdentifierString(), portal);
+        if (previous != null && !portal.hasName()) {
+            portal.setName(previous.getName());
+        }
         if (portal.hasName()) {
             portalNames.put(portal.getName(), portal.getIdentifierString());
         }
