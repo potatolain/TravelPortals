@@ -27,7 +27,7 @@ public class TravelPortalsPlayerListener implements Listener {
 	 * Runs when a player moves. Acts if the player is in a portal block.
 	 * @param event The event related to this.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
 		if (sameBlock(event.getFrom(), event.getTo()))
@@ -60,7 +60,7 @@ public class TravelPortalsPlayerListener implements Listener {
 
 	public void unregister()
 	{
-		InventoryMoveItemEvent.getHandlerList().unregister(this);
+		PlayerMoveEvent.getHandlerList().unregister(this);
 	}
 }
 

@@ -41,6 +41,11 @@ public class TravelPortals extends PluginBase {
 	private final TravelPortalsBlockListener blockListener = new TravelPortalsBlockListener(this);
 
 	/**
+	 * A Block listener.
+	 */
+	private final TravelPortalsDrownListener drownListener = new TravelPortalsDrownListener(this);
+
+	/**
 	 * Here we store the portals
 	 */
 	protected PortalStorage portalStorage;
@@ -152,6 +157,7 @@ public class TravelPortals extends PluginBase {
 		}
 
 		getServer().getPluginManager().registerEvents(blockListener, this);
+		getServer().getPluginManager().registerEvents(drownListener, this);
 
 		super.onEnable();
 
