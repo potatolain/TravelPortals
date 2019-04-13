@@ -196,7 +196,7 @@ public class PortalUseTask implements Runnable {
 		playerLoc.setX(playerLoc.getX() - 1.0);
 
 		// Is the user actually in portal material?
-		if (plugin.doortypes.contains(blockType) || blockType == plugin.blocktype)
+		if (blockType == plugin.portaltype || blockType == plugin.blocktype || plugin.doortypes.contains(blockType))
 		{
 			return plugin.getPortalStorage().getPortal(playerLoc);
 		}
