@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -209,11 +208,11 @@ public class PortalCommandSet extends CommandSet
 		int pn = 1;
 		if (args.length >= 1)
 			try
-		{
+			{
 				pn = Integer.parseInt(args[0]);
-		}
-		catch (NumberFormatException e)
-		{}
+			}
+			catch (NumberFormatException e)
+			{}
 
 		// Negative page numbers will not fly.
 		if (pn < 1) pn = 1;
@@ -234,7 +233,7 @@ public class PortalCommandSet extends CommandSet
 
 
 		// No portals! :(
-		if (allp.size() == 0)
+		if (plugin.getPortalStorage().getPortals().isEmpty())
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "There are no visible portals to list!");
 			return true;
@@ -244,40 +243,25 @@ public class PortalCommandSet extends CommandSet
 		sender.sendMessage(ChatColor.DARK_GREEN + "TravelPortals (Page " + pn + "/" + ((allp.size()/8) + (allp.size()%8>0?1:0)) + ")");
 		sender.sendMessage(ChatColor.DARK_AQUA + "---------------------------------------------------");
 
-		// An iterator for both names and destinations..
-		Iterator<String> pnames = allp.keySet().iterator();
-		Iterator<String> pdests = allp.values().iterator();
-
-		// Get to the page the user requested..
-		for (int j = 0; j < ((pn-1)*8) && pnames.hasNext(); j++)
-		{
-			pnames.next();
-			pdests.next();
-		}
-
-		// Now, print out all of the portals on this page.
-		for (int j = 0; j < 8 && pnames.hasNext(); j++)
-		{
-			// Get the name, make it fill approx half the given space
-			String cl = pnames.next();
-			String dest = pdests.next();
-			if (cl.equals(""))
-				cl = "(no name)";
-			if (dest.equals(""))
-				dest = "(no destination)";
-			int left = (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)) - MinecraftFontWidthCalculator.getStringWidth(cl);
-			if (left > 0)
-			{
-				cl += whitespace(left);
-			}
-			else
-			{
-				cl = substring(cl, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
-			}
-			// Now make an arrow, and then the destination, with the same padding/trimming from above.
-			cl += ChatColor.WHITE + " --> " + ChatColor.DARK_AQUA + substring(dest, (int)(MinecraftFontWidthCalculator.getMaxStringWidth()/(2.2)));
-			sender.sendMessage(ChatColor.DARK_AQUA + cl);
-		}
+		plugin.getPortalStorage().getPortals().values().stream()
+				.filter(WarpLocation::hasName)
+				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
+				.skip(((pn-1)*8))
+				.limit(8)
+				.forEachOrdered(w -> {
+					// Get the name, make it fill approx half the given space
+					String cl = w.getName();
+					int maxWidth = (int) (MinecraftFontWidthCalculator.getMaxStringWidth() / 2.2);
+					int left = maxWidth - MinecraftFontWidthCalculator.getStringWidth(cl);
+					if (left > 0)
+						cl += whitespace(left);
+					else
+						cl = substring(cl, maxWidth);
+					// Now make an arrow, and then the destination, with the same padding/trimming from above.
+					cl += ChatColor.WHITE + " --> " + ChatColor.DARK_AQUA +
+							substring(w.getDestination().isEmpty() ? "(no destination)" : w.getDestination(), maxWidth);
+					sender.sendMessage(ChatColor.DARK_AQUA + cl);
+				});
 		return true;
 	}
 
