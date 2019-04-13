@@ -158,7 +158,7 @@ public class PortalUseTask implements Runnable {
 			{
 				Location warpTo = plugin.getWarpLocationIfAllowed(player);
 				if (warpTo != null)
-					player.teleport(warpTo);
+					plugin.teleportToWarp(player, warpTo);
 			}
 		}
 		if (n == 0) 
@@ -208,7 +208,7 @@ public class PortalUseTask implements Runnable {
 	 * @param playerName The name of the player to check.
 	 * @param w The warp to test.
 	 */
-	void checkPlayer(String playerName, WarpLocation w)
+	private void checkPlayer(String playerName, WarpLocation w)
 	{
 		Player player = Bukkit.getServer().getPlayer(playerName);
 		if ( player == null ) 
@@ -220,7 +220,7 @@ public class PortalUseTask implements Runnable {
 			{
 				Location loc = plugin.getWarpLocationIfAllowed(player);
 				if (loc != null)
-					player.teleport(loc);
+					plugin.teleportToWarp(player, loc);
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import io.papermc.lib.PaperLib;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -7,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.logging.Level;
 
 /**
  * Handle events for all Player related events
@@ -41,21 +45,13 @@ public class TravelPortalsPlayerListener implements Listener {
 		if (locy == null)
 			return;
 
-		// Pre-load the chunk we're headed for...
-		if (!locy.getBlock().getChunk().isLoaded())
-			locy.getBlock().getChunk().load();
-		
-		// Shove a block under them.
-		Block below = locy.getBlock().getRelative(BlockFace.DOWN);
-		event.getPlayer().sendBlockChange(below.getLocation(), below.getType(), below.getData());
+		event.setCancelled(true);
+		plugin.teleportToWarp(event.getPlayer(), locy);
 
-		// Warp the user!
-		event.getPlayer().teleport(locy);
-		event.setTo(locy);
 	}
 
 	private boolean sameBlock(Location from, Location to) {
-		return from.getWorld() == to.getWorld() && from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ();
+		return to != null && from.getWorld() == to.getWorld() && from.getBlockX() == to.getBlockX() && from.getBlockY() == to.getBlockY() && from.getBlockZ() == to.getBlockZ();
 	}
 
 	public void unregister()

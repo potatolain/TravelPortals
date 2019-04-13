@@ -1,5 +1,6 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import io.papermc.lib.PaperLib;
 import net.cpprograms.minecraft.General.CommandHandler;
 import net.cpprograms.minecraft.General.PermissionsHandler;
 import net.cpprograms.minecraft.General.PluginBase;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import net.cpprograms.minecraft.TravelPortals.storage.LegacyStorage;
 import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
@@ -20,6 +22,8 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -586,6 +590,26 @@ public class TravelPortals extends PluginBase {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Teleport a player to a portal warp location
+	 * @param player The player to teleport
+	 * @param warp The warp
+	 */
+	public void teleportToWarp(Player player, Location warp) {
+		PaperLib.getChunkAtAsync(warp, false).thenAccept(chunk -> {
+			// Shove a block under them.
+			Block below = warp.getBlock().getRelative(BlockFace.DOWN);
+			player.sendBlockChange(below.getLocation(), below.getType().isSolid() ? below.getBlockData() : Material.BEDROCK.createBlockData());
+
+			// Warp the user!
+			player.teleport(warp);
+		}).exceptionally(ex -> {
+			player.sendMessage(ChatColor.RED + "Error while teleporting: " + ex.getMessage());
+			getLogger().log(Level.SEVERE, "Error while loading chunk to teleport " + player.getName() + " to " + warp, ex);
+			return null;
+		});
 	}
 
 	/**
