@@ -568,8 +568,15 @@ public class TravelPortals extends PluginBase {
 					Location locy = new Location(player.getWorld(), x + 0.50, y + 0.1, z + 0.50, rotation, 0);
 					if (destination.getWorld() != null && !destination.getWorld().equals(""))
 					{
-						World wo = WorldCreator.name(destination.getWorld()).createWorld();
-						locy.setWorld(wo);
+						World wo = getServer().getWorld(destination.getWorld());
+						if (wo != null) {
+							locy.setWorld(wo);
+						} else {
+							logWarning("World " + destination.getWorld() + " for portal " + destination.getName() + " was not found! - consider running the following command from the console:");
+							logWarning("portal fixworld " + TravelPortals.server.getWorlds().get(0).getName());
+							logWarning("Replacing the world name with the world this portal should link to, if it is incorrect.");
+							return null;
+						}
 					}
 					else
 					{
@@ -598,16 +605,17 @@ public class TravelPortals extends PluginBase {
 	 * @param warp The warp
 	 */
 	public void teleportToWarp(Player player, Location warp) {
+		Location to = warp.clone();
 		PaperLib.getChunkAtAsync(warp, false).thenAccept(chunk -> {
 			// Shove a block under them.
-			Block below = warp.getBlock().getRelative(BlockFace.DOWN);
+			Block below = to.getBlock().getRelative(BlockFace.DOWN);
 			player.sendBlockChange(below.getLocation(), below.getType().isSolid() ? below.getBlockData() : Material.BEDROCK.createBlockData());
 
 			// Warp the user!
-			player.teleport(warp);
+			player.teleport(to);
 		}).exceptionally(ex -> {
 			player.sendMessage(ChatColor.RED + "Error while teleporting: " + ex.getMessage());
-			getLogger().log(Level.SEVERE, "Error while loading chunk to teleport " + player.getName() + " to " + warp, ex);
+			getLogger().log(Level.SEVERE, "Error while loading chunk to teleport " + player.getName() + " to " + to, ex);
 			return null;
 		});
 	}
