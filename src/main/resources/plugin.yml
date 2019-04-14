@@ -2,6 +2,9 @@ name: TravelPortals
 main: net.cpprograms.minecraft.TravelPortals.TravelPortals
 version: '${minecraft.plugin.version}'
 api-version: 1.13
+softdepend:
+  - Multiverse-Core
+  - Multiworld
 commands:
   portal:
     description: Portals
