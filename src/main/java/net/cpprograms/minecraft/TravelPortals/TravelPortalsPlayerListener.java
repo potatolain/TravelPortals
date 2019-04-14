@@ -45,7 +45,6 @@ public class TravelPortalsPlayerListener implements Listener {
 		if (locy == null)
 			return;
 
-		event.setCancelled(true);
 		plugin.teleportToWarp(event.getPlayer(), locy);
 
 	}

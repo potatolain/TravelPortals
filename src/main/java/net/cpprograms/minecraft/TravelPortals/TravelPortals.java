@@ -279,11 +279,13 @@ public class TravelPortals extends PluginBase {
 
 		if (usePlayerMove)
 		{
+			logDebug("Using player move event listener");
 			playerListener = new TravelPortalsPlayerListener(this);
 			getServer().getPluginManager().registerEvents(playerListener, this);
 		}
 		else
 		{
+			logDebug("Using portal use task");
 			useTask = new PortalUseTask(this);
 			if (!useTask.register())
 			{
@@ -590,6 +592,8 @@ public class TravelPortals extends PluginBase {
 						portal.setLastUsed();
 					}
 
+					logDebug(player.getName() + " entered portal " + portal.getName() + " at " + portal.getIdentifierString() + " which warps to " + destination.getName() + " at " + destination.getIdentifierString());
+
 					return locy;
 				}
 			}
@@ -611,6 +615,7 @@ public class TravelPortals extends PluginBase {
 
 			// Warp the user!
 			player.teleport(to);
+			logDebug("Teleported " + player.getName() + " to " + to);
 		}).exceptionally(ex -> {
 			player.sendMessage(ChatColor.RED + "Error while teleporting: " + ex.getMessage());
 			getLogger().log(Level.SEVERE, "Error while loading chunk to teleport " + player.getName() + " to " + to, ex);
