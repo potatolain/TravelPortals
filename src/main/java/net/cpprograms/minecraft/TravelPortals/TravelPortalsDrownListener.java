@@ -4,16 +4,12 @@ package net.cpprograms.minecraft.TravelPortals;
  * 2019 Max Lee aka Phoenix616 (mail@moep.tv)
  */
 
-import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * Handle events for all Player related events
@@ -37,10 +33,10 @@ public class TravelPortalsDrownListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerAirChange(EntityAirChangeEvent event)
 	{
-		if (event.getEntityType() != EntityType.PLAYER)
+		if (!(event.getEntity() instanceof Player) || ((Player) event.getEntity()).getMaximumAir() != ((Player) event.getEntity()).getRemainingAir())
 			return;
 
-		WarpLocation portal = plugin.getPortalStorage().getPortal(event.getEntity().getLocation());
+		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(event.getEntity().getLocation(), 2);
 		if (portal == null)
 			return;
 
@@ -51,12 +47,12 @@ public class TravelPortalsDrownListener implements Listener {
 	 * @param event The event related to this.
 	 */
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerAirChange(EntityDamageEvent event)
+	public void onPlayerDrowning(EntityDamageEvent event)
 	{
 		if (event.getEntityType() != EntityType.PLAYER || event.getCause() == EntityDamageEvent.DamageCause.DROWNING)
 			return;
 
-		WarpLocation portal = plugin.getPortalStorage().getPortal(event.getEntity().getLocation());
+		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(event.getEntity().getLocation(), 2);
 		if (portal == null)
 			return;
 
