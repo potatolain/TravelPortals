@@ -572,7 +572,7 @@ public class PortalCommandSet extends CommandSet
 					name = "is hidden";
 		}
 
-		WarpLocation destination = plugin.getPortalStorage().getPortal(dest);
+		WarpLocation destination = dest.isEmpty() ? null : plugin.getPortalStorage().getPortal(dest);
 
 		if (destination == null && !dest.isEmpty())
 			dest = "warps to " + ChatColor.RED + dest + ChatColor.DARK_AQUA + " in world " + ChatColor.RED + world;
@@ -594,6 +594,24 @@ public class PortalCommandSet extends CommandSet
 
 		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + name + ChatColor.DARK_AQUA + " and " + dest + ChatColor.DARK_AQUA + ".");
 		sender.sendMessage(ChatColor.DARK_AQUA  + owner);
+
+		if (plugin.permissions.hasPermission(sender, "travelportals.command.info.details")) {
+			sender.sendMessage(ChatColor.DARK_AQUA + "Portal location: " + ChatColor.YELLOW + portal.getIdentifierString());
+			float rotation = 0f;
+			if (portal.getDoorPosition() > 0)
+			{
+				if (portal.getDoorPosition() == 1)
+					rotation = 270.0f;
+				else if (portal.getDoorPosition() == 2)
+					rotation = 0.0f;
+				else if (portal.getDoorPosition() == 3)
+					rotation = 90.0f;
+				else
+					rotation = 180.0f;
+			}
+			sender.sendMessage(ChatColor.DARK_AQUA + "Portal direction: " + ChatColor.YELLOW + portal.getDoorPosition() + "/" + rotation);
+			sender.sendMessage(ChatColor.DARK_AQUA + "Destination location: " + ChatColor.YELLOW + (destination != null ? destination.getIdentifierString() : "none"));
+		}
 
 		return true;
 	}
