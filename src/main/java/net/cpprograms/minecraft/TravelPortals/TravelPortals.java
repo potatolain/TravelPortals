@@ -444,9 +444,7 @@ public class TravelPortals extends PluginBase {
 			return null;
 
 		Location playerLoc = player.getLocation();
-		playerLoc.setX(playerLoc.getX() + 1.0);
 		Material blockType = player.getWorld().getBlockAt(playerLoc).getType();
-		playerLoc.setX(playerLoc.getX() - 1.0);
 		// Is the user actually in portal material?
 		if (blockType == portaltype || blockType == blocktype || doortypes.contains(blockType))
 		{
