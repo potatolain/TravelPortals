@@ -201,68 +201,8 @@ public class PluginBase extends JavaPlugin {
 	 */
 	protected boolean loadConfig()
 	{
-		try
-		{
-			if (!getDataFolder().exists())
-				getDataFolder().mkdirs();
-			getConfig().load(new File(getDataFolder(), "config.yml"));
-			if (getConfig().contains("debug"))
-				debugMode = getConfig().getBoolean("debug");
-		} catch (FileNotFoundException e) {
-			logInfo("No config file found. Creating a default configuration file: " + getPluginName() + "/config.yml");
-			return this.saveDefaultConfiguration();
-		} catch (IOException e) {
-			logSevere("IOException while loading " + getPluginName() + "'s config file! Check on your config.yml, and make sure that the plugins folder is writable.");
-			if (debugMode)
-				e.printStackTrace();
-			return false;
-		} catch (InvalidConfigurationException e) {
-			logSevere("Your configuration file for " + getPluginName() + " is invalid. Double check your syntax. (And remove any tab characters)");
-			if (debugMode)
-				e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Save a default configuration file if ours does not exist.
-	 * @return true if the save was successful; false otherwise.
-	 */
-	protected boolean saveDefaultConfiguration()
-	{
-		try
-		{
-			File conf = new File(this.getDataFolder(), "config.yml");
-
-			InputStream is = this.getClass().getResourceAsStream("/config.yml");
-			if (!conf.exists())
-				conf.createNewFile();
-			OutputStream os = new FileOutputStream(conf);
-
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = is.read(buf)) > 0)
-				os.write(buf, 0, len);
-
-			is.close();
-			os.close();
-		} 
-		catch (IOException e) 
-		{
-			logSevere("Could not save default config.yml file! Check the plugin's data directory!");
-			if (debugMode)
-				e.printStackTrace();
-			return false;
-		} 
-		catch (NullPointerException e) 
-		{
-			logSevere("Could not find default config.yml file! Plugin developer: Did you include config.yml in the root of the jar?");
-			if (debugMode)
-				e.printStackTrace();
-			return false;
-		}
-
+		saveDefaultConfig();
+		reloadConfig();
 		return true;
 	}
 
