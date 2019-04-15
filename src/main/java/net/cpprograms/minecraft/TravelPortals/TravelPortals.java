@@ -641,8 +641,16 @@ public class TravelPortals extends PluginBase {
 	 * @param warp The warp
 	 */
 	public void teleportToWarp(Player player, Location warp) {
-		if (warp.getWorld() == null)
+		if (warp.getWorld() == null) {
+			player.sendMessage(ChatColor.RED + "Target portal does not have a world set!");
 			return;
+		}
+
+		if (!warp.getWorld().getWorldBorder().isInside(warp)) {
+			player.sendMessage(ChatColor.RED + "Target portal is outside of the world border!");
+			return;
+		}
+
 		if (portalAmbientSound != null)
 			player.getWorld().playSound(player.getLocation(), portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
 
