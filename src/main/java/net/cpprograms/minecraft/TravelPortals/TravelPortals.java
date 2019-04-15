@@ -643,8 +643,6 @@ public class TravelPortals extends PluginBase {
 	public void teleportToWarp(Player player, Location warp) {
 		if (warp.getWorld() == null)
 			return;
-		if (portalTravelSound != null)
-			player.playSound(player.getLocation(), portalTravelSound, SoundCategory.BLOCKS, 1f, 1f);
 		if (portalAmbientSound != null)
 			player.getWorld().playSound(player.getLocation(), portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
 
@@ -658,6 +656,8 @@ public class TravelPortals extends PluginBase {
 
 			// Warp the user!
 			player.teleport(to);
+			if (portalTravelSound != null)
+				player.playSound(to, portalTravelSound, SoundCategory.BLOCKS, 1f, 1f);
 			logDebug("Teleported " + player.getName() + " to " + to);
 		}).exceptionally(ex -> {
 			player.sendMessage(ChatColor.RED + "Error while teleporting: " + ex.getMessage());
