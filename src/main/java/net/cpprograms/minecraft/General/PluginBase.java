@@ -203,6 +203,8 @@ public class PluginBase extends JavaPlugin {
 	{
 		saveDefaultConfig();
 		reloadConfig();
+		if (getConfig().contains("debug"))
+			debugMode = getConfig().getBoolean("debug");
 		return true;
 	}
 
