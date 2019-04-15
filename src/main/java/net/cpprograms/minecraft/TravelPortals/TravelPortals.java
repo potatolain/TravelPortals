@@ -656,10 +656,16 @@ public class TravelPortals extends PluginBase {
 
 		Location to = warp.clone();
 		PaperLib.getChunkAtAsync(warp, false).thenAccept(chunk -> {
+			Block block = to.getBlock();
+			if (block.getType().isSolid() || block.getRelative(BlockFace.UP).getType().isSolid()) {
+				player.sendMessage(ChatColor.RED + "Target portal is obstructed!");
+				return;
+			}
+
 			if (portalAmbientSound != null)
 				to.getWorld().playSound(to, portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
 			// Shove a block under them.
-			Block below = to.getBlock().getRelative(BlockFace.DOWN);
+			Block below = block.getRelative(BlockFace.DOWN);
 			player.sendBlockChange(below.getLocation(), below.getType().isSolid() ? below.getBlockData() : Material.BEDROCK.createBlockData());
 
 			// Warp the user!
