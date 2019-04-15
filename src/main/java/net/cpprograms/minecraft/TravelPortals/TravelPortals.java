@@ -20,13 +20,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 
 /**
  * TravelPortals Bukkit port.
@@ -106,6 +106,21 @@ public class TravelPortals extends PluginBase {
 	 * The type of block used for the torch at the bottom.
 	 */
 	protected Material torchtype = Material.REDSTONE_TORCH;
+
+	/**
+	 * Portal create sound when a player creates a new portal
+	 */
+	protected Sound portalCreateSound = Sound.BLOCK_PORTAL_TRIGGER;
+
+	/**
+	 * Portal ambient sound, currently only gets played for everyone at the start and target portal when a player travels through it
+	 */
+	protected Sound portalAmbientSound = Sound.BLOCK_PORTAL_AMBIENT;
+
+	/**
+	 * Sound playing to the player travelling through a portal
+	 */
+	protected Sound portalTravelSound = Sound.BLOCK_PORTAL_TRAVEL;
 
 	/**
 	 * Do we want to use the permissions plugin?
@@ -232,6 +247,14 @@ public class TravelPortals extends PluginBase {
 			}
 			if (conf.get("torchname", null) != null)
 				strTorchtype = conf.getString("torchname");
+
+			if (conf.isConfigurationSection("sounds"))
+			{
+				portalCreateSound = getSound(conf.getString("sounds.create"));
+				portalAmbientSound = getSound(conf.getString("sounds.ambient"));
+				portalTravelSound = getSound(conf.getString("sounds.travel"));
+			}
+
 			if (conf.get("permissions", null) != null)
 				usepermissions = conf.getBoolean("permissions");
 			if (conf.get("autoexport", null) != null)
@@ -298,6 +321,17 @@ public class TravelPortals extends PluginBase {
 		}
 		permissions = new PermissionsHandler(usepermissions);
 		return true;
+	}
+
+	private Sound getSound(String name) {
+		try {
+			return Sound.valueOf(name.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			if (!name.isEmpty()) {
+				logWarning(name + " is not a valid sound!");
+			}
+			return null;
+		}
 	}
 
 	/**
@@ -607,8 +641,17 @@ public class TravelPortals extends PluginBase {
 	 * @param warp The warp
 	 */
 	public void teleportToWarp(Player player, Location warp) {
+		if (warp.getWorld() == null)
+			return;
+		if (portalTravelSound != null)
+			player.playSound(player.getLocation(), portalTravelSound, SoundCategory.BLOCKS, 1f, 1f);
+		if (portalAmbientSound != null)
+			player.getWorld().playSound(player.getLocation(), portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
+
 		Location to = warp.clone();
 		PaperLib.getChunkAtAsync(warp, false).thenAccept(chunk -> {
+			if (portalAmbientSound != null)
+				to.getWorld().playSound(to, portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
 			// Shove a block under them.
 			Block below = to.getBlock().getRelative(BlockFace.DOWN);
 			player.sendBlockChange(below.getLocation(), below.getType().isSolid() ? below.getBlockData() : Material.BEDROCK.createBlockData());

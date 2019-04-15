@@ -1,6 +1,7 @@
 package net.cpprograms.minecraft.TravelPortals;
 
 import org.bukkit.ChatColor;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.Material;
@@ -108,6 +109,9 @@ public class TravelPortalsBlockListener implements Listener {
 			{
 				player.getWorld().getBlockAt(x, y, z).setType(plugin.portaltype);
 				player.getWorld().getBlockAt(x, y+1, z).setType(plugin.portaltype);
+
+				if (plugin.portalCreateSound != null)
+					event.getBlock().getWorld().playSound(event.getBlock().getLocation(), plugin.portalCreateSound, SoundCategory.BLOCKS, 1f, 1f);
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
 

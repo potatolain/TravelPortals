@@ -45,6 +45,15 @@ autoexport: false
 # Default: 8
 cooldown : 8
 
+# Different portal sounds, set to empty strings if you don't want them
+sound:
+  # Portal create sound when a player creates a new portal
+  create: BLOCK_PORTAL_TRIGGER
+  # Portal ambient sound, currently only gets played the start and target portal when a player travels through it
+  ambient: BLOCK_PORTAL_AMBIENT
+  # Sound playing to the player travelling through a portal
+  travel: BLOCK_PORTAL_TRAVEL
+
 # This option will keep a number of backups of the portals file in case anything goes wrong. 
 # They do not need much space; if you have problems with the file I strongly suggest upping this
 # to 5 or 10. 
@@ -53,7 +62,7 @@ numsaves: 3
 # This option determines whether to use the playerMove functionality (default) or the new
 # polling technique developed by asofold, which may perform better on high-load servers. 
 # true uses the old method; false uses the new one.
-useplayermove: true
+useplayermove: false
 
 # This option affects how often to check all players to see if they are in a portal or not.
 # It is in server ticks.
