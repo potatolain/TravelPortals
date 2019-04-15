@@ -62,7 +62,7 @@ numsaves: 3
 # This option determines whether to use the playerMove functionality (default) or the new
 # polling technique developed by asofold, which may perform better on high-load servers. 
 # true uses the old method; false uses the new one.
-useplayermove: false
+useplayermove: true
 
 # This option affects how often to check all players to see if they are in a portal or not.
 # It is in server ticks.
