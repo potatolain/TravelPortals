@@ -31,15 +31,9 @@ public class TravelPortalsBlockListener implements Listener {
 	 * Called when a block is placed; let us know if a portal is being created.
 	 * @param event The event related to the block placement.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event)
 	{
-		if (event.isCancelled()) 
-		{
-			plugin.logDebug("BlockPlace blocked because event was cancelled.");
-			return;
-		}
-
 		if (event.getBlock().getType() == plugin.torchtype)
 		{
 			if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.portal.create"))
@@ -129,16 +123,9 @@ public class TravelPortalsBlockListener implements Listener {
 	 * Called when a block is broken; let us know if a portal is being destroyed.
 	 * @param event The event related to block breakage.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event)
 	{
-
-		if (event.isCancelled())
-		{
-			plugin.logDebug("BlockBreak blocked due to event cancellation.");
-			return;
-		}
-
 		// Is this block important to us?
 		if (event.getBlock().getType() == plugin.blocktype || plugin.doortypes.contains(event.getBlock().getType()))
 		{
