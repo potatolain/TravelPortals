@@ -131,7 +131,7 @@ public class TravelPortalsBlockListener implements Listener {
 		{
 			Player player = event.getPlayer();
 			Block block = event.getBlock();
-			for (WarpLocation w : plugin.getPortalStorage().getPortals().values())
+			for (WarpLocation w : plugin.getPortalStorage().getNearbyPortals(event.getBlock().getLocation(), 2))
 			{
 				// Check if the user actually hit one of them.
 				if (((Math.abs(w.getX() - block.getX()) < 2 && Math.abs(w.getZ() - block.getZ()) < 1) || (Math.abs(w.getZ() - block.getZ()) < 2 && Math.abs(w.getX() - block.getX()) < 1)) && (block.getY() - w.getY() < 2 && block.getY() - w.getY() >= 0))

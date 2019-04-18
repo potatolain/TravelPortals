@@ -843,10 +843,10 @@ public class PortalCommandSet extends CommandSet
 	private WarpLocation getPortal(Player player)
 	{
 		// Get target block
-		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getTargetBlock(getTransparent(), 5).getLocation(), 2);
+		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(player.getTargetBlock(getTransparent(), 5).getLocation(), 1);
 		if (portal == null)
 			// Check see if the player is just near a portal
-			portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 2);
+			portal = plugin.getPortalStorage().getNearbyPortal(player.getLocation(), 1);
 		return portal;
 	}
 

@@ -36,8 +36,7 @@ public class TravelPortalsDrownListener implements Listener {
 		if (!(event.getEntity() instanceof Player) || ((Player) event.getEntity()).getMaximumAir() != ((Player) event.getEntity()).getRemainingAir())
 			return;
 
-		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(event.getEntity().getLocation(), 2);
-		if (portal == null)
+		if (plugin.getPortalStorage().getNearbyPortals(event.getEntity().getLocation(), 1).isEmpty())
 			return;
 
 		event.setCancelled(true);
@@ -52,8 +51,7 @@ public class TravelPortalsDrownListener implements Listener {
 		if (event.getEntityType() != EntityType.PLAYER || event.getCause() == EntityDamageEvent.DamageCause.DROWNING)
 			return;
 
-		WarpLocation portal = plugin.getPortalStorage().getNearbyPortal(event.getEntity().getLocation(), 2);
-		if (portal == null)
+		if (plugin.getPortalStorage().getNearbyPortals(event.getEntity().getLocation(), 1).isEmpty())
 			return;
 
 		event.setCancelled(true);

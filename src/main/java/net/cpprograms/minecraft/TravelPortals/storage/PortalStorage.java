@@ -104,15 +104,15 @@ public abstract class PortalStorage {
     }
 
     /**
-     * Get the closest nearby portal
-     * @param location  The location to get a portal at
+     * Get all portals in a certain radius
+     * @param location  The location to get the portal at
      * @param radius    The radius in blocks to search in
-     * @return          The Portal or null if none was found
+     * @return          The Portals or an empty collection if none were found
      */
-    public WarpLocation getNearbyPortal(Location location, int radius) {
+    public Collection<WarpLocation> getNearbyPortals(Location location, int radius) {
         WarpLocation exact = getPortal(location);
         if (exact != null) {
-            return exact;
+            return Collections.singletonList(exact);
         }
 
         Set<WarpLocation> nearbyPortals = new HashSet<>();
@@ -122,16 +122,29 @@ public abstract class PortalStorage {
             for (int z = -radius; z <= radius; z++) {
                 for (int y = -radius; y <= radius; y++) {
                     WarpLocation portal = getPortal(loopLocation);
-                    if (portal != null && !nearbyPortals.contains(portal)) {
+                    if (portal != null) {
                         nearbyPortals.add(portal);
                     }
                     loopLocation.add(0, 1, 0);
                 }
+                loopLocation.subtract(0, 2 * radius + 1, 0); // reset to start y
                 loopLocation.add(0, 0, 1);
             }
+            loopLocation.subtract(0, 0, 2 * radius + 1); // reset to start z
             loopLocation.add(1, 0, 0);
         }
 
+        return nearbyPortals;
+    }
+
+    /**
+     * Get the closest nearby portal
+     * @param location  The location to get a portal at
+     * @param radius    The radius in blocks to search in
+     * @return          The Portal or null if none was found
+     */
+    public WarpLocation getNearbyPortal(Location location, int radius) {
+        Collection<WarpLocation> nearbyPortals = getNearbyPortals(location, radius);
         if (nearbyPortals.size() == 1) {
             return nearbyPortals.iterator().next();
         } else if (!nearbyPortals.isEmpty()){
