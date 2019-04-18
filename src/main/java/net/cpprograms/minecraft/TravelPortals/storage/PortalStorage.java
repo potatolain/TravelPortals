@@ -3,6 +3,8 @@ package net.cpprograms.minecraft.TravelPortals.storage;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
 import org.bukkit.Location;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -62,7 +64,7 @@ public abstract class PortalStorage {
             portal.setName(previous.getName());
         }
         if (portal.hasName()) {
-            portalNames.put(portal.getName(), portal.getIdentifierString());
+            portalNames.put(portal.getName().toLowerCase(), portal.getIdentifierString());
         }
         portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ(), portal.getIdentifierString());
         portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ(), portal.getIdentifierString());
@@ -74,7 +76,7 @@ public abstract class PortalStorage {
      * @return The portal info or null if none was found
      */
     public WarpLocation getPortal(String name) {
-        String identifier = portalNames.get(name);
+        String identifier = portalNames.get(name.toLowerCase());
         if (identifier == null) {
             return null;
         }
