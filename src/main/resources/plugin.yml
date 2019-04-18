@@ -20,6 +20,7 @@ permissions:
       travelportals.command.hide: false
       travelportals.command.list: false
       travelportals.command.list.all: false
+      travelportals.command.list.others: false
       travelportals.command.name: false
       travelportals.command.warp: false
       travelportals.command.info: false
@@ -39,6 +40,7 @@ permissions:
       travelportals.command.hide: true
       travelportals.command.list: true
       travelportals.command.list.all: true
+      travelportals.command.list.others: true
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
@@ -71,6 +73,7 @@ permissions:
       travelportals.command.hide: true
       travelportals.command.list: true
       travelportals.command.list.all: true
+      travelportals.command.list.others: true
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
@@ -93,6 +96,7 @@ permissions:
       travelportals.command.hide: true
       travelportals.command.list: true
       travelportals.command.list.all: true
+      travelportals.command.list.others: true
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
@@ -131,6 +135,9 @@ permissions:
     default: true
   travelportals.command.list.all:
     description: Allows the user to see the list of all portals.
+    default: true
+  travelportals.command.list.others:
+    description: Allows the user to see the list of all portals of a specific player.
     default: true
   travelportals.command.name:
     description: Allows the user to name his/her own portals.

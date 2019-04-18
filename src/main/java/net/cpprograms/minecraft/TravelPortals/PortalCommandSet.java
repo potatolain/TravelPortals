@@ -206,15 +206,22 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
+		String ownerName = null;
 		// Get what page to use.
 		int pn = 1;
 		if (args.length >= 1)
 			try
 			{
-				pn = Integer.parseInt(args[0]);
+				pn = Integer.parseInt(args[args.length - 1]);
+				if (args.length >= 2)
+				{
+					ownerName = args[0];
+				}
 			}
 			catch (NumberFormatException e)
-			{}
+			{
+				ownerName = args[0];
+			}
 
 		// Negative page numbers will not fly.
 		if (pn < 1) pn = 1;
@@ -222,8 +229,11 @@ public class PortalCommandSet extends CommandSet
 		boolean showAll = plugin.permissions.hasPermission(sender, "travelportals.command.list.all");
 
 		// This will load all of the portals in alphabetical order
+		String finalOwner = plugin.permissions.hasPermission(sender, "travelportals.command.list.others") ? ownerName : null;
 		List<WarpLocation> allp = plugin.getPortalStorage().getPortals().values().stream()
-				.filter(w -> w.hasName() && ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", false)))
+				.filter(w -> w.hasName()
+						&& (finalOwner == null || finalOwner.equals(w.getOwner()))
+						&& ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", false)))
 				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
 				.collect(Collectors.toList());
 
@@ -235,7 +245,7 @@ public class PortalCommandSet extends CommandSet
 		}
 
 		// Output this information to the user now!
-		sender.sendMessage(ChatColor.DARK_GREEN + "TravelPortals (Page " + pn + "/" + (int) Math.ceil(allp.size() / 8.0) + ")");
+		sender.sendMessage(ChatColor.DARK_GREEN + "TravelPortals" + (finalOwner != null ? " by " + finalOwner : "") + " (Page " + pn + "/" + (int) Math.ceil(allp.size() / 8.0) + ")");
 		sender.sendMessage(ChatColor.DARK_AQUA + "---------------------------------------------------");
 
 		for (int i = (pn - 1) * 8; i < pn * 8 && i < allp.size(); i++) {
