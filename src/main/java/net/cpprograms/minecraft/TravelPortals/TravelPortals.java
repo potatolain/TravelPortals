@@ -50,6 +50,11 @@ public class TravelPortals extends PluginBase {
 	private final TravelPortalsDrownListener drownListener = new TravelPortalsDrownListener(this);
 
 	/**
+	 * Whether or not we should use UUIDs to resolve portal permissions
+	 */
+	private boolean useUuid = false;
+
+	/**
 	 * Here we store the portals
 	 */
 	protected PortalStorage portalStorage;
@@ -175,6 +180,8 @@ public class TravelPortals extends PluginBase {
 			return;
 		}
 
+		portalStorage.update();
+
 		getServer().getPluginManager().registerEvents(blockListener, this);
 		getServer().getPluginManager().registerEvents(drownListener, this);
 
@@ -204,6 +211,8 @@ public class TravelPortals extends PluginBase {
 			}
 
 			logDebug("Storage type is " + storageType);
+
+			useUuid = conf.getBoolean("use-uuids", false);
 
 			try {
 				portalStorage = createStorage(storageType);
@@ -433,7 +442,7 @@ public class TravelPortals extends PluginBase {
 			String line;
 			while ((line = br.readLine()) != null)
 			{
-				String[] data = line.split(",");
+				String[] data = line.split(",", 8);
 				if (data.length != 8)
 					continue;
 				WarpLocation warp = new WarpLocation(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), 0, data[6], data[7]);
@@ -502,7 +511,7 @@ public class TravelPortals extends PluginBase {
 					return null;
 				}
 
-				if (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))
+				if (!portal.isOwner(player))
 				{
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
@@ -515,7 +524,7 @@ public class TravelPortals extends PluginBase {
 			// Complain if this isn't usable
 			if (!portal.hasDestination())
 			{
-				if ((!permissions.hasPermission(player, "travelportals.command.warp") || (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))))
+				if (!permissions.hasPermission(player, "travelportals.command.warp") || !portal.isOwner(player))
 				{
 					player.sendMessage(ChatColor.DARK_RED + "This portal has no destination.");
 				}
@@ -548,7 +557,7 @@ public class TravelPortals extends PluginBase {
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
 
-						if (!portal.getOwner().equals("") && !portal.getOwner().equals(player.getName()))
+						if (!portal.isOwner(player))
 						{
 							player.sendMessage(ChatColor.DARK_RED + "You do not own the destination portal, and do not have permission to use it.");
 							return null;
@@ -695,6 +704,13 @@ public class TravelPortals extends PluginBase {
 	 */
 	public boolean isAutoExport() {
 		return autoExport;
+	}
+
+	/**
+	 * Whether or not UUIDs should be used for portal access
+	 */
+	public boolean shouldUseUuid() {
+		return useUuid;
 	}
 
 	/**

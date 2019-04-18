@@ -14,11 +14,10 @@ import java.util.Map;
 
 public class YamlStorage extends PortalStorage {
 
-    private final TravelPortals plugin;
     private final File worldsFolder;
 
     public YamlStorage(TravelPortals plugin) {
-        this.plugin = plugin;
+        super(plugin);
         worldsFolder = new File(plugin.getDataFolder(), "worlds");
     }
 

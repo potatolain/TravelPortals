@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A quick serializable storage medium for warping points.
@@ -187,6 +188,15 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
+	 * Check whether or not a certain player is the owner of a portal
+	 * @param player The player to check
+	 * @return Whether or not the player is the owner
+	 */
+	public boolean isOwner(Player player) {
+		return hasOwnerId() ? player.getUniqueId().equals(getOwnerId()) : player.getName().equals(getOwnerName());
+	}
+
+	/**
 	 * Gets the current owner of the portal.
 	 * @return The owner of the portal.
 	 */
@@ -198,7 +208,28 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
+	 * Gets the name of the current owner of the portal.
+	 * @return The name of the owner of the portal.
+	 */
+	public String getOwnerName()
+	{
+		return getOwner().split(",")[0];
+	}
+
+	/**
 	 * Sets the current owner of the portal.
+	 * @param player The new owner.
+	 */
+	public void setOwner(Player player) 
+	{
+		if (player == null)
+			owner = null;
+		else
+			owner = player.getName() + "," + player.getUniqueId();
+	}
+
+	/**
+	 * Sets the current owner of the portal. Where possible use {@link #setOwner(Player)}
 	 * @param _owner The new owner.
 	 */
 	public void setOwner(String _owner)
@@ -212,6 +243,28 @@ public class WarpLocation implements java.io.Serializable {
 	public boolean hasOwner()
 	{
 		return owner != null && !owner.isEmpty();
+	}
+
+	/**
+	 * Checks whether or not we have an UUID stored for the owner
+	 */
+	public boolean hasOwnerId() {
+		return hasOwner() && owner.split(",").length > 1;
+	}
+
+	/**
+	 * Get the UUID of the owner of the portal
+	 * @return The UUID of the owner
+	 */
+	public UUID getOwnerId() {
+		if (!hasOwnerId()) {
+			return null;
+		}
+		try {
+			return UUID.fromString(owner.split(",")[1]);
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
 	}
 
 	/**
@@ -332,13 +385,13 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
-     * Returns a string that can uniquely identify this portal amongst other portals. 
-     * Contains the world, and its location in space.
-     * @return A string that can be used to uniquely identify this portal.
-     */
-    public String getIdentifierString() {
-        return world + "," + x + "," + y + "," + z;
-    }
+	 * Returns a string that can uniquely identify this portal amongst other portals. 
+	 * Contains the world, and its location in space.
+	 * @return A string that can be used to uniquely identify this portal.
+	 */
+	public String getIdentifierString() {
+		return world + "," + x + "," + y + "," + z;
+	}
 
 	/**
 	 * Check if this portal is usable. (Time limit)
@@ -367,7 +420,9 @@ public class WarpLocation implements java.io.Serializable {
 	 */
 	public boolean canAccess(CommandSender sender)
 	{
-		return !hasOwner() || !(sender instanceof Player) || sender.getName().equals(owner);
+		return !hasOwner()
+				|| !(sender instanceof Player)
+				|| isOwner((Player) sender);
 	}
 
 	public static WarpLocation deserialize(Map<?, ?> map)

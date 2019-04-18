@@ -142,7 +142,7 @@ public class TravelPortalsBlockListener implements Listener {
 							event.setCancelled(true);
 							return;
 						}
-						if (!w.getOwner().equals("") && !w.getOwner().equals(player.getName())) {
+						if (!w.isOwner(player)) {
 							if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.admin.portal.destroy")) {
 								event.setCancelled(true);
 								return;

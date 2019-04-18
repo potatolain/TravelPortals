@@ -4,6 +4,10 @@
 # Available options are YAML and LEGACY
 storagetype: YAML
 
+# Whether or not we should store player UUIDs
+# Setting this to true will also cause the plugin to try to convert existing data to UUIDs if it isn't already
+use-uuids: true
+
 # The type of block used for the frame of the portal. Default: OBSIDIAN
 frame: OBSIDIAN
 # The name for the type of block being used for the frame. Default: obsidian

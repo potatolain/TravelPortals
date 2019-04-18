@@ -232,7 +232,7 @@ public class PortalCommandSet extends CommandSet
 		String finalOwner = plugin.permissions.hasPermission(sender, "travelportals.command.list.others") ? ownerName : null;
 		List<WarpLocation> allp = plugin.getPortalStorage().getPortals().values().stream()
 				.filter(w -> w.hasName()
-						&& (finalOwner == null || finalOwner.equals(w.getOwner()))
+						&& (finalOwner == null || finalOwner.equalsIgnoreCase(w.getOwnerName()))
 						&& ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", sender.isOp())))
 				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
 				.collect(Collectors.toList());
@@ -322,7 +322,7 @@ public class PortalCommandSet extends CommandSet
 				// Ownership check
 				if (plugin.usepermissions)
 				{
-					if (!portal.getOwner().equals("") && !portal.getOwner().equals(sender.getName()))
+					if (sender instanceof Player && !portal.isOwner((Player) sender))
 					{
 						if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.name"))
 						{
@@ -571,7 +571,7 @@ public class PortalCommandSet extends CommandSet
 
 		String name = portal.getName();
 		String dest = portal.getDestination();
-		String owner = portal.getOwner();
+		String owner = portal.getOwnerName();
 		String world = portal.getWorld();
 
 		if (world == null || world.isEmpty())
@@ -612,6 +612,7 @@ public class PortalCommandSet extends CommandSet
 		sender.sendMessage(ChatColor.DARK_AQUA  + owner);
 
 		if (plugin.permissions.hasPermission(sender, "travelportals.command.info.details", sender.isOp())) {
+		    sender.sendMessage(ChatColor.DARK_AQUA + "Owner UUID: " + ChatColor.YELLOW + portal.getOwnerId());
 			sender.sendMessage(ChatColor.DARK_AQUA + "Portal location: " + ChatColor.YELLOW + portal.getIdentifierString());
 			float rotation = 0f;
 			if (portal.getDoorPosition() > 0)
@@ -657,12 +658,12 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		if (portal.getOwner().equals("") || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
+		if (!portal.hasOwner() || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
 		{
 			if (args.length > 0)
 				portal.setOwner(args[0]);
 			else
-				portal.setOwner(player.getName());
+				portal.setOwner(player);
 
 			plugin.savedata();
 			player.sendMessage(ChatColor.DARK_GREEN + "You have successfully claimed this portal"+(args.length>0?" for " + args[0]:"")+"!");
@@ -671,14 +672,14 @@ public class PortalCommandSet extends CommandSet
 		}
 		else
 		{
-			if (portal.getOwner().equals(player.getName()) || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
+			if (portal.isOwner(player) || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
 			{
 				portal.setOwner("");
 				player.sendMessage(ChatColor.DARK_GREEN + "This portal no longer has an owner.");
 			}
 			else
 			{
-				player.sendMessage(ChatColor.DARK_RED + "This portal is already owned by "+portal.getOwner()+"!");
+				player.sendMessage(ChatColor.DARK_RED + "This portal is already owned by "+portal.getOwnerName()+"!");
 				return true;
 			}
 		}

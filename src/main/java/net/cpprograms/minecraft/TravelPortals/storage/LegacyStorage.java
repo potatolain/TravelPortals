@@ -2,7 +2,6 @@ package net.cpprograms.minecraft.TravelPortals.storage;
 
 import net.cpprograms.minecraft.TravelPortals.TravelPortals;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
-import org.bukkit.Location;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,16 +13,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 public class LegacyStorage extends PortalStorage {
 
-    private final TravelPortals plugin;
-
     public LegacyStorage(TravelPortals plugin)
     {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     @Override

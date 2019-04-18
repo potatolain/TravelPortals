@@ -1,7 +1,10 @@
 package net.cpprograms.minecraft.TravelPortals.storage;
 
+import net.cpprograms.minecraft.General.uuidconverter.UuidConverter;
+import net.cpprograms.minecraft.TravelPortals.TravelPortals;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,12 +12,21 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public abstract class PortalStorage {
+
+    protected final TravelPortals plugin;
 
     private Map<String, WarpLocation> portals = new LinkedHashMap<>();
     private Map<String, String> portalNames = new LinkedHashMap<>();
     private Map<String, String> portalLocations = new LinkedHashMap<>();
+
+    private Set<String> namesToConvert = new HashSet<>();
+
+    protected PortalStorage(TravelPortals plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * Load the data from the storage
@@ -47,6 +59,33 @@ public abstract class PortalStorage {
     public abstract StorageType getType();
 
     /**
+     * Attempt to update to UUIDs if it is necessary
+     */
+    public void update() {
+        if (!plugin.shouldUseUuid() || namesToConvert.isEmpty()) {
+            return;
+        }
+
+        Map<String, UUID> uuidMap = new UuidConverter(plugin).getUuidMap(namesToConvert);
+        if (uuidMap.isEmpty()) {
+            return;
+        }
+
+        int i = 0;
+        for (WarpLocation portal : getPortals().values()) {
+            if (!portal.hasOwnerId()) {
+                UUID id = uuidMap.get(portal.getOwnerName());
+                if (id != null) {
+                    portal.setOwner(portal.getOwnerName() + "," + id);
+                    i++;
+                }
+            }
+        }
+        plugin.logInfo(i + " portals updated! Found " + uuidMap.size() + " of " + namesToConvert.size() + " missing names.");
+        save();
+    }
+
+    /**
      * This gets all portals
      * @return A list with all portals
      */
@@ -68,6 +107,10 @@ public abstract class PortalStorage {
         }
         portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ(), portal.getIdentifierString());
         portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ(), portal.getIdentifierString());
+
+        if (plugin.shouldUseUuid() && !portal.hasOwnerId()) {
+            namesToConvert.add(portal.getOwnerName());
+        }
     }
 
     /**
