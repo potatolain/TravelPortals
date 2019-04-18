@@ -19,6 +19,7 @@ permissions:
       travelportals.command.help: false
       travelportals.command.hide: false
       travelportals.command.list: false
+      travelportals.command.list.all: false
       travelportals.command.name: false
       travelportals.command.warp: false
       travelportals.command.info: false
@@ -37,6 +38,7 @@ permissions:
       travelportals.command.help: true
       travelportals.command.hide: true
       travelportals.command.list: true
+      travelportals.command.list.all: true
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
@@ -68,6 +70,7 @@ permissions:
       travelportals.command.help: true
       travelportals.command.hide: true
       travelportals.command.list: true
+      travelportals.command.list.all: true
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
@@ -89,6 +92,7 @@ permissions:
       travelportals.command.help: true
       travelportals.command.hide: true
       travelportals.command.list: true
+      travelportals.command.list.all: true
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
@@ -96,6 +100,7 @@ permissions:
       travelportals.command.claim: true
       travelportals.admin.portal.use: true
       travelportals.admin.portal.destroy: true
+      travelportals.admin.portal.accessall: true
       travelportals.admin.command.name: true
       travelportals.admin.command.warp: true
       travelportals.admin.command.hide: true
@@ -122,7 +127,10 @@ permissions:
     description: Allows the user to see the help.
     default: true
   travelportals.command.list:
-    description: Allows the user to see the list of portals.
+    description: Allows the user to see the list of his portals.
+    default: true
+  travelportals.command.list.all:
+    description: Allows the user to see the list of all portals.
     default: true
   travelportals.command.name:
     description: Allows the user to name his/her own portals.
@@ -148,6 +156,9 @@ permissions:
     default: true
   travelportals.admin.portal.destroy:
     description: Allows the user to destroy ALL portals; not just his/her own.
+    default: op
+  travelportals.admin.portal.see:
+    description: Allows the user to see any existing portals.
     default: op
   travelportals.admin.command.name:
     description: Allows the user to change the name of any existing portal.

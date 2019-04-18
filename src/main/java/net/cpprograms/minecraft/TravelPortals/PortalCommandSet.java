@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
 import org.bukkit.ChatColor;
@@ -198,7 +200,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean list(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.list"))
+		if (sender instanceof Player && !plugin.permissions.hasPermission(sender, "travelportals.command.list"))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -217,51 +219,61 @@ public class PortalCommandSet extends CommandSet
 		// Negative page numbers will not fly.
 		if (pn < 1) pn = 1;
 
-		// This will load all of the portals in alphabetical order
-		TreeMap<String, String> allp = new TreeMap<String, String>();
-		for (WarpLocation w : plugin.getPortalStorage().getPortals().values())
-			if (w.hasName() && w.canSee(sender))
-			{
-				WarpLocation tmp = this.plugin.getPortalStorage().getPortal(w.getDestination());
-				if (tmp == null)
-					allp.put(w.getName(), ChatColor.RED + "" + w.getDestination());
-				else if (tmp.isHidden())
-					allp.put(w.getName(), ChatColor.BLUE + "?????");
-				else
-					allp.put(w.getName(), w.getDestination());
-			}
+		boolean showAll = plugin.permissions.hasPermission(sender, "travelportals.command.list.all");
 
+		// This will load all of the portals in alphabetical order
+		List<WarpLocation> allp = plugin.getPortalStorage().getPortals().values().stream()
+				.filter(w -> w.hasName() && ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", false)))
+				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
+				.collect(Collectors.toList());
 
 		// No portals! :(
-		if (plugin.getPortalStorage().getPortals().isEmpty())
+		if (allp.isEmpty())
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "There are no visible portals to list!");
 			return true;
 		}
 
 		// Output this information to the user now!
-		sender.sendMessage(ChatColor.DARK_GREEN + "TravelPortals (Page " + pn + "/" + ((allp.size()/8) + (allp.size()%8>0?1:0)) + ")");
+		sender.sendMessage(ChatColor.DARK_GREEN + "TravelPortals (Page " + pn + "/" + (int) Math.ceil(allp.size() / 8.0) + ")");
 		sender.sendMessage(ChatColor.DARK_AQUA + "---------------------------------------------------");
 
-		plugin.getPortalStorage().getPortals().values().stream()
-				.filter(WarpLocation::hasName)
-				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
-				.skip(((pn-1)*8))
-				.limit(8)
-				.forEachOrdered(w -> {
-					// Get the name, make it fill approx half the given space
-					String cl = w.getName();
-					int maxWidth = (int) (MinecraftFontWidthCalculator.getMaxStringWidth() / 2.2);
-					int left = maxWidth - MinecraftFontWidthCalculator.getStringWidth(cl);
-					if (left > 0)
-						cl += whitespace(left);
-					else
-						cl = substring(cl, maxWidth);
-					// Now make an arrow, and then the destination, with the same padding/trimming from above.
-					cl += ChatColor.WHITE + " --> " + ChatColor.DARK_AQUA +
-							substring(w.getDestination().isEmpty() ? "(no destination)" : w.getDestination(), maxWidth);
-					sender.sendMessage(ChatColor.DARK_AQUA + cl);
-				});
+		for (int i = (pn - 1) * 8; i < pn * 8 && i < allp.size(); i++) {
+			WarpLocation w = allp.get(i);
+			// Get the name, make it fill approx half the given space
+			String cl = w.getName();
+			if (w.isHidden()) {
+				cl = ChatColor.BLUE + cl;
+			}
+			int maxWidth = (int) (MinecraftFontWidthCalculator.getMaxStringWidth() / 2.2);
+			int left = maxWidth - MinecraftFontWidthCalculator.getStringWidth(cl);
+			if (left > 0)
+				cl += whitespace(left);
+			else
+				cl = substring(cl, maxWidth);
+			String destination = "(no destination)";
+			if (!w.getDestination().isEmpty()) {
+				WarpLocation dest = plugin.getPortalStorage().getPortal(w.getDestination());
+				if (dest != null) {
+					if (dest.isHidden()) {
+						if (dest.canSee(sender)) {
+							destination = ChatColor.BLUE + dest.getName();
+						} else {
+							destination = ChatColor.BLUE + "(???)";
+						}
+					} else {
+						destination = dest.getName();
+					}
+				} else {
+					destination = ChatColor.RED + w.getDestination();
+				}
+			}
+
+			// Now make an arrow, and then the destination, with the same padding/trimming from above.
+			cl += ChatColor.WHITE + " --> " + ChatColor.DARK_AQUA +
+					substring(destination, maxWidth);
+			sender.sendMessage(ChatColor.DARK_AQUA + cl);
+		}
 		return true;
 	}
 
