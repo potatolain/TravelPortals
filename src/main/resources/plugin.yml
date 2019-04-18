@@ -77,7 +77,7 @@ permissions:
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
-      travelportals.command.info.debug: true
+      travelportals.command.info.details: true
       travelportals.command.claim: true
       travelportals.admin.portal.use: true
       travelportals.admin.portal.destroy: true
@@ -100,7 +100,7 @@ permissions:
       travelportals.command.name: true
       travelportals.command.warp: true
       travelportals.command.info: true
-      travelportals.command.info.debug: true
+      travelportals.command.info.details: true
       travelportals.command.claim: true
       travelportals.admin.portal.use: true
       travelportals.admin.portal.destroy: true
@@ -154,9 +154,9 @@ permissions:
   travelportals.command.info:
     description: Allows the user to get some information about nearby portals.
     default: true
-  travelportals.command.info-debug:
+  travelportals.command.info.details:
     description: Allows the user to get some more information about nearby portals.
-    default: true
+    default: op
   # Here be dragons.. err, admin permissions
   travelportals.admin.portal.use:
     description: Allows the user to use any existing portals.

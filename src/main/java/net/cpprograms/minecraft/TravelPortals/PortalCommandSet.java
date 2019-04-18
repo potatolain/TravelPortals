@@ -233,7 +233,7 @@ public class PortalCommandSet extends CommandSet
 		List<WarpLocation> allp = plugin.getPortalStorage().getPortals().values().stream()
 				.filter(w -> w.hasName()
 						&& (finalOwner == null || finalOwner.equals(w.getOwner()))
-						&& ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", false)))
+						&& ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", sender.isOp())))
 				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
 				.collect(Collectors.toList());
 
@@ -611,7 +611,7 @@ public class PortalCommandSet extends CommandSet
 		sender.sendMessage(ChatColor.DARK_AQUA + "This portal " + name + ChatColor.DARK_AQUA + " and " + dest + ChatColor.DARK_AQUA + ".");
 		sender.sendMessage(ChatColor.DARK_AQUA  + owner);
 
-		if (plugin.permissions.hasPermission(sender, "travelportals.command.info.details")) {
+		if (plugin.permissions.hasPermission(sender, "travelportals.command.info.details", sender.isOp())) {
 			sender.sendMessage(ChatColor.DARK_AQUA + "Portal location: " + ChatColor.YELLOW + portal.getIdentifierString());
 			float rotation = 0f;
 			if (portal.getDoorPosition() > 0)
