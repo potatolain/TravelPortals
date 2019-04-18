@@ -416,12 +416,6 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
-		if (args.length < 1)
-		{
-			sender.sendMessage(ChatColor.DARK_RED + "You have to include portal name!");
-			return true;
-		}
-
 		int nameIndex = args.length - 1;
 		WarpLocation portal = null;
 		if (nameIndex > 0)
