@@ -557,7 +557,7 @@ public class TravelPortals extends PluginBase {
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
 
-						if (!portal.isOwner(player))
+						if (!destination.isOwner(player))
 						{
 							player.sendMessage(ChatColor.DARK_RED + "You do not own the destination portal, and do not have permission to use it.");
 							return null;
