@@ -41,6 +41,12 @@ torchname: redstone torch
 # Without permissions, all users can create, use, and destroy portals. 
 permissions: false
 
+# Whether or not portals are able to teleport between worlds
+# If set to true the following permissions bypass it:
+# - travelportals.portal.use.crossworld
+# - travelportals.command.warp.crossworld
+cross-world-portals: true
+
 # Turn this option on, and the list of current portals will be exported to travelportals.txt 
 # every time a portal is updated. Trigger this manually with /portal export.
 autoexport: false

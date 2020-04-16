@@ -70,6 +70,7 @@ permissions:
     children:
       travelportals.portal.create: true
       travelportals.portal.use: true
+      travelportals.portal.use.crossworld: true
       travelportals.portal.destroy: true
       travelportals.command.help: true
       travelportals.command.hide: true
@@ -78,6 +79,7 @@ permissions:
       travelportals.command.list.others: true
       travelportals.command.name: true
       travelportals.command.warp: true
+      travelportals.command.warp.crossworld: true
       travelportals.command.info: true
       travelportals.command.info.details: true
       travelportals.command.claim: true
@@ -93,6 +95,7 @@ permissions:
     children: 
       travelportals.portal.create: true
       travelportals.portal.use: true
+      travelportals.portal.use.crossworld: true
       travelportals.portal.destroy: true
       travelportals.command.help: true
       travelportals.command.hide: true
@@ -101,6 +104,7 @@ permissions:
       travelportals.command.list.others: true
       travelportals.command.name: true
       travelportals.command.warp: true
+      travelportals.command.warp.crossworld: true
       travelportals.command.info: true
       travelportals.command.info.details: true
       travelportals.command.claim: true
@@ -126,6 +130,9 @@ permissions:
   travelportals.portal.use:
     description: Allows the user to use his/her own portals.
     default: true
+  travelportals.admin.portal.use.crossworld:
+    description: Allows the user to use their portal between worlds if that is blocked normally.
+    default: op
   travelportals.portal.destroy:
     description: Allows the user to destroy his/her own portals.
     default: true
@@ -146,7 +153,10 @@ permissions:
     default: true
   travelportals.command.warp:
     description: Allows the user to change the destination of his/her own portals.
-    default: true;
+    default: true
+  travelportals.command.warp.crossworld:
+    description: Allows the user to set the warp destination of their portal to another world if that is blocked normally.
+    default: op
   travelportals.command.hide:
     description: Allows the user to hide his/her portals.
     default: true

@@ -133,6 +133,11 @@ public class TravelPortals extends PluginBase {
 	protected boolean usepermissions = false;
 
 	/**
+	 * Do we want to allow portals to teleport between worlds?
+	 */
+	protected boolean crossWorldPortals = true;
+
+	/**
 	 * How long until a portal reactivates?
 	 */
 	protected int cooldown = 5000;
@@ -266,6 +271,8 @@ public class TravelPortals extends PluginBase {
 
 			if (conf.get("permissions", null) != null)
 				usepermissions = conf.getBoolean("permissions");
+			if (conf.get("cross-world-portals", null) != null)
+				crossWorldPortals = conf.getBoolean("cross-world-portals");
 			if (conf.get("autoexport", null) != null)
 				autoExport = conf.getBoolean("autoexport");
 			if (conf.get("cooldown", null) != null)
@@ -556,6 +563,14 @@ public class TravelPortals extends PluginBase {
 					// Another permissions check...
 					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
 					{
+						if (!crossWorldPortals
+								&& !destination.getWorld().isEmpty() && !player.getWorld().getName().equals(destination.getWorld())
+								&& !permissions.hasPermission(player, "travelportals.portal.use.crossworld")
+						)
+						{
+							player.sendMessage(ChatColor.DARK_RED + "You cannot travel between worlds.");
+							return null;
+						}
 
 						if (!destination.isOwner(player))
 						{

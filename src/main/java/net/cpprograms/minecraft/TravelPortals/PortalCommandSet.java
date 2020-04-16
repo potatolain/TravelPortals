@@ -394,6 +394,22 @@ public class PortalCommandSet extends CommandSet
 			}
 			else
 			{
+				WarpLocation destination = plugin.getPortalStorage().getPortal(args[nameIndex]);
+				if (destination != null)
+				{
+					if (!plugin.crossWorldPortals
+							&& !destination.getWorld().isEmpty() && !portal.getWorld().equals(destination.getWorld())
+							&& !plugin.permissions.hasPermission(sender, "travelportals.command.warp.crossworld")
+					)
+					{
+						sender.sendMessage(ChatColor.DARK_RED + "You cannot create portals between worlds.");
+						return true;
+					}
+				}
+				else
+				{
+					sender.sendMessage(ChatColor.RED + "A portal with the name " + args[nameIndex] + " does not exist. Linking anyways.");
+				}
 				portal.setDestination(args[nameIndex]);
 				plugin.getPortalStorage().save();
 				sender.sendMessage(ChatColor.DARK_GREEN + "This portal now points to " + args[nameIndex] + ".");
