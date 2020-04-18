@@ -560,18 +560,18 @@ public class TravelPortals extends PluginBase {
 				else
 				{
 
-					// Another permissions check...
-					if (!permissions.hasPermission(player, "travelportals.admin.portal.use")) 
+					if (!crossWorldPortals
+							&& !destination.getWorld().isEmpty() && !player.getWorld().getName().equals(destination.getWorld())
+							&& !permissions.hasPermission(player, "travelportals.portal.use.crossworld", false)
+					)
 					{
-						if (!crossWorldPortals
-								&& !destination.getWorld().isEmpty() && !player.getWorld().getName().equals(destination.getWorld())
-								&& !permissions.hasPermission(player, "travelportals.portal.use.crossworld")
-						)
-						{
-							player.sendMessage(ChatColor.DARK_RED + "You cannot travel between worlds.");
-							return null;
-						}
+						player.sendMessage(ChatColor.DARK_RED + "You cannot travel between worlds.");
+						return null;
+					}
 
+					// Another permissions check...
+					if (!permissions.hasPermission(player, "travelportals.admin.portal.use"))
+					{
 						if (!destination.isOwner(player))
 						{
 							player.sendMessage(ChatColor.DARK_RED + "You do not own the destination portal, and do not have permission to use it.");

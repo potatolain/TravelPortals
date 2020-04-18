@@ -399,7 +399,7 @@ public class PortalCommandSet extends CommandSet
 				{
 					if (!plugin.crossWorldPortals
 							&& !destination.getWorld().isEmpty() && !portal.getWorld().equals(destination.getWorld())
-							&& !plugin.permissions.hasPermission(sender, "travelportals.command.warp.crossworld")
+							&& !plugin.permissions.hasPermission(sender, "travelportals.command.warp.crossworld", false)
 					)
 					{
 						sender.sendMessage(ChatColor.DARK_RED + "You cannot create portals between worlds.");
