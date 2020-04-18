@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
@@ -127,25 +126,25 @@ public class PortalCommandSet extends CommandSet
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
 				player.sendMessage(ChatColor.RED + "/portal deactivate [name] deactivates a portal entirely.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", player.isOp()))
 				player.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld [oldname] [newname] to redirect existing portals");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld", player.isOp()))
 				sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld", player.isOp()))
 				player.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export", player.isOp()))
 				player.sendMessage(ChatColor.RED + "You can export to travelportals.txt with /portal export");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport", player.isOp()))
 				player.sendMessage(ChatColor.RED + "You can import portals with /portal reimport [file name]");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload", player.isOp()))
 				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.convert"))
+			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.convert", player.isOp()))
 				sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to legacy|yaml");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
@@ -179,7 +178,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean reload(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.reload"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.reload", sender.isOp()))
 			return noPermissionForAction(sender);
 
 		plugin.getPortalStorage().save(); // Force save before loading it again
@@ -200,7 +199,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean list(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission(sender, "travelportals.command.list"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.command.list"))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -426,7 +425,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean hide(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.hide"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.command.hide"))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -472,7 +471,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean export(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && plugin.usepermissions && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.export"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.export", sender.isOp()))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -491,7 +490,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean reimport(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && plugin.usepermissions && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.reimport"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.reimport", sender.isOp()))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -530,7 +529,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean deactivate(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.deactivate", sender.isOp()))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.deactivate", sender.isOp()))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -567,7 +566,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean info(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.command.info"))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.command.info"))
 		{
 			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
 			return true;
@@ -681,7 +680,7 @@ public class PortalCommandSet extends CommandSet
 			else
 				portal.setOwner(player);
 
-			plugin.savedata();
+			plugin.getPortalStorage().save();
 			player.sendMessage(ChatColor.DARK_GREEN + "You have successfully claimed this portal"+(args.length>0?" for " + args[0]:"")+"!");
 
 			return true;
@@ -712,7 +711,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean renameworld(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.renameworld", false))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.renameworld", sender.isOp()))
 			return noPermissionForAction(sender);
 
 		if (args.length < 2)
@@ -720,7 +719,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.DARK_RED + "You need to include the name of the old world and the name of the new world.");
 			return true;
 		}
-		plugin.renameWorld(args[0], args[1]);
+		plugin.getPortalStorage().renameWorld(args[0], args[1]);
 		sender.sendMessage(ChatColor.DARK_GREEN + "The world \"" + args[0] + "\" has been renamed to \"" + args[1] + "\".");
 		return true;
 	}
@@ -733,7 +732,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean deleteworld(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.renameworld", false))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.renameworld", sender.isOp()))
 			return noPermissionForAction(sender);
 
 		if (args.length < 1)
@@ -748,7 +747,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.DARK_GREEN + "Type " + ChatColor.DARK_RED + "/portal deleteworld " + args[0] + " confirm " + ChatColor.DARK_GREEN + " to delete.");
 			return true;
 		}
-		plugin.deleteWorld(args[0]);
+		plugin.getPortalStorage().deleteWorld(args[0]);
 		sender.sendMessage(ChatColor.DARK_GREEN + "All portals linked to \"" + args[0] + "\" have been deleted.");
 		return true;
 	}
@@ -762,7 +761,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean fixworld(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.fixworld", false))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.fixworld", sender.isOp()))
 			return this.noPermissionForAction(sender);
 
 		if (args.length < 1)
@@ -770,7 +769,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.DARK_RED + "You need to include the name of a default world to use.");
 			return true;
 		}
-		plugin.renameWorld("", args[0]);
+		plugin.getPortalStorage().renameWorld("", args[0]);
 		sender.sendMessage(ChatColor.DARK_GREEN + "All portals without a saved world now point to world \"" + args[0] + "\"");
 		return true;
 	}
@@ -783,7 +782,7 @@ public class PortalCommandSet extends CommandSet
 	 */
 	public boolean convert(CommandSender sender, String[] args)
 	{
-		if (sender instanceof Player && !plugin.permissions.hasPermission((Player)sender, "travelportals.admin.command.convert", false))
+		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.convert", sender.isOp()))
 			return this.noPermissionForAction(sender);
 
 		if (args.length < 2)
