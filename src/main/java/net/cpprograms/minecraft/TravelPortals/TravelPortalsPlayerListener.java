@@ -37,10 +37,6 @@ public class TravelPortalsPlayerListener implements Listener {
 		if (sameBlock(event.getFrom(), event.getTo()))
 			return;
 
-		// Permissions check
-		if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.portal.use"))
-			return;
-
 		Location locy = plugin.getWarpLocationIfAllowed(event.getPlayer());
 		if (locy == null)
 			return;
