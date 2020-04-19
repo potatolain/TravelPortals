@@ -130,7 +130,7 @@ permissions:
   travelportals.portal.use:
     description: Allows the user to use his/her own portals.
     default: true
-  travelportals.admin.portal.use.crossworld:
+  travelportals.portal.use.crossworld:
     description: Allows the user to use their portal between worlds if that is blocked normally.
     default: op
   travelportals.portal.destroy:
