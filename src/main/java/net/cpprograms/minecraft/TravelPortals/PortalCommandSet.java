@@ -410,7 +410,7 @@ public class PortalCommandSet extends CommandSet
 					sender.sendMessage(ChatColor.RED + "A portal with the name " + args[nameIndex] + " does not exist. Linking anyways.");
 				}
 				portal.setDestination(args[nameIndex]);
-				plugin.getPortalStorage().save();
+				plugin.getPortalStorage().save(portal);
 				sender.sendMessage(ChatColor.DARK_GREEN + "This portal now points to " + args[nameIndex] + ".");
 			}
 		}
@@ -680,7 +680,7 @@ public class PortalCommandSet extends CommandSet
 			else
 				portal.setOwner(player);
 
-			plugin.getPortalStorage().save();
+			plugin.getPortalStorage().save(portal);
 			player.sendMessage(ChatColor.DARK_GREEN + "You have successfully claimed this portal"+(args.length>0?" for " + args[0]:"")+"!");
 
 			return true;

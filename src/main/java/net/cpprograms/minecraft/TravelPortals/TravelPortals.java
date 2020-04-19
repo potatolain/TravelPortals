@@ -355,7 +355,7 @@ public class TravelPortals extends PluginBase {
 	 */
 	@Override
 	public void onDisable() {
-		savedata();
+		getPortalStorage().save();
 		super.onDisable();
 	}
 

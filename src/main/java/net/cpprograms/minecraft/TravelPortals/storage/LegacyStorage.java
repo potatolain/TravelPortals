@@ -115,7 +115,7 @@ public class LegacyStorage extends PortalStorage {
                     oIn.close();
                     fIn.close();
 
-                    plugin.savedata();
+                    plugin.getPortalStorage().save();
 
                     doBackup();
                     plugin.logInfo("Imported old portals sucecessfully!");
