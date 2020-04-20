@@ -4,7 +4,6 @@ import net.cpprograms.minecraft.General.uuidconverter.UuidConverter;
 import net.cpprograms.minecraft.TravelPortals.TravelPortals;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -249,11 +248,13 @@ public abstract class PortalStorage {
      * @return true if it succeeded; false if it failed
      */
     public boolean deleteWorld(String world) {
+        Set<WarpLocation> toDelete = new HashSet<>();
         for (WarpLocation portal : portals.values()) {
             if (world.equalsIgnoreCase(portal.getWorld())) {
-                removePortal(portal);
+                toDelete.add(portal);
             }
         }
+        toDelete.forEach(this::removePortal);
         return save(world);
     }
 
