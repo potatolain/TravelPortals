@@ -693,10 +693,16 @@ public class TravelPortals extends PluginBase {
 			player.sendBlockChange(below.getLocation(), below.getType().isSolid() ? below.getBlockData() : Material.BEDROCK.createBlockData());
 
 			// Warp the user!
-			player.teleport(to);
-			if (portalTravelSound != null)
-				player.playSound(to, portalTravelSound, SoundCategory.BLOCKS, 1f, 1f);
-			logDebug("Teleported " + player.getName() + " to " + to);
+			PaperLib.teleportAsync(player, to).thenAccept(success -> {
+				if (success) {
+					if (portalTravelSound != null)
+						player.playSound(to, portalTravelSound, SoundCategory.BLOCKS, 1f, 1f);
+					logDebug("Teleported " + player.getName() + " to " + to);
+				} else {
+					player.sendMessage(ChatColor.RED + "Error while teleporting!");
+					getLogger().log(Level.SEVERE, "Unable to teleport " + player.getName() + " to " + to);
+				}
+			});
 		}).exceptionally(ex -> {
 			player.sendMessage(ChatColor.RED + "Error while teleporting: " + ex.getMessage());
 			getLogger().log(Level.SEVERE, "Error while loading chunk to teleport " + player.getName() + " to " + to, ex);
