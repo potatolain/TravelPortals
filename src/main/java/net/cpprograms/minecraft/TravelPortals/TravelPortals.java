@@ -168,6 +168,11 @@ public class TravelPortals extends PluginBase {
 	 */
 	private PortalUseTask useTask = null;
 
+	/**
+	 * Should the max-portals permission apply per world?
+	 */
+	protected Boolean maxportalsperworld = false;
+
 
 	/**
 	 * Called upon enabling the plugin
@@ -286,6 +291,8 @@ public class TravelPortals extends PluginBase {
 				mainTicks = conf.getInt("polling-mainticks");
 			if (conf.get("polling-followticks", null) != null)
 				followTicks = conf.getInt("polling-followticks");
+			if (conf.get("maxportalsperworld", null) != null)
+				maxportalsperworld = conf.getBoolean("maxportalsperworld");
 
 		} catch (NumberFormatException i) {
 			logSevere("An exception occurred when trying to read your config file. " + i.getMessage());

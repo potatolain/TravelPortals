@@ -1,6 +1,8 @@
 package net.cpprograms.minecraft.General;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 /**
  * Handle permissions stuff, if needed.
@@ -51,5 +53,33 @@ public class PermissionsHandler
 	public boolean hasPermission(CommandSender sender, String permission)
 	{
 		return hasPermission(sender, permission, true);
+	}
+
+	/**
+	 * Get the value of a numeric permission
+	 * @param sender The player
+	 * @param permission The permission
+	 * @return The numeric value if it is set, otherwise 0
+	 */
+	public int getNumVal(CommandSender sender, String permission)
+	{
+		if (!permission.endsWith("."))
+			permission = permission + ".";
+
+		int partsNum = permission.split("\\.").length;
+		for(PermissionAttachmentInfo perm: ((Player)sender).getEffectivePermissions()){
+			String permString = perm.getPermission();
+			if(permString.startsWith(permission)){
+				String[] amount = permString.split("\\.");
+				if (amount.length == (partsNum +1)) {
+					try {
+						return Integer.parseInt(amount[amount.length - 1]);
+					} catch (Exception ex) {
+						// Nothing to do
+					}
+				}
+			}
+		}
+		return 0;
 	}
 }
