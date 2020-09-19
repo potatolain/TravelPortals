@@ -45,16 +45,21 @@ public class TravelPortalsBlockListener implements Listener {
 			int y = event.getBlock().getY();
 			int z = event.getBlock().getZ();
 			int doordir = 0;
+			int maxPortals = -1;
+			int currPortalsNum = 0;
 
 			// Check how many portals the user may create
-			int maxPortals = plugin.permissions.getNumVal(event.getPlayer(), "travelportals.portal.create");
+			if (!plugin.permissions.hasPermission(event.getPlayer(), "travelportals.portal.create.nolimit"))
+			{
+				maxPortals = plugin.permissions.getNumVal(event.getPlayer(), "travelportals.portal.create");
 
-			// Count current portals of user
-			int currPortalsNum = (int)plugin.getPortalStorage().getPortals().values()
-					.stream()
-					.filter(p -> p.isOwner(player))
-					.filter(p -> plugin.maxportalsperworld ? p.getWorld() == event.getBlock().getWorld().getName() : true)
-					.count();
+				// Count current portals of user
+				currPortalsNum = (int) plugin.getPortalStorage().getPortals().values()
+						.stream()
+						.filter(p -> p.isOwner(player))
+						.filter(p -> plugin.maxportalsperworld ? p.getWorld() == event.getBlock().getWorld().getName() : true)
+						.count();
+			}
 
 			// Test the area to the right of the portal
 			if (player.getWorld().getBlockAt(x + 1, y, z).getType() == plugin.blocktype &&
@@ -112,7 +117,7 @@ public class TravelPortalsBlockListener implements Listener {
 			// This is what we want. (x, y-1, z) is the coordinate above the torch, and needs to be empty.
 			if (numwalls == 13 && player.getWorld().getBlockAt(x, y+1, z).getType() == Material.AIR)
 			{
-				if (currPortalsNum >= maxPortals) {
+				if (maxPortals >= 0 && currPortalsNum >= maxPortals) {
 					player.sendMessage(ChatColor.DARK_RED + "You've reached your portal limit and can't create new portals.");
 					return;
 				}
@@ -124,7 +129,9 @@ public class TravelPortalsBlockListener implements Listener {
 					event.getBlock().getWorld().playSound(event.getBlock().getLocation(), plugin.portalCreateSound, SoundCategory.BLOCKS, 1f, 1f);
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
-				player.sendMessage(ChatColor.DARK_RED + "You can build " + (maxPortals - ++currPortalsNum) + " more portals" );
+
+				if (maxPortals >= 0)
+					player.sendMessage(ChatColor.DARK_RED + "You can build " + (maxPortals - ++currPortalsNum) + " more portals" );
 
 				WarpLocation portal = new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player.getName());
 				plugin.getPortalStorage().addPortal(portal);
