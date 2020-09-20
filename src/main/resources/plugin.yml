@@ -36,6 +36,7 @@ permissions:
     description: User permissions that work like classic TravelPortals; all users have access to all portals.
     children: 
       travelportals.portal.create: true
+      travelportals.portal.create.nolimit: true
       travelportals.portal.use: true
       travelportals.portal.destroy: true
       travelportals.command.help: true
@@ -56,6 +57,7 @@ permissions:
     description: User permissions that limit each user to their own portals
     children: 
       travelportals.portal.create: true
+      travelportals.portal.create.nolimit: true
       travelportals.portal.use: true
       travelportals.portal.destroy: true
       travelportals.command.help: true
@@ -69,6 +71,7 @@ permissions:
     description: Suggested permissions for ops. Gives access to most commands
     children:
       travelportals.portal.create: true
+      travelportals.portal.create.nolimit: true
       travelportals.portal.use: true
       travelportals.portal.use.crossworld: true
       travelportals.portal.destroy: true
@@ -94,6 +97,7 @@ permissions:
     description: Gives access to everything. Use with caution.
     children: 
       travelportals.portal.create: true
+      travelportals.portal.create.nolimit: true
       travelportals.portal.use: true
       travelportals.portal.use.crossworld: true
       travelportals.portal.destroy: true
@@ -126,6 +130,12 @@ permissions:
   # Here be real permissions
   travelportals.portal.create:
     description: Allows the user to create portals.
+    default: true
+  travelportals.portal.create.250:
+    description: Max portals a user may create
+    default: true
+  travelportals.portal.create.nolimit:
+    description: Allows the user to build as many portals as they like
     default: true
   travelportals.portal.use:
     description: Allows the user to use his/her own portals.

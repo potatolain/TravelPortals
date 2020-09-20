@@ -87,3 +87,6 @@ polling-followticks: 17
 # the output from it can make diagnosing problems easier, and if you are going to report
 # a bug, you will likely be asked to turn this on and reproduce the problem.
 debug: false
+
+# Whether or not the max-portals permission applies on a 'per world' basis or not
+maxportalsperworld: false

@@ -4,6 +4,8 @@ import net.cpprograms.minecraft.General.uuidconverter.UuidConverter;
 import net.cpprograms.minecraft.TravelPortals.TravelPortals;
 import net.cpprograms.minecraft.TravelPortals.WarpLocation;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -202,6 +204,32 @@ public abstract class PortalStorage {
             return closest;
         }
         return null;
+    }
+
+    /**
+     * Get all the portals of a specific player
+     * @param player The owner of the portals
+     * @return The portals or an empty collection of none were found
+     */
+    public Collection<WarpLocation> getPlayerPortals(Player player) {
+        return getPlayerPortalsForWorld(player, null);
+    }
+
+    /**
+     * Get all the portals of a specific player, in a specific world
+     * @param player The owner of the portals
+     * @param world The world to look for, or null for all worlds
+     * @return The portals or an empty collection of none were found
+     */
+    public Collection<WarpLocation> getPlayerPortalsForWorld(Player player, World world) {
+        Set<WarpLocation> playerPortals = new HashSet<>();
+
+        for (Map.Entry<String, WarpLocation> portal : portals.entrySet()) {
+            if (portal.getValue().isOwner(player) && (world == null || portal.getValue().getWorld().equals(world.getName())))
+                playerPortals.add(portal.getValue());
+        }
+
+        return playerPortals;
     }
 
 
