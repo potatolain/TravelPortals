@@ -171,7 +171,7 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * Should the max-portals permission apply per world?
 	 */
-	protected Boolean maxportalsperworld = false;
+	protected boolean maxportalsperworld = false;
 
 
 	/**
