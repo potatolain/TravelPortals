@@ -54,11 +54,9 @@ public class TravelPortalsBlockListener implements Listener {
 				maxPortals = plugin.permissions.getNumVal(event.getPlayer(), "travelportals.portal.create");
 
 				// Count current portals of user
-				currPortalsNum = (int) plugin.getPortalStorage().getPortals().values()
-						.stream()
-						.filter(p -> p.isOwner(player))
-						.filter(p -> plugin.maxportalsperworld ? p.getWorld() == event.getBlock().getWorld().getName() : true)
-						.count();
+				currPortalsNum = plugin.maxportalsperworld
+						? plugin.getPortalStorage().getPlayerPortalsForWorld(player, event.getBlock().getWorld()).size()
+						: plugin.getPortalStorage().getPlayerPortals(player).size();
 			}
 
 			// Test the area to the right of the portal
