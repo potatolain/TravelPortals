@@ -131,7 +131,7 @@ public class TravelPortalsBlockListener implements Listener {
 				if (maxPortals >= 0)
 					player.sendMessage(ChatColor.DARK_RED + "You can build " + (maxPortals - ++currPortalsNum) + " more portals" );
 
-                WarpLocation portal = new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player);
+				WarpLocation portal = new WarpLocation(x,y,z, doordir, player.getWorld().getName(), player);
 				plugin.getPortalStorage().addPortal(portal);
 				if (!plugin.getPortalStorage().save(portal)) {
 					player.sendMessage(ChatColor.RED + "Error while saving your portal! Please contact an admin!");
