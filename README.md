@@ -88,6 +88,8 @@ not own a portal, this user will need an admin permission (see below) to modify
 said portal.
 
 - travelportals.portal.create
+- travelportals.portal.create.nolimit
+- travelportals.portal.create.250
 - travelportals.portal.destroy
 - travelportals.portal.use
 - travelportals.command.help
