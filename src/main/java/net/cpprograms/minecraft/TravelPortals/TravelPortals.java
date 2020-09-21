@@ -494,20 +494,20 @@ public class TravelPortals extends PluginBase {
 	/**
 	 * Gets the destination of this teleport, but only if the user can use it.
 	 * @param player The player in question.
+	 * @param location The location to get the portal at
 	 * @param disablePortal Disable this portal (set its cooldown).
 	 * @return The location to warp to, or null if there is no warping to be done.
 	 */
-	public Location getWarpLocationIfAllowed(Player player, boolean disablePortal)
+	public Location getWarpLocationIfAllowed(Player player, Location location, boolean disablePortal)
 	{
 		if (!permissions.hasPermission(player, "travelportals.portal.use"))
 			return null;
 
-		Location playerLoc = player.getLocation();
-		Material blockType = player.getWorld().getBlockAt(playerLoc).getType();
+		Material blockType = player.getWorld().getBlockAt(location).getType();
 		// Is the user actually in portal material?
 		if (blockType == portaltype || blockType == blocktype || doortypes.contains(blockType))
 		{
-			WarpLocation portal = portalStorage.getPortal(player.getLocation());
+			WarpLocation portal = portalStorage.getPortal(location);
 			if (portal == null)
 				return null;
 
@@ -605,22 +605,22 @@ public class TravelPortals extends PluginBase {
 							rotation = 180.0f;
 					}
 					// Guess.
-					else if (doortypes.contains(player.getWorld().getBlockAt(x + 1, y, z).getType()))
+					else if (doortypes.contains(location.getWorld().getBlockAt(x + 1, y, z).getType()))
 					{
 						rotation = 270.0f;
 						destination.setDoorPosition(1);
 					}
-					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z+1).getType()))
+					else if (doortypes.contains(location.getWorld().getBlockAt(x, y, z+1).getType()))
 					{
 						rotation = 0.0f;
 						destination.setDoorPosition(2);
 					}
-					else if (doortypes.contains(player.getWorld().getBlockAt(x - 1, y, z).getType()))
+					else if (doortypes.contains(location.getWorld().getBlockAt(x - 1, y, z).getType()))
 					{
 						rotation = 90.0f;
 						destination.setDoorPosition(3);
 					}
-					else if (doortypes.contains(player.getWorld().getBlockAt(x, y, z-1).getType()))
+					else if (doortypes.contains(location.getWorld().getBlockAt(x, y, z-1).getType()))
 					{
 						rotation = 180.0f;
 						destination.setDoorPosition(4);
@@ -630,7 +630,7 @@ public class TravelPortals extends PluginBase {
 						// oh noes :<
 					}
 					// Create the location for the user to warp to
-					Location locy = new Location(player.getWorld(), x + 0.50, y + 0.1, z + 0.50, rotation, 0);
+					Location locy = new Location(location.getWorld(), x + 0.50, y + 0.1, z + 0.50, rotation, 0);
 					if (destination.getWorld() != null && !destination.getWorld().equals(""))
 					{
 						World wo = getServer().getWorld(destination.getWorld());
@@ -724,7 +724,29 @@ public class TravelPortals extends PluginBase {
 	 */
 	public Location getWarpLocationIfAllowed(Player player) 
 	{ 
-		return getWarpLocationIfAllowed(player, true); 
+		return getWarpLocationIfAllowed(player, true);
+	}
+
+	/**
+	 * Get a location for the user to warp to, if they are allowed to use it.
+	 * @param player The player to warp.
+	 * @param disablePortal Disable this portal (set its cooldown).
+	 * @return A location, or null if the user does not need to be teleported.
+	 */
+	public Location getWarpLocationIfAllowed(Player player, boolean disablePortal)
+	{
+		return getWarpLocationIfAllowed(player, player.getLocation(), disablePortal);
+	}
+
+	/**
+	 * Get a location for the user to warp to, if they are allowed to use it.
+	 * @param player The player to warp.
+	 * @param location The location to get the portal at
+	 * @return A location, or null if the user does not need to be teleported.
+	 */
+	public Location getWarpLocationIfAllowed(Player player, Location location)
+	{
+		return getWarpLocationIfAllowed(player, location, true);
 	}
 
 	/**

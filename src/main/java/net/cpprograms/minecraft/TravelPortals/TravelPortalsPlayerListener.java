@@ -1,16 +1,9 @@
 package net.cpprograms.minecraft.TravelPortals;
 
-import io.papermc.lib.PaperLib;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.logging.Level;
 
 /**
  * Handle events for all Player related events
@@ -37,7 +30,7 @@ public class TravelPortalsPlayerListener implements Listener {
 		if (sameBlock(event.getFrom(), event.getTo()))
 			return;
 
-		Location locy = plugin.getWarpLocationIfAllowed(event.getPlayer());
+		Location locy = plugin.getWarpLocationIfAllowed(event.getPlayer(), event.getTo());
 		if (locy == null)
 			return;
 
