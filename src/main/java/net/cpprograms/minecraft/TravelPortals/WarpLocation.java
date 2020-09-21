@@ -134,6 +134,24 @@ public class WarpLocation implements java.io.Serializable {
 	}
 
 	/**
+	 * Creates a warp point at a position. This is the most likely constructor you'll use.
+	 * @param _x The X coordinate of the warp point's position.
+	 * @param _y The Y coordinate of the warp point's position.
+	 * @param _z The Z coordinate of the warp point's position.
+	 * @param _doorpos The position of the door.
+	 * @param _world The world to put this WarpLocation into.
+	 * @param _owner The person who owns this.
+	 */
+	public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, Player _owner)
+	{
+		x = _x; y = _y; z = _z; name = ""; destination = "";
+		lastused = 0;
+		doorpos = _doorpos;
+		world = _world;
+		setOwner(_owner);
+	}
+
+	/**
 	 * Check to see if this is a valid warp for use. (Has a name and destination)
 	 * @return true if the destination and name are both set, otherwise false.
 	 */

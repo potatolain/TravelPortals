@@ -675,9 +675,13 @@ public class PortalCommandSet extends CommandSet
 
 		if (!portal.hasOwner() || plugin.permissions.hasPermission(player, "travelportals.admin.command.claim", player.isOp()))
 		{
-			if (args.length > 0)
-				portal.setOwner(args[0]);
-			else
+			if (args.length > 0) {
+				Player newOwner = plugin.getServer().getPlayer(args[0]);
+				if (newOwner != null)
+					portal.setOwner(newOwner);
+				else
+					portal.setOwner(args[0]);
+			} else
 				portal.setOwner(player);
 
 			plugin.getPortalStorage().save(portal);
