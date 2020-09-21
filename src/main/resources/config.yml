@@ -56,7 +56,7 @@ autoexport: false
 cooldown : 8
 
 # Different portal sounds, set to empty strings if you don't want them
-sound:
+sounds:
   # Portal create sound when a player creates a new portal
   create: BLOCK_PORTAL_TRIGGER
   # Portal ambient sound, currently only gets played the start and target portal when a player travels through it
