@@ -1,7 +1,7 @@
 # TravelPortals configuration file
 
 # Define which storage the plugin should use for the portal data
-# Available options are YAML and LEGACY
+# Currently only YAML is an available option
 storagetype: YAML
 
 # Whether or not we should store player UUIDs

@@ -11,6 +11,7 @@ package net.cpprograms.minecraft.TravelPortals;
 
 import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
 import java.util.LinkedHashMap;
@@ -19,12 +20,9 @@ import java.util.UUID;
 
 /**
  * A quick serializable storage medium for warping points.
- * REPLACES WarpPoint
  * @author cppchriscpp
  */
-public class WarpLocation implements java.io.Serializable {
-
-	static final long serialVersionUID = 4523543646L;
+public class WarpLocation implements ConfigurationSerializable {
 	/**
 	 * Used to store the position of the warp.
 	 */

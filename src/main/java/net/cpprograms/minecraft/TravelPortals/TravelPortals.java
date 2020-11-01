@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import net.cpprograms.minecraft.TravelPortals.storage.LegacyStorage;
 import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
 import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
 import net.cpprograms.minecraft.TravelPortals.storage.YamlStorage;
@@ -210,14 +209,21 @@ public class TravelPortals extends PluginBase {
 		// Read in the YAML config stuff
 		try {
 			FileConfiguration conf = getConfig();
-			StorageType storageType = StorageType.LEGACY;
+			StorageType storageType;
 			if (conf.get("storagetype", null) != null) {
 				try {
 					storageType = StorageType.valueOf(conf.getString("storagetype").toUpperCase());
 				} catch (IllegalArgumentException e) {
-					logSevere(conf.getString("storagetype") + " is not a valid storage type? Valid types are " + Arrays.toString(StorageType.values()) + ".");
+					if (conf.getString("storagetype").equalsIgnoreCase("LEGACY")) {
+						logSevere("The legacy storage format is no longer supported! Please downgrade to 2.4 and convert your storage to YAML!");
+					} else {
+						logSevere(conf.getString("storagetype") + " is not a valid storage type? Valid types are " + Arrays.toString(StorageType.values()) + ".");
+					}
 					return false;
 				}
+			} else {
+				logSevere("The legacy storage format is no longer supported! Please downgrade to 2.4 and convert your storage to YAML!");
+				return false;
 			}
 
 			logDebug("Storage type is " + storageType);
@@ -785,8 +791,6 @@ public class TravelPortals extends PluginBase {
 	 */
 	public PortalStorage createStorage(StorageType type) throws IllegalArgumentException {
 		switch (type) {
-			case LEGACY:
-				return new LegacyStorage(this);
 			case YAML:
 				return new YamlStorage(this);
 			default:

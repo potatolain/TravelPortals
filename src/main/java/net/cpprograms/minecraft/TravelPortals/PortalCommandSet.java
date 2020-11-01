@@ -143,10 +143,10 @@ public class PortalCommandSet extends CommandSet
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload", player.isOp()))
 				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
-
+			/*
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.convert", player.isOp()))
-				sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to legacy|yaml");
-
+				sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to " + StorageType.stringValues());
+			*/
 			if (plugin.permissions.hasPermission(player, "travelportals.command.list"))
 				player.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
 
@@ -163,7 +163,7 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.RED + "If you rename a world, use /portal renameworld oldname newname to replace it");
 			sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with /portal fixworld world");
 			sender.sendMessage(ChatColor.RED + "If you delete a world, use /portal deleteworld [name] to delete all portals pointing to it.");
-			sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to legacy|yaml");
+			//sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use /portal convert from|to " + StorageType.stringValues());
 			sender.sendMessage(ChatColor.RED + "If you want to reload the plugin config use /portal reload");
 			sender.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command /portal list.");
 		}
@@ -791,7 +791,7 @@ public class PortalCommandSet extends CommandSet
 
 		if (args.length < 2)
 		{
-			sender.sendMessage(ChatColor.DARK_RED + "Missing arguments. Correct usage: " + ChatColor.RED + "/portal convert from|to legacy|yaml");
+			sender.sendMessage(ChatColor.DARK_RED + "Missing arguments. Correct usage: " + ChatColor.RED + "/portal convert from|to " + StorageType.stringValues());
 			return true;
 		}
 
@@ -812,7 +812,7 @@ public class PortalCommandSet extends CommandSet
 				sender.sendMessage(ChatColor.DARK_RED + "Error while trying to convert storage " + args[0].toLowerCase() + " " + input + "! Take a look at the console/logs for more info.");
 			}
 		} catch (IllegalArgumentException e) {
-			sender.sendMessage(ChatColor.RED + args[1] + ChatColor.DARK_RED + " is not a valid storage type. Valid types are " + ChatColor.RED + "legacy" + ChatColor.DARK_RED + " and " + ChatColor.RED + "yaml");
+			sender.sendMessage(ChatColor.RED + args[1] + ChatColor.DARK_RED + " is not a valid storage type. Valid types are " + ChatColor.RED + StorageType.stringValues());
 		}
 		return true;
 	}
