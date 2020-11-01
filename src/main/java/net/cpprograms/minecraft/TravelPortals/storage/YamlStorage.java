@@ -41,7 +41,12 @@ public class YamlStorage extends PortalStorage {
             }
 
             for (Map<?, ?> portalMap : YamlConfiguration.loadConfiguration(portalFile).getMapList("portals")) {
-                addPortal(WarpLocation.deserialize(portalMap));
+                try {
+                    addPortal(WarpLocation.deserialize(portalMap));
+                } catch (IllegalArgumentException e) {
+                    plugin.logSevere("Could not load portal at " + portalMap.get("x") + " " + portalMap.get("y") + " "
+                            + portalMap.get("z") + " " + portalMap.get("world") + ":  " + e.getMessage());
+                }
             }
         }
 

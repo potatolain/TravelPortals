@@ -20,6 +20,10 @@ permissions:
       travelportals.portal.destroy: false
       travelportals.command.help: false
       travelportals.command.hide: false
+      travelportals.command.privacy: false
+      travelportals.command.privacy.public: false
+      travelportals.command.privacy.hidden: false
+      travelportals.command.privacy.private: false
       travelportals.command.list: false
       travelportals.command.list.all: false
       travelportals.command.list.others: false
@@ -32,6 +36,7 @@ permissions:
       travelportals.admin.command.name: false
       travelportals.admin.command.warp: false
       travelportals.admin.command.hide: false
+      travelportals.admin.command.privacy: false
   travelportals.classicuser:
     description: User permissions that work like classic TravelPortals; all users have access to all portals.
     children: 
@@ -41,6 +46,10 @@ permissions:
       travelportals.portal.destroy: true
       travelportals.command.help: true
       travelportals.command.hide: true
+      travelportals.command.privacy: true
+      travelportals.command.privacy.public: true
+      travelportals.command.privacy.hidden: true
+      travelportals.command.privacy.private: true
       travelportals.command.list: true
       travelportals.command.list.all: true
       travelportals.command.list.others: true
@@ -53,6 +62,7 @@ permissions:
       travelportals.admin.command.name: true
       travelportals.admin.command.warp: true
       travelportals.admin.command.hide: true
+      travelportals.admin.command.privacy: true
   travelportals.normaluser:
     description: User permissions that limit each user to their own portals
     children: 
@@ -62,6 +72,10 @@ permissions:
       travelportals.portal.destroy: true
       travelportals.command.help: true
       travelportals.command.hide: true
+      travelportals.command.privacy: true
+      travelportals.command.privacy.public: true
+      travelportals.command.privacy.hidden: true
+      travelportals.command.privacy.private: true
       travelportals.command.list: true
       travelportals.command.name: true
       travelportals.command.warp: true
@@ -77,6 +91,10 @@ permissions:
       travelportals.portal.destroy: true
       travelportals.command.help: true
       travelportals.command.hide: true
+      travelportals.command.privacy: true
+      travelportals.command.privacy.public: true
+      travelportals.command.privacy.hidden: true
+      travelportals.command.privacy.private: true
       travelportals.command.list: true
       travelportals.command.list.all: true
       travelportals.command.list.others: true
@@ -91,6 +109,7 @@ permissions:
       travelportals.admin.command.name: true
       travelportals.admin.command.warp: true
       travelportals.admin.command.hide: true
+      travelportals.admin.command.privacy: true
       travelportals.admin.command.deactivate: true
       travelportals.admin.command.claim: true
   travelportals.*:
@@ -103,6 +122,10 @@ permissions:
       travelportals.portal.destroy: true
       travelportals.command.help: true
       travelportals.command.hide: true
+      travelportals.command.privacy: true
+      travelportals.command.privacy.public: true
+      travelportals.command.privacy.hidden: true
+      travelportals.command.privacy.private: true
       travelportals.command.list: true
       travelportals.command.list.all: true
       travelportals.command.list.others: true
@@ -118,6 +141,7 @@ permissions:
       travelportals.admin.command.name: true
       travelportals.admin.command.warp: true
       travelportals.admin.command.hide: true
+      travelportals.admin.command.privacy: true
       travelportals.admin.command.deactivate: true
       travelportals.admin.command.claim: true
       travelportals.admin.command.export: true
@@ -169,6 +193,18 @@ permissions:
     default: op
   travelportals.command.hide:
     description: Allows the user to hide his/her portals.
+    default: true
+  travelportals.command.privacy:
+    description: Allows the user to change the privacy settings of their portals.
+    default: true
+  travelportals.command.privacy.public:
+    description: Allows the user to make their portals public.
+    default: true
+  travelportals.command.privacy.hidden:
+    description: Allows the user to hide their portals.
+    default: true
+  travelportals.command.privacy.private:
+    description: Allows the user to make their portals private.
     default: true
   travelportals.command.claim:
     description: Allows the user to claim unclaimed portals (ones made by older versions)

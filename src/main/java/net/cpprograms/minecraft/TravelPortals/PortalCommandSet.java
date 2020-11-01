@@ -114,7 +114,9 @@ public class PortalCommandSet extends CommandSet
 			if (plugin.permissions.hasPermission(player, "travelportals.command.warp"))
 				player.sendMessage(ChatColor.DARK_GREEN + "/portal warp [name] sets the portal name to warp to.");
 
-			if (plugin.permissions.hasPermission(player, "travelportals.command.hide"))
+			if (plugin.permissions.hasPermission(player, "travelportals.command.privacy"))
+				player.sendMessage(ChatColor.DARK_GREEN + "/portal privacy [name] public|hidden|private sets the portal's privacy level.");
+			else if (plugin.permissions.hasPermission(player, "travelportals.command.hide"))
 				player.sendMessage(ChatColor.DARK_GREEN + "/portal hide [name] hides (or unhides) a portal from the list.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.info"))
@@ -232,7 +234,7 @@ public class PortalCommandSet extends CommandSet
 		List<WarpLocation> allp = plugin.getPortalStorage().getPortals().values().stream()
 				.filter(w -> w.hasName()
 						&& (finalOwner == null || finalOwner.equalsIgnoreCase(w.getOwnerName()))
-						&& ((showAll && !w.isHidden()) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", sender.isOp())))
+						&& ((showAll && w.getPrivacy() == WarpLocation.Privacy.PUBLIC) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", sender.isOp())))
 				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
 				.collect(Collectors.toList());
 
@@ -250,10 +252,7 @@ public class PortalCommandSet extends CommandSet
 		for (int i = (pn - 1) * 8; i < pn * 8 && i < allp.size(); i++) {
 			WarpLocation w = allp.get(i);
 			// Get the name, make it fill approx half the given space
-			String cl = w.getName();
-			if (w.isHidden()) {
-				cl = ChatColor.BLUE + cl;
-			}
+			String cl = w.getPrivacy().getColor() + w.getName();
 			int maxWidth = (int) (MinecraftFontWidthCalculator.getMaxStringWidth() / 2.2);
 			int left = maxWidth - MinecraftFontWidthCalculator.getStringWidth(cl);
 			if (left > 0)
@@ -264,11 +263,11 @@ public class PortalCommandSet extends CommandSet
 			if (!w.getDestination().isEmpty()) {
 				WarpLocation dest = plugin.getPortalStorage().getPortal(w.getDestination());
 				if (dest != null) {
-					if (dest.isHidden()) {
+					if (dest.getPrivacy() != WarpLocation.Privacy.PUBLIC) {
 						if (dest.canSee(sender)) {
-							destination = ChatColor.BLUE + dest.getName();
+							destination = w.getPrivacy().getColor() + dest.getName();
 						} else {
-							destination = ChatColor.BLUE + "(???)";
+							destination = w.getPrivacy().getColor() + "(???)";
 						}
 					} else {
 						destination = dest.getName();
@@ -396,7 +395,14 @@ public class PortalCommandSet extends CommandSet
 				WarpLocation destination = plugin.getPortalStorage().getPortal(args[nameIndex]);
 				if (destination != null)
 				{
-					if (!plugin.crossWorldPortals
+					if (destination.getPrivacy() == WarpLocation.Privacy.PRIVATE
+							&& !destination.canAccess(sender)
+							&& !plugin.permissions.hasPermission(sender, "travelportals.admin.command.warp"))
+					{
+						sender.sendMessage(ChatColor.RED + "The portal with the name " + destination.getName() + " is private. You cannot link to it.");
+						return true;
+					}
+					else if (!plugin.crossWorldPortals
 							&& !destination.getWorld().isEmpty() && !portal.getWorld().equals(destination.getWorld())
 							&& !plugin.permissions.hasPermission(sender, "travelportals.command.warp.crossworld", false)
 					)
@@ -420,7 +426,7 @@ public class PortalCommandSet extends CommandSet
 	/**
 	 * Hide a portal
 	 * @param sender The entity responsible for sending the command.
-	 * @param args The arguments passed in. (Not used
+	 * @param args The arguments passed in. (Not used in this command)
 	 * @return true if handled; false otherwise.
 	 */
 	public boolean hide(CommandSender sender, String[] args)
@@ -438,7 +444,7 @@ public class PortalCommandSet extends CommandSet
 		else if (sender instanceof Player)
 			portal = getPortal((Player) sender);
 
-		if (portal == null) // Is this name already taken?
+		if (portal == null) // Is the portal unknown?
 			sender.sendMessage(ChatColor.DARK_RED + "No portal found!");
 		else
 		{
@@ -454,11 +460,72 @@ public class PortalCommandSet extends CommandSet
 					}
 				}
 			}
-			portal.setHidden(!portal.isHidden());
-			if (portal.isHidden())
-				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + args[0] + " has been hidden.");
-			else
-				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + args[0] + " has been unhidden.");
+			if (portal.getPrivacy() == WarpLocation.Privacy.PUBLIC) {
+				portal.setPrivacy(WarpLocation.Privacy.HIDDEN);
+				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + portal.getName() + " has been hidden.");
+			} else if (portal.getPrivacy() == WarpLocation.Privacy.HIDDEN) {
+				portal.setPrivacy(WarpLocation.Privacy.PUBLIC);
+				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + portal.getName() + " has been unhidden.");
+			} else {
+				sender.sendMessage(ChatColor.DARK_AQUA + "Warp " + portal.getName() + " is neither hidden nor public. Use /portal privacy public|hidden|private to set the privacy level!");
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Set the privacy setting of a portal
+	 * @param sender The entity responsible for sending the command.
+	 * @param args The arguments passed in.
+	 * @return true if handled; false otherwise.
+	 */
+	public boolean privacy(CommandSender sender, String[] args)
+	{
+		if (!plugin.permissions.hasPermission(sender, "travelportals.command.privacy"))
+		{
+			sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use this command.");
+			return true;
+		}
+
+		int nameIndex = args.length - 1;
+		WarpLocation portal = null;
+		if (nameIndex > 1)
+			portal = plugin.getPortalStorage().getPortal(args[0]);
+		else if (sender instanceof Player)
+			portal = getPortal((Player) sender);
+
+		if (portal == null) // Is the portal unknown?
+			sender.sendMessage(ChatColor.DARK_RED + "No portal found!");
+		else
+		{
+			// Ownership check
+			if (sender instanceof Player && plugin.usepermissions)
+			{
+				if (!portal.canAccess(sender))
+				{
+					if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.privacy"))
+					{
+						sender.sendMessage(ChatColor.DARK_RED + "You do not own this portal, and thus you cannot change its privacy settings.");
+						return true;
+					}
+				}
+			}
+			try {
+				WarpLocation.Privacy privacy = WarpLocation.Privacy.valueOf(args[nameIndex].toUpperCase());
+				if (!plugin.permissions.hasPermission(sender, "travelportals.command.privacy." + privacy.name().toLowerCase())) {
+					sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to use the privacy option " + privacy.name().toLowerCase());
+					return true;
+				}
+				if (portal.getPrivacy() != privacy) {
+					sender.sendMessage(ChatColor.DARK_AQUA + "Privacy of warp " + portal.getName() + " was set to " + privacy.getColor() + privacy.name().toLowerCase() +
+							ChatColor.DARK_AQUA + "(was " + portal.getPrivacy().name().toLowerCase() + ")");
+					portal.setPrivacy(privacy);
+				} else {
+					sender.sendMessage(ChatColor.RED + "Warp " + portal.getName() + " was already set to " + privacy.getColor() + privacy.name().toLowerCase());
+				}
+			} catch (IllegalArgumentException e) {
+				sender.sendMessage(ChatColor.RED + "Invalid input. Valid privacy options are " + Arrays.toString(WarpLocation.Privacy.values()));
+			}
 		}
 		return true;
 	}
@@ -596,11 +663,11 @@ public class PortalCommandSet extends CommandSet
 			name = "has no name";
 		else {
 			name = "is named " + name;
-			if (portal.isHidden())
+			if (portal.getPrivacy() != WarpLocation.Privacy.PUBLIC)
 				if (portal.canAccess(sender))
-					name += ChatColor.BLUE + " (hidden)";
+					name += portal.getPrivacy().getColor() + " (" + portal.getPrivacy().name().toLowerCase() + ")";
 				else
-					name = "is hidden";
+					name = "is " + portal.getPrivacy().getColor() + portal.getPrivacy().name().toLowerCase();
 		}
 
 		WarpLocation destination = dest.isEmpty() ? null : plugin.getPortalStorage().getPortal(dest);
@@ -611,11 +678,11 @@ public class PortalCommandSet extends CommandSet
 			dest = "has no destination";
 		else {
 			dest = "warps to " + dest + ChatColor.DARK_AQUA + " in world " + destination.getWorld();
-			if (destination.isHidden())
+			if (destination.getPrivacy() != WarpLocation.Privacy.PUBLIC)
 				if (destination.canAccess(sender))
-					dest += ChatColor.BLUE + " (hidden)";
+					name += destination.getPrivacy().getColor() + " (" + destination.getPrivacy().name().toLowerCase() + ")";
 				else
-					dest = "warps to " + ChatColor.BLUE + "?????";
+					name = "warps to a " + destination.getPrivacy().getColor() + destination.getPrivacy().name().toLowerCase() + ChatColor.DARK_AQUA + " portal";
 		}
 
 		if (owner.isEmpty())

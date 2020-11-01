@@ -59,6 +59,11 @@ public class TravelPortals extends PluginBase {
 	protected PortalStorage portalStorage;
 
 	/**
+	 * The default privacy setting for new portals
+	 */
+	protected WarpLocation.Privacy defaultPrivacy = WarpLocation.Privacy.PUBLIC;
+
+	/**
 	 * The type of block portals must be made from. (Default is 49 (Obsidian))
 	 */
 	protected Material blocktype = Material.OBSIDIAN;
@@ -232,6 +237,12 @@ public class TravelPortals extends PluginBase {
 
 			try {
 				portalStorage = createStorage(storageType);
+			} catch (IllegalArgumentException e) {
+				logSevere(e.getMessage());
+			}
+
+			try {
+				defaultPrivacy = WarpLocation.Privacy.valueOf(conf.getString("default-privacy").toUpperCase());
 			} catch (IllegalArgumentException e) {
 				logSevere(e.getMessage());
 			}
@@ -439,7 +450,7 @@ public class TravelPortals extends PluginBase {
 			FileOutputStream fOut = new FileOutputStream(new File(this.getDataFolder(), "travelportals.txt"));
 			PrintStream pOut = new PrintStream(fOut);
 			for (WarpLocation w : portalStorage.getPortals().values())
-				pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.isHidden() +"," + w.getWorld() + "," + w.getOwner());
+				pOut.println(w.getX() + "," + w.getY() + "," + w.getZ() + "," + w.getName() + "," + w.getDestination() + "," + w.getPrivacy().name() +"," + w.getWorld() + "," + w.getOwner());
 
 			pOut.close();
 			fOut.close();
@@ -466,7 +477,17 @@ public class TravelPortals extends PluginBase {
 				if (data.length != 8)
 					continue;
 				WarpLocation warp = new WarpLocation(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]), 0, data[6], data[7]);
-				warp.setHidden("1".equals(data[5]));
+				if ("1".equals(data[5]) || "true".equals(data[5])) {
+					warp.setPrivacy(WarpLocation.Privacy.HIDDEN);
+				} else if ("0".equals(data[5]) || "false".equals(data[5])) {
+					warp.setPrivacy(WarpLocation.Privacy.PUBLIC);
+				} else {
+					try {
+						warp.setPrivacy(WarpLocation.Privacy.valueOf(data[5]));
+					} catch (IllegalArgumentException e) {
+						logSevere(e.getMessage());
+					}
+				}
 				warp.setDestination(data[4]);
 				warp.setName(data[3]);
 				portalStorage.addPortal(warp);

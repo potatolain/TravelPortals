@@ -51,6 +51,7 @@ The Commands:
 - /portal help - Show info on how to use the plugin.
 - /portal name [name] - Sets the name of the portal in front of you.
 - /portal warp [name] - Sets the name of the portal that the portal in front of you warps to.
+- /portal privacy [name] public|hidden|private - sets the portal's privacy level.
 - /portal hide [name] - Hides or unhides the portal with the name given.
 - /portal info - Gives basic information about the portal in front of you.
 - /portal info [name] - Gives basic information about the portal in front of you.
@@ -94,6 +95,10 @@ said portal.
 - travelportals.portal.use
 - travelportals.command.help
 - travelportals.command.hide
+- travelportals.command.privacy
+- travelportals.command.privacy.public
+- travelportals.command.privacy.hidden
+- travelportals.command.privacy.private
 - travelportals.command.list
 - travelportals.command.name
 - travelportals.command.warp

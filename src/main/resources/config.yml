@@ -8,6 +8,12 @@ storagetype: YAML
 # Setting this to true will also cause the plugin to try to convert existing data to UUIDs if it isn't already
 use-uuids: true
 
+# Set the default privacy level of newly created portals.
+# PUBLIC - everyone can see and link to the portal (traditional)
+# HIDDEN - nobody can see the portal's name but can still link to it when they know it
+# PRIVATE - only the owner of the portal (or admins) can see and link to the portal
+default-privacy: public
+
 # The type of block used for the frame of the portal. Default: OBSIDIAN
 frame: OBSIDIAN
 # The name for the type of block being used for the frame. Default: obsidian

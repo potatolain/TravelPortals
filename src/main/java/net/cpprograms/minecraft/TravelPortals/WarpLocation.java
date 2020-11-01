@@ -10,6 +10,7 @@ package net.cpprograms.minecraft.TravelPortals;
  */
 
 import net.cpprograms.minecraft.TravelPortals.storage.PortalStorage;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
@@ -42,9 +43,9 @@ public class WarpLocation implements ConfigurationSerializable {
 	private transient long lastused;
 
 	/**
-	 * Is this portal hidden?
+	 * The privacy state of the portal?
 	 */
-	private boolean hidden = false;
+	private Privacy privacy = Privacy.PUBLIC;
 
 	/**
 	 * Portal owner.
@@ -366,20 +367,42 @@ public class WarpLocation implements ConfigurationSerializable {
 	/**
 	 * Set whether the warp's name is hidden.
 	 * @param dp whether to show the warp.
+	 * @deprecated Use {@link #setPrivacy(Privacy)}
 	 */
-
+	@Deprecated
 	public void setHidden(boolean dp)
 	{
-		hidden = dp;
+		setPrivacy(dp ? Privacy.HIDDEN : Privacy.PUBLIC);
 	}
 
 	/**
 	 * Figure out whether this warp is hidden.
 	 * @return true to suppress name, false otherwise.
+	 * @deprecated Use {@link #getPrivacy()}
 	 */
+	@Deprecated
 	public boolean isHidden()
 	{
-		return hidden;
+		return getPrivacy() != Privacy.PUBLIC;
+	}
+
+	/**
+	 * Set the portal's privacy setting.
+	 * @param p the privacy setting of the portal.
+	 */
+
+	public void setPrivacy(Privacy p)
+	{
+		privacy = p;
+	}
+
+	/**
+	 * Figure out this warp's privacy setting
+	 * @return the warp's privacy setting.
+	 */
+	public Privacy getPrivacy()
+	{
+		return privacy;
 	}
 
 	/**
@@ -426,7 +449,7 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public boolean canSee(CommandSender sender)
 	{
-		return !hidden || canAccess(sender);
+		return getPrivacy() == Privacy.PUBLIC || canAccess(sender);
 	}
 
 	/**
@@ -441,7 +464,7 @@ public class WarpLocation implements ConfigurationSerializable {
 				|| isOwner((Player) sender);
 	}
 
-	public static WarpLocation deserialize(Map<?, ?> map)
+	public static WarpLocation deserialize(Map<?, ?> map) throws IllegalArgumentException
 	{
 		WarpLocation portal = new WarpLocation(
 				(Integer) map.get("x"),
@@ -456,7 +479,10 @@ public class WarpLocation implements ConfigurationSerializable {
 		if (map.containsKey("destination"))
 			portal.setDestination((String) map.get("destination"));
 		if (map.containsKey("hidden"))
-			portal.setHidden((Boolean) map.get("hidden"));
+			portal.setPrivacy(Privacy.HIDDEN);
+		if (map.containsKey("privacy")) {
+			portal.setPrivacy(Privacy.valueOf(((String) map.get("privacy")).toUpperCase()));
+		}
 		if (map.containsKey("direction"))
 			portal.setDoorPosition((Integer) map.get("direction"));
 		return portal;
@@ -475,8 +501,8 @@ public class WarpLocation implements ConfigurationSerializable {
 			map.put("owner", getOwner());
 		if (hasDestination())
 			map.put("destination", getDestination());
-		if (isHidden())
-			map.put("hidden", isHidden());
+		if (getPrivacy() != Privacy.PUBLIC)
+			map.put("privacy", getPrivacy().name());
 		if (getDoorPosition() != 0)
 			map.put("direction", getDoorPosition());
 		return map;
@@ -492,12 +518,28 @@ public class WarpLocation implements ConfigurationSerializable {
 				"z=" + getZ() + "," +
 				"destination=" + getDestination() + "," +
 				"owner=" + getOwner() + "," +
-				"hidden=" + isHidden() + "," +
+				"privacy=" + getPrivacy() + "," +
 				"direction=" + getDoorPosition();
 	}
 
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
+	}
+
+	public enum Privacy {
+		PUBLIC(ChatColor.DARK_AQUA),
+		HIDDEN(ChatColor.BLUE),
+		PRIVATE(ChatColor.AQUA);
+
+		private final ChatColor color;
+
+		Privacy(ChatColor color) {
+			this.color = color;
+		}
+
+		public ChatColor getColor() {
+			return color;
+		}
 	}
 }
