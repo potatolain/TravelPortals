@@ -77,7 +77,7 @@ public abstract class PortalStorage {
             if (!portal.hasOwnerId()) {
                 UUID id = uuidMap.get(portal.getOwnerName());
                 if (id != null) {
-                    portal.setOwner(portal.getOwnerName() + "," + id);
+                    portal.setOwnerId(id);
                     i++;
                 }
             }

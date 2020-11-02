@@ -1,10 +1,7 @@
 package net.cpprograms.minecraft.TravelPortals;
 
 /**
- * @(#)WarpLocation.java
- *
- * Stores warp locations for users.
- *
+ * @(#)WarpLocation.java Stores warp locations for users.
  * @author cppchriscpp
  * @version 1.10
  */
@@ -27,7 +24,7 @@ public class WarpLocation implements ConfigurationSerializable {
 	/**
 	 * Used to store the position of the warp.
 	 */
-	private int x,y,z;
+	private int x, y, z;
 	/**
 	 * Stores the name of the warp.
 	 */
@@ -48,9 +45,14 @@ public class WarpLocation implements ConfigurationSerializable {
 	private Privacy privacy = Privacy.PUBLIC;
 
 	/**
-	 * Portal owner.
+	 * Portal owner name.
 	 */
-	private String owner = "";
+	private String ownerName = "";
+
+	/**
+	 * Portal owner uuid.
+	 */
+	private UUID ownerId = null;
 
 	/**
 	 * Where is the door?
@@ -77,8 +79,12 @@ public class WarpLocation implements ConfigurationSerializable {
 	/**
 	 * Default constructor. I suggest against using this.
 	 */
-	public WarpLocation() {
-		x=0; y=0; z=0; name = "";
+	public WarpLocation()
+	{
+		x = 0;
+		y = 0;
+		z = 0;
+		name = "";
 		lastused = 0;
 		world = "";
 	}
@@ -92,7 +98,11 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, String _world)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x;
+		y = _y;
+		z = _z;
+		name = "";
+		destination = "";
 		lastused = 0;
 		world = _world;
 	}
@@ -108,7 +118,11 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x;
+		y = _y;
+		z = _z;
+		name = "";
+		destination = "";
 		lastused = 0;
 		doorpos = _doorpos;
 		world = _world;
@@ -125,11 +139,15 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, String _owner)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x;
+		y = _y;
+		z = _z;
+		name = "";
+		destination = "";
 		lastused = 0;
 		doorpos = _doorpos;
 		world = _world;
-		owner = _owner;
+		setOwner(_owner);
 	}
 
 	/**
@@ -143,7 +161,11 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public WarpLocation(int _x, int _y, int _z, int _doorpos, String _world, Player _owner)
 	{
-		x = _x; y = _y; z = _z; name = ""; destination = "";
+		x = _x;
+		y = _y;
+		z = _z;
+		name = "";
+		destination = "";
 		lastused = 0;
 		doorpos = _doorpos;
 		world = _world;
@@ -158,6 +180,7 @@ public class WarpLocation implements ConfigurationSerializable {
 	{
 		return (!(name != null && name.isEmpty() && destination != null && destination.isEmpty()));
 	}
+
 	/**
 	 * Get the X coordinate of this point.
 	 * @return The X coordinate of this point.
@@ -209,19 +232,20 @@ public class WarpLocation implements ConfigurationSerializable {
 	 * @param player The player to check
 	 * @return Whether or not the player is the owner
 	 */
-	public boolean isOwner(Player player) {
+	public boolean isOwner(Player player)
+	{
 		return hasOwnerId() ? player.getUniqueId().equals(getOwnerId()) : player.getName().equals(getOwnerName());
 	}
 
 	/**
 	 * Gets the current owner of the portal.
 	 * @return The owner of the portal.
+	 * @deprecated Use {@link #getOwnerId()} or {@link #getOwnerName()}
 	 */
+	@Deprecated
 	public String getOwner()
 	{
-		if (owner == null)
-			owner = "";
-		return owner;
+		return getOwnerName() + (hasOwnerId() ? "," + getOwnerId() : "");
 	}
 
 	/**
@@ -230,28 +254,58 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public String getOwnerName()
 	{
-		return getOwner().split(",")[0];
+		return ownerName;
+	}
+
+	/**
+	 * Set the Name of the owner of the portal
+	 * @param _ownerName The name of the owner
+	 */
+	public void setOwnerName(String _ownerName)
+	{
+		ownerName = _ownerName;
 	}
 
 	/**
 	 * Sets the current owner of the portal.
 	 * @param player The new owner.
 	 */
-	public void setOwner(Player player) 
+	public void setOwner(Player player)
 	{
 		if (player == null)
-			owner = null;
+		{
+			ownerName = null;
+			ownerId = null;
+		}
 		else
-			owner = player.getName() + "," + player.getUniqueId();
+		{
+			ownerName = player.getName();
+			ownerId = player.getUniqueId();
+		}
 	}
 
 	/**
 	 * Sets the current owner of the portal. Where possible use {@link #setOwner(Player)}
 	 * @param _owner The new owner.
+	 * @deprecated Directly use {@link #setOwner(Player)} or {@link #setOwnerId(UUID)} and {@link #setOwnerName(String)}
 	 */
+	@Deprecated
 	public void setOwner(String _owner)
 	{
-		owner = _owner;
+		if (_owner.contains(","))
+		{
+			String[] parts = _owner.split(",");
+			ownerName = parts[0];
+			if (parts.length > 1)
+				ownerId = UUID.fromString(parts[1]);
+			else
+				ownerId = null;
+		}
+		else
+		{
+			ownerName = _owner;
+			ownerId = null;
+		}
 	}
 
 	/**
@@ -259,29 +313,33 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public boolean hasOwner()
 	{
-		return owner != null && !owner.isEmpty();
+		return ownerId != null || ownerName != null && !ownerName.isEmpty();
 	}
 
 	/**
 	 * Checks whether or not we have an UUID stored for the owner
 	 */
-	public boolean hasOwnerId() {
-		return hasOwner() && owner.split(",").length > 1;
+	public boolean hasOwnerId()
+	{
+		return ownerId != null;
 	}
 
 	/**
 	 * Get the UUID of the owner of the portal
 	 * @return The UUID of the owner
 	 */
-	public UUID getOwnerId() {
-		if (!hasOwnerId()) {
-			return null;
-		}
-		try {
-			return UUID.fromString(owner.split(",")[1]);
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
+	public UUID getOwnerId()
+	{
+		return ownerId;
+	}
+
+	/**
+	 * Set the UUID of the owner of the portal
+	 * @param _ownerId	The UUID of the owner
+	 */
+	public void setOwnerId(UUID _ownerId)
+	{
+		ownerId = _ownerId;
 	}
 
 	/**
@@ -428,7 +486,8 @@ public class WarpLocation implements ConfigurationSerializable {
 	 * Contains the world, and its location in space.
 	 * @return A string that can be used to uniquely identify this portal.
 	 */
-	public String getIdentifierString() {
+	public String getIdentifierString()
+	{
 		return world + "," + x + "," + y + "," + z;
 	}
 
@@ -439,7 +498,7 @@ public class WarpLocation implements ConfigurationSerializable {
 	 */
 	public boolean isUsable(int cooldown)
 	{
-		return (lastused+cooldown < System.currentTimeMillis());
+		return (lastused + cooldown < System.currentTimeMillis());
 	}
 
 	/**
@@ -476,11 +535,16 @@ public class WarpLocation implements ConfigurationSerializable {
 			portal.setName((String) map.get("name"));
 		if (map.containsKey("owner"))
 			portal.setOwner((String) map.get("owner"));
+		if (map.containsKey("owner-name"))
+			portal.setOwnerName((String) map.get("owner-name"));
+		if (map.containsKey("owner-id"))
+			portal.setOwnerId(UUID.fromString((String) map.get("owner-id")));
 		if (map.containsKey("destination"))
 			portal.setDestination((String) map.get("destination"));
 		if (map.containsKey("hidden"))
 			portal.setPrivacy(Privacy.HIDDEN);
-		if (map.containsKey("privacy")) {
+		if (map.containsKey("privacy"))
+		{
 			portal.setPrivacy(Privacy.valueOf(((String) map.get("privacy")).toUpperCase()));
 		}
 		if (map.containsKey("direction"))
@@ -490,15 +554,17 @@ public class WarpLocation implements ConfigurationSerializable {
 
 	public Map<String, Object> serialize()
 	{
-		Map<String, Object> map  = new LinkedHashMap<>();
+		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("x", getX());
 		map.put("y", getY());
 		map.put("z", getZ());
 		map.put("world", getWorld());
 		if (hasName())
 			map.put("name", getName());
-		if (hasOwner())
-			map.put("owner", getOwner());
+		if (getOwnerName() != null)
+			map.put("owner-id", getOwnerName());
+		if (hasOwnerId())
+			map.put("owner-id", getOwnerId());
 		if (hasDestination())
 			map.put("destination", getDestination());
 		if (getPrivacy() != Privacy.PUBLIC)
@@ -509,7 +575,8 @@ public class WarpLocation implements ConfigurationSerializable {
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "WarpLocation{" +
 				"name=" + getName() + "," +
 				"world=" + getWorld() + "," +
@@ -517,13 +584,15 @@ public class WarpLocation implements ConfigurationSerializable {
 				"y=" + getY() + "," +
 				"z=" + getZ() + "," +
 				"destination=" + getDestination() + "," +
-				"owner=" + getOwner() + "," +
+				"ownerName=" + getOwnerName() + "," +
+				"ownerId=" + getOwnerId() + "," +
 				"privacy=" + getPrivacy() + "," +
 				"direction=" + getDoorPosition();
 	}
 
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		return toString().hashCode();
 	}
 
@@ -538,7 +607,8 @@ public class WarpLocation implements ConfigurationSerializable {
 			this.color = color;
 		}
 
-		public ChatColor getColor() {
+		public ChatColor getColor()
+		{
 			return color;
 		}
 	}

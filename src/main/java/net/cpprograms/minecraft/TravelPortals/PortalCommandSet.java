@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import net.cpprograms.minecraft.TravelPortals.storage.StorageType;
@@ -231,11 +232,30 @@ public class PortalCommandSet extends CommandSet
 
 		// This will load all of the portals in alphabetical order
 		String finalOwner = plugin.permissions.hasPermission(sender, "travelportals.command.list.others") ? ownerName : null;
+		UUID ownerId = sender instanceof Player && finalOwner == null ? ((Player) sender).getUniqueId() : null;
 		List<WarpLocation> allp = plugin.getPortalStorage().getPortals().values().stream()
 				.filter(w -> w.hasName()
 						&& (finalOwner == null || finalOwner.equalsIgnoreCase(w.getOwnerName()))
 						&& ((showAll && w.getPrivacy() == WarpLocation.Privacy.PUBLIC) || w.canAccess(sender) || plugin.permissions.hasPermission(sender, "travelportals.admin.portal.see", sender.isOp())))
-				.sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()))
+				.sorted((p1, p2) -> {
+					if (ownerId != null)
+					{
+						if (ownerId.equals(p1.getOwnerId()) != ownerId.equals(p2.getOwnerId()))
+							if (ownerId.equals(p1.getOwnerId()))
+								return -1;
+							else
+								return 1;
+					}
+					if (finalOwner != null)
+					{
+						if (finalOwner.equalsIgnoreCase(p1.getOwnerName()) != finalOwner.equalsIgnoreCase(p2.getOwnerName()))
+							if (finalOwner.equalsIgnoreCase(p1.getOwnerName()))
+								return -1;
+							else
+								return 1;
+					}
+					return p1.getName().compareToIgnoreCase(p2.getName());
+				})
 				.collect(Collectors.toList());
 
 		// No portals! :(
