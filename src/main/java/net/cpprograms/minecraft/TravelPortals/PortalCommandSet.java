@@ -487,6 +487,12 @@ public class PortalCommandSet extends CommandSet
 			return true;
 		}
 
+		if (args.length < 1)
+		{
+			sender.sendMessage(ChatColor.RED + "You have to include a privacy option for the portal! Available options: " + Arrays.toString(WarpLocation.Privacy.values()));
+			return true;
+		}
+
 		int nameIndex = args.length - 1;
 		WarpLocation portal = null;
 		if (nameIndex > 1)
