@@ -274,11 +274,11 @@ public class PortalCommandSet extends CommandSet
 			// Get the name, make it fill approx half the given space
 			String cl = w.getPrivacy().getColor() + w.getName();
 			int maxWidth = (int) (MinecraftFontWidthCalculator.getMaxStringWidth() / 2.2);
-			int left = maxWidth - MinecraftFontWidthCalculator.getStringWidth(cl);
+			int left = maxWidth - (sender instanceof Player ? MinecraftFontWidthCalculator.getStringWidth(cl) : cl.length());
 			if (left > 0)
-				cl += whitespace(left);
+				cl += sender instanceof Player ? whitespace(left) : left;
 			else
-				cl = substring(cl, maxWidth);
+				cl = sender instanceof Player ? substring(cl, maxWidth) : cl.substring(0, maxWidth);
 			String destination = "(no destination)";
 			if (!w.getDestination().isEmpty()) {
 				WarpLocation dest = plugin.getPortalStorage().getPortal(w.getDestination());
