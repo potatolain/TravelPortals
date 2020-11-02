@@ -515,7 +515,7 @@ public class PortalCommandSet extends CommandSet
 
 		int nameIndex = args.length - 1;
 		WarpLocation portal = null;
-		if (nameIndex > 1)
+		if (nameIndex > 0)
 			portal = plugin.getPortalStorage().getPortal(args[0]);
 		else if (sender instanceof Player)
 			portal = getPortal((Player) sender);
@@ -544,7 +544,7 @@ public class PortalCommandSet extends CommandSet
 				}
 				if (portal.getPrivacy() != privacy) {
 					sender.sendMessage(ChatColor.DARK_AQUA + "Privacy of warp " + portal.getName() + " was set to " + privacy.getColor() + privacy.name().toLowerCase() +
-							ChatColor.DARK_AQUA + "(was " + portal.getPrivacy().name().toLowerCase() + ")");
+							ChatColor.DARK_AQUA + " (was " + portal.getPrivacy().name().toLowerCase() + ")");
 					portal.setPrivacy(privacy);
 				} else {
 					sender.sendMessage(ChatColor.RED + "Warp " + portal.getName() + " was already set to " + privacy.getColor() + privacy.name().toLowerCase());
