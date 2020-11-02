@@ -562,9 +562,9 @@ public class WarpLocation implements ConfigurationSerializable {
 		if (hasName())
 			map.put("name", getName());
 		if (getOwnerName() != null)
-			map.put("owner-id", getOwnerName());
+			map.put("owner-name", getOwnerName());
 		if (hasOwnerId())
-			map.put("owner-id", getOwnerId());
+			map.put("owner-id", getOwnerId().toString());
 		if (hasDestination())
 			map.put("destination", getDestination());
 		if (getPrivacy() != Privacy.PUBLIC)
