@@ -276,7 +276,7 @@ public class PortalCommandSet extends CommandSet
 			int maxWidth = (int) (MinecraftFontWidthCalculator.getMaxStringWidth() / 2.2);
 			int left = maxWidth - (sender instanceof Player ? MinecraftFontWidthCalculator.getStringWidth(cl) : cl.length());
 			if (left > 0)
-				cl += sender instanceof Player ? whitespace(left) : left;
+				cl += sender instanceof Player ? whitespace(left) : String.join("", Collections.nCopies(left, " "));
 			else
 				cl = sender instanceof Player ? substring(cl, maxWidth) : cl.substring(0, maxWidth);
 			String destination = "(no destination)";
