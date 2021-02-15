@@ -124,7 +124,7 @@ public class TravelPortalsBlockListener implements Listener {
 				player.getWorld().getBlockAt(x, y+1, z).setType(plugin.portaltype);
 
 				if (plugin.portalCreateSound != null)
-					event.getBlock().getWorld().playSound(event.getBlock().getLocation(), plugin.portalCreateSound, SoundCategory.BLOCKS, 1f, 1f);
+					event.getBlock().getWorld().playSound(event.getBlock().getLocation(), plugin.portalCreateSound, SoundCategory.BLOCKS, (float) plugin.portalCreateSoundVolume, 1f);
 
 				player.sendMessage(ChatColor.DARK_RED + "You have created a portal! Type /portal help for help using it.");
 

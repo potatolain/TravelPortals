@@ -65,10 +65,16 @@ cooldown : 8
 sounds:
   # Portal create sound when a player creates a new portal
   create: BLOCK_PORTAL_TRIGGER
+  # Volume of the create sound
+  create-volume: 1.0
   # Portal ambient sound, currently only gets played the start and target portal when a player travels through it
   ambient: BLOCK_PORTAL_AMBIENT
+  # Volume of the ambient sound
+  ambient-volume: 1.0
   # Sound playing to the player travelling through a portal
   travel: BLOCK_PORTAL_TRAVEL
+  # Volume of the travel sound
+  travel-volume: 0.5
 
 # This option will keep a number of backups of the portals file in case anything goes wrong. 
 # They do not need much space; if you have problems with the file I strongly suggest upping this

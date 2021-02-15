@@ -122,14 +122,29 @@ public class TravelPortals extends PluginBase {
 	protected Sound portalCreateSound = Sound.BLOCK_PORTAL_TRIGGER;
 
 	/**
+	 * Volume of the create sound
+	 */
+	protected double portalCreateSoundVolume = 1.0;
+
+	/**
 	 * Portal ambient sound, currently only gets played for everyone at the start and target portal when a player travels through it
 	 */
 	protected Sound portalAmbientSound = Sound.BLOCK_PORTAL_AMBIENT;
 
 	/**
+	 * Volume of the ambient sound
+	 */
+	protected double portalAmbientSoundVolume = 1.0;
+
+	/**
 	 * Sound playing to the player travelling through a portal
 	 */
 	protected Sound portalTravelSound = Sound.BLOCK_PORTAL_TRAVEL;
+
+	/**
+	 * Volume of the travel sound
+	 */
+	protected double portalTravelSoundVolume = 0.5;
 
 	/**
 	 * Do we want to use the permissions plugin?
@@ -287,8 +302,11 @@ public class TravelPortals extends PluginBase {
 			if (conf.isConfigurationSection("sounds"))
 			{
 				portalCreateSound = getSound(conf.getString("sounds.create"));
+				portalCreateSoundVolume = conf.getDouble("sounds.create-volume");
 				portalAmbientSound = getSound(conf.getString("sounds.ambient"));
+				portalAmbientSoundVolume = conf.getDouble("sounds.ambient-volume");
 				portalTravelSound = getSound(conf.getString("sounds.travel"));
+				portalTravelSoundVolume = conf.getDouble("sounds.travel-volume");
 			}
 
 			if (conf.get("permissions", null) != null)
@@ -710,7 +728,7 @@ public class TravelPortals extends PluginBase {
 		}
 
 		if (portalAmbientSound != null)
-			player.getWorld().playSound(player.getLocation(), portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
+			player.getWorld().playSound(player.getLocation(), portalAmbientSound, SoundCategory.AMBIENT, (float) portalAmbientSoundVolume, 1f);
 
 		Location to = warp.clone();
 		PaperLib.getChunkAtAsync(warp, false).thenAccept(chunk -> {
@@ -721,7 +739,7 @@ public class TravelPortals extends PluginBase {
 			}
 
 			if (portalAmbientSound != null)
-				to.getWorld().playSound(to, portalAmbientSound, SoundCategory.AMBIENT, 1f, 1f);
+				to.getWorld().playSound(to, portalAmbientSound, SoundCategory.AMBIENT, (float) portalAmbientSoundVolume, 1f);
 			// Shove a block under them.
 			Block below = block.getRelative(BlockFace.DOWN);
 			player.sendBlockChange(below.getLocation(), below.getType().isSolid() ? below.getBlockData() : Material.BEDROCK.createBlockData());
@@ -730,7 +748,7 @@ public class TravelPortals extends PluginBase {
 			PaperLib.teleportAsync(player, to).thenAccept(success -> {
 				if (success) {
 					if (portalTravelSound != null)
-						player.playSound(to, portalTravelSound, SoundCategory.BLOCKS, 1f, 1f);
+						player.playSound(to, portalTravelSound, SoundCategory.BLOCKS, (float) portalTravelSoundVolume, 1f);
 					logDebug("Teleported " + player.getName() + " to " + to);
 				} else {
 					player.sendMessage(ChatColor.RED + "Error while teleporting!");
