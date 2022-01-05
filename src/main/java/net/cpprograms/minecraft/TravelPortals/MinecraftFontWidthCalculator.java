@@ -1,19 +1,53 @@
 package net.cpprograms.minecraft.TravelPortals;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * DO WHAT YOU WANT TO PUBLIC LICENSE
  * Credit to angelsl for the original code.
+ * Updated by Phoenix616
  */
-@SuppressWarnings("all")
 public class MinecraftFontWidthCalculator {
 
-	private static String weirdHardcodedStuffIFoundInMinecraft = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'abcdefghijklmnopqrstuvwxyz{|}~¦ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×áíóúñÑªº¿®¬½¼¡«»";
-	private static int[] charWidth = {1,9,9,8,8,8,8,7,9,8,9,9,8,9,9,9,8,8,8,8,9,9,8,9,8,8,8,8,8,9,9,9,4,2,5,6,6,6,6,3,5,5,5,6,2,6,2,6,6,6,6,6,6,6,6,6,6,6,2,2,5,6,5,6,7,6,6,6,6,6,6,6,6,4,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,4,6,4,6,6,3,6,6,6,6,6,5,6,6,2,6,5,3,6,6,6,6,6,6,6,4,6,6,6,6,6,6,5,2,5,7,6,6,6,6,6,6,6,6,6,6,6,6,4,6,3,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,4,6,6,3,6,6,6,6,6,6,6,7,6,6,6,2,6,6,8,9,9,6,6,6,8,8,6,8,8,8,8,8,6,6,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,6,9,9,9,5,9,9,8,7,7,8,7,8,8,8,7,8,8,7,9,9,6,7,7,7,7,7,9,6,7,8,7,6,6,9,7,6,7,1};
+	private static final int DEFAULT_WIDTH = 5;
+
+	// Special characters not 5 dots wide
+	private static final Map<Character, Integer> SPECIAL_WIDTHS = new HashMap<>();
+	static {
+		SPECIAL_WIDTHS.put(' ', 3);
+		SPECIAL_WIDTHS.put('!', 1);
+		SPECIAL_WIDTHS.put('"', 3);
+		SPECIAL_WIDTHS.put('\'', 1);
+		SPECIAL_WIDTHS.put('(', 3);
+		SPECIAL_WIDTHS.put(')', 3);
+		SPECIAL_WIDTHS.put('*', 3);
+		SPECIAL_WIDTHS.put(',', 1);
+		SPECIAL_WIDTHS.put('.', 1);
+		SPECIAL_WIDTHS.put(':', 1);
+		SPECIAL_WIDTHS.put(';', 1);
+		SPECIAL_WIDTHS.put('<', 4);
+		SPECIAL_WIDTHS.put('>', 4);
+		SPECIAL_WIDTHS.put('@', 6);
+		SPECIAL_WIDTHS.put('I', 3);
+		SPECIAL_WIDTHS.put('[', 3);
+		SPECIAL_WIDTHS.put(']', 3);
+		SPECIAL_WIDTHS.put('`', 2);
+		SPECIAL_WIDTHS.put('f', 4);
+		SPECIAL_WIDTHS.put('i', 1);
+		SPECIAL_WIDTHS.put('k', 4);
+		SPECIAL_WIDTHS.put('l', 2);
+		SPECIAL_WIDTHS.put('t', 3);
+		SPECIAL_WIDTHS.put('{', 3);
+		SPECIAL_WIDTHS.put('|', 1);
+		SPECIAL_WIDTHS.put('}', 3);
+		SPECIAL_WIDTHS.put('~', 6);
+	}
 
 	// Custom function to get the maximum width of the string.
 	public static int getMaxStringWidth()
 	{
-		return getStringWidth("---------------------------------------------------");
+		return getStringWidth("-----------------------------------------------------.");
 	}
 
 
@@ -28,10 +62,7 @@ public class MinecraftFontWidthCalculator {
 				j++;
 				continue;
 			}
-			int k = weirdHardcodedStuffIFoundInMinecraft.indexOf(s.charAt(j));
-			if (k >= 0) {
-				i += charWidth[k + 32];
-			}
+			i += SPECIAL_WIDTHS.getOrDefault(s.charAt(j), DEFAULT_WIDTH);
 		}
 
 		return i;
