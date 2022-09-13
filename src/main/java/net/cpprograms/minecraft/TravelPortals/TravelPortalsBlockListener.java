@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -201,6 +202,23 @@ public class TravelPortalsBlockListener implements Listener {
 		if ( event.getBlock().getType() != plugin.portaltype)
 				return;
 		
+		if (plugin.getPortalStorage().getPortal(event.getBlock().getLocation()) != null)
+			event.setCancelled(true);
+	}
+
+	/**
+	 * Handle when water changes to another state in a portal.
+	 * @param event The BlockFormEvent event we want to prevent.
+	 */
+	@EventHandler
+	public void onBlockForm(BlockFormEvent event)
+	{
+		if (event.isCancelled())
+			return;
+
+		if ( event.getBlock().getType() != plugin.portaltype)
+				return;
+
 		if (plugin.getPortalStorage().getPortal(event.getBlock().getLocation()) != null)
 			event.setCancelled(true);
 	}
