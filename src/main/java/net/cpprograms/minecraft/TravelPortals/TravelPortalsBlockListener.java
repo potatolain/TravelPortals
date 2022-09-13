@@ -193,13 +193,13 @@ public class TravelPortalsBlockListener implements Listener {
 	 * Handle when water tries to flow from a portal.
 	 * @param event The BlockFromTo event we want to prevent. 
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockFromTo(BlockFromToEvent event) 
 	{
-		if (event.isCancelled() || event.getFace() != BlockFace.DOWN)
+		if (event.getFace() != BlockFace.DOWN)
 			return;
 
-		if ( event.getBlock().getType() != plugin.portaltype)
+		if (event.getBlock().getType() != plugin.portaltype)
 				return;
 		
 		if (plugin.getPortalStorage().getPortal(event.getBlock().getLocation()) != null)
@@ -210,13 +210,10 @@ public class TravelPortalsBlockListener implements Listener {
 	 * Handle when water changes to another state in a portal.
 	 * @param event The BlockFormEvent event we want to prevent.
 	 */
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onBlockForm(BlockFormEvent event)
 	{
-		if (event.isCancelled())
-			return;
-
-		if ( event.getBlock().getType() != plugin.portaltype)
+		if (event.getBlock().getType() != plugin.portaltype)
 				return;
 
 		if (plugin.getPortalStorage().getPortal(event.getBlock().getLocation()) != null)
