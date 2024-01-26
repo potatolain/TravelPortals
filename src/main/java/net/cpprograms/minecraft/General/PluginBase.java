@@ -19,7 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * Plugin base for all of my plugins. Automates some stuff, and makes it easier to manage for me.
  *
- * @author cppchriscpp
  */
 public class PluginBase extends JavaPlugin {
 

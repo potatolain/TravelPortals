@@ -7,7 +7,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * Handle events for all Player related events
- * @author cppchriscpp
  */
 public class TravelPortalsPlayerListener implements Listener {
 	private final TravelPortals plugin;

@@ -139,7 +139,7 @@ Support & Bug Reports
 
 If you have problems setting up the plugin then use the comments on the [project page](https://dev.bukkit.org/projects/travelportals) on BukkitDev.
 
-If you want to report a bug or suggest an enhancement then you should open an [issue](https://github.com/cppchriscpp/TravelPortals/issues).
+If you want to report a bug or suggest an enhancement then you should open an [issue](https://gh.nes.science/TravelPortals/issues).
 
 Someone will try to get back to you as soon as is reasonably possible.
 

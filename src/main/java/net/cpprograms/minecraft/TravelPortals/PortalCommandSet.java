@@ -21,7 +21,6 @@ import net.cpprograms.minecraft.General.PluginBase;
 
 /**
  * CommandSet for the portal method.
- * @author cppchriscpp
  *
  */
 public class PortalCommandSet extends CommandSet

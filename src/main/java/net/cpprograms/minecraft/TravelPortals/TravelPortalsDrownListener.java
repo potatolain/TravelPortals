@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
  * Handle events for all Player related events
- * @author cppchriscpp
  */
 public class TravelPortalsDrownListener implements Listener {
 	private final TravelPortals plugin;

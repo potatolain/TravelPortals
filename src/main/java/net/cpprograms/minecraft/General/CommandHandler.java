@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Class to handle commands in a nice clean way. 
- * @author cppchriscpp
  *
  */
 public class CommandHandler 

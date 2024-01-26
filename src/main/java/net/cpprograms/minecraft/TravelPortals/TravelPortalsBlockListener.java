@@ -15,7 +15,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 /**
  * TravelPortals block listener
- * @author cppchriscpp
  */
 public class TravelPortalsBlockListener implements Listener {
 	private final TravelPortals plugin;

@@ -31,7 +31,6 @@ import org.bukkit.command.CommandSender;
  **		}
  *
  * Just implement the methods, and don't bother implementing onCommand; it's all taken care of!
- * @author cppchriscpp
  *
  */
 public abstract class CommandSet 

@@ -6,7 +6,6 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 
 /**
  * Handle permissions stuff, if needed.
- * @author cppchriscpp
  *
  */
 public class PermissionsHandler

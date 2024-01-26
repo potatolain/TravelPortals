@@ -30,7 +30,6 @@ import org.bukkit.entity.Player;
 /**
  * TravelPortals Bukkit port.
  *
- * @author cppchriscpp
  */
 public class TravelPortals extends PluginBase {
 	/**
@@ -289,7 +288,7 @@ public class TravelPortals extends PluginBase {
 				// the file extremely unclear.
 				logWarning("Old style door configuration found. Config loaded correctly, but you may want to update it.");
 				logWarning("The plugin now supports a list \"doorlist\", to allow use of the new wooden door types.");
-				logWarning("Example configuration here: https://github.com/cppchriscpp/TravelPortals/blob/master/config.yml");
+				logWarning("Example configuration here: https://gh.nes.science/TravelPortals/blob/master/config.yml");
 			}
 			if (conf.get("doorname", null) != null)
 				strDoortype = conf.getString("doorname");

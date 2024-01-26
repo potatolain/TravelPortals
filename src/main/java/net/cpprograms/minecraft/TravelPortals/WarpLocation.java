@@ -2,7 +2,6 @@ package net.cpprograms.minecraft.TravelPortals;
 
 /**
  * @(#)WarpLocation.java Stores warp locations for users.
- * @author cppchriscpp
  * @version 1.10
  */
 
@@ -18,7 +17,6 @@ import java.util.UUID;
 
 /**
  * A quick serializable storage medium for warping points.
- * @author cppchriscpp
  */
 public class WarpLocation implements ConfigurationSerializable {
 	/**
