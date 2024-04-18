@@ -63,6 +63,9 @@ public class MinecraftFontWidthCalculator {
 				continue;
 			}
 			i += SPECIAL_WIDTHS.getOrDefault(s.charAt(j), DEFAULT_WIDTH);
+			if (j + 1 < s.length()) {
+				i++;
+			}
 		}
 
 		return i;
