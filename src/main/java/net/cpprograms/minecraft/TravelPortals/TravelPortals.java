@@ -272,7 +272,12 @@ public class TravelPortals extends PluginBase {
 			if (conf.get("doorlist", null) != null) {
 				List<Material> doorList = new ArrayList<Material>();
 				for (String doorType : conf.getStringList("doorlist")) {
-					doorList.add(Material.valueOf(doorType.toUpperCase()));
+					Material door = Material.matchMaterial(doorType);
+					if (door != null) {
+						doorList.add(door);
+					} else {
+						logWarning("Unknown door type in 'doorlist' config: " + doorType);
+					}
 				}
 				if (!doorList.isEmpty()) {
 					doortypes = EnumSet.copyOf(doorList);

@@ -22,8 +22,7 @@ framename: obsidian
 # The type of block to fill the portal with. Default: WATER
 fill: WATER
 
-# The types of blocks used for the door. Default: All wooden doors and iron doors
-
+# The types of blocks used for the door. Default: All doors
 doorlist:
 - OAK_DOOR
 - IRON_DOOR
@@ -32,6 +31,17 @@ doorlist:
 - DARK_OAK_DOOR
 - JUNGLE_DOOR
 - SPRUCE_DOOR
+- WARPED_DOOR
+- CRIMSON_DOOR
+- CHERRY_DOOR
+- BAMBOO_DOOR
+- EXPOSED_COPPER_DOOR
+- OXIDIZED_COPPER_DOOR
+- WEATHERED_COPPER_DOOR
+- WAXED_COPPER_DOOR
+- WAXED_EXPOSED_COPPER_DOOR
+- WAXED_OXIDIZED_COPPER_DOOR
+- WAXED_WEATHERED_COPPER_DOOR
 
 # The name of the type of block used for the door. Default: door
 doorname: door
