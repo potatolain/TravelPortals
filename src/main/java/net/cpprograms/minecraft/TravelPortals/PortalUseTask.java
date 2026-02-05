@@ -189,13 +189,8 @@ public class PortalUseTask implements Runnable {
 		if (!plugin.permissions.hasPermission(player, "travelportals.portal.use"))
 			return null;
 		Location playerLoc = player.getLocation();
-		World world = player.getWorld();
 
-		Material blockType = world.getBlockAt(playerLoc).getType();
-
-		// Is the user actually in portal material?
-		if (blockType == plugin.portaltype || blockType == plugin.blocktype || plugin.doortypes.contains(blockType))
-		{
+		if (plugin.couldBePortal(playerLoc)) {
 			return plugin.getPortalStorage().getPortal(playerLoc);
 		}
 		return null;

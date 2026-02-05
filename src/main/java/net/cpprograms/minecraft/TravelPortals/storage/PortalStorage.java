@@ -21,7 +21,7 @@ public abstract class PortalStorage {
 
     private Map<String, WarpLocation> portals = new LinkedHashMap<>();
     private Map<String, String> portalNames = new LinkedHashMap<>();
-    private Map<String, String> portalLocations = new LinkedHashMap<>();
+    private Map<StorageLocation, String> portalLocations = new LinkedHashMap<>();
 
     private Set<String> namesToConvert = new HashSet<>();
 
@@ -106,8 +106,8 @@ public abstract class PortalStorage {
         if (portal.hasName()) {
             portalNames.put(portal.getName().toLowerCase(), portal.getIdentifierString());
         }
-        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + "," + portal.getZ(), portal.getIdentifierString());
-        portalLocations.put(portal.getWorld() + "," + portal.getX() + "," + portal.getY() + 1 + "," + portal.getZ(), portal.getIdentifierString());
+        portalLocations.put(new StorageLocation(portal), portal.getIdentifierString());
+        portalLocations.put(new StorageLocation(portal, 1), portal.getIdentifierString());
 
         if (plugin.shouldUseUuid() && !portal.hasOwnerId()) {
             namesToConvert.add(portal.getOwnerName());
@@ -133,9 +133,9 @@ public abstract class PortalStorage {
      * @return          The Portal or null if none was found
      */
     public WarpLocation getPortal(Location location) {
-        String portalIdentifier = portalLocations.get(location.getWorld().getName() + "," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+        String portalIdentifier = portalLocations.get(new StorageLocation(location));
         if (portalIdentifier == null) {
-            portalIdentifier = portalLocations.get("," + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ());
+            portalIdentifier = portalLocations.get(new StorageLocation("", location));
         }
         if (portalIdentifier != null) {
             if (portals.containsKey(portalIdentifier)) {
@@ -292,5 +292,23 @@ public abstract class PortalStorage {
     public void clearCache() {
         portals.clear();
         portalLocations.clear();
+    }
+
+    public record StorageLocation(String world, int x, int y, int z) {
+        public StorageLocation(Location location) {
+            this(location.getWorld() != null ? location.getWorld().getName() : "", location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        }
+
+        public StorageLocation(String world, Location location) {
+            this(world, location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        }
+
+        public StorageLocation(WarpLocation warpLocation) {
+            this(warpLocation.getWorld(), warpLocation.getX(), warpLocation.getY(), warpLocation.getZ());
+        }
+
+        public StorageLocation(WarpLocation warpLocation, int yOffset) {
+            this(warpLocation.getWorld(), warpLocation.getX(), warpLocation.getY() + yOffset, warpLocation.getZ());
+        }
     }
 }

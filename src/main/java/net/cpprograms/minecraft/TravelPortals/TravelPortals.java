@@ -177,6 +177,11 @@ public class TravelPortals extends PluginBase {
 	protected int followTicks = 7;
 
 	/**
+	 * Flag indicating if portal blocks should be validated before querying.
+	 */
+	private boolean validatePortalBlocks = true;
+
+	/**
 	 * Flag indicating if playerMove should be used or not.
 	 */
 	protected boolean usePlayerMove = true;
@@ -324,6 +329,8 @@ public class TravelPortals extends PluginBase {
 			if (conf.get("numsaves", null) != null)
 				numsaves = conf.getInt("numsaves");
 
+			if (conf.get("validate-portal-blocks", null) != null)
+				validatePortalBlocks = conf.getBoolean("validate-portal-blocks");
 			if (conf.get("useplayermove", null) != null)
 				usePlayerMove = conf.getBoolean("useplayermove");
 			if (conf.get("polling-mainticks", null) != null)
@@ -552,9 +559,8 @@ public class TravelPortals extends PluginBase {
 		if (!permissions.hasPermission(player, "travelportals.portal.use"))
 			return null;
 
-		Material blockType = player.getWorld().getBlockAt(location).getType();
 		// Is the user actually in portal material?
-		if (blockType == portaltype || blockType == blocktype || doortypes.contains(blockType))
+		if (couldBePortal(location))
 		{
 			WarpLocation portal = portalStorage.getPortal(location);
 			if (portal == null)
@@ -813,6 +819,13 @@ public class TravelPortals extends PluginBase {
 	}
 
 	/**
+	 * Whether the portal blocks should be validated before querying
+	 */
+	public boolean shouldValidatePortalBlocks() {
+		return validatePortalBlocks;
+	}
+
+	/**
 	 * How many backup saves should there be? (Default is 3)
 	 */
 	public int getNumSaves() {
@@ -839,6 +852,22 @@ public class TravelPortals extends PluginBase {
 			default:
 				throw new IllegalArgumentException("The storage type " + type + " is not properly supported yet! Please choose a different one!");
 		}
+	}
+
+	/**
+	 * Check if the blocks at the location could be part of a portal.
+	 *
+	 * @param location The location to check
+	 * @return <code>true</code> if the blocks could be part of a portal or 'validate-portal-blocks' is false in the config
+	 */
+	public boolean couldBePortal(Location location) {
+		if (!validatePortalBlocks) {
+			return true;
+		}
+
+		// Is the user actually in portal material?
+		Material type = location.getBlock().getType();
+		return type == portaltype || type == blocktype || doortypes.contains(type);
 	}
 }
 

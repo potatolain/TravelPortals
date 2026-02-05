@@ -92,6 +92,12 @@ sounds:
 # to 5 or 10. 
 numsaves: 3
 
+# This validates the types of blocks before checking if there is a portal at the location
+# of the player. This might be more efficient but break portals if they no longer are filled
+# with the "fill"-block (e.g. after changing that option or cases were players managed to remove
+# that block)
+validate-portal-blocks: true
+
 # This option determines whether to use the playerMove functionality (default) or the new
 # polling technique developed by asofold, which may perform better on high-load servers. 
 # true uses the old method; false uses the new one.
