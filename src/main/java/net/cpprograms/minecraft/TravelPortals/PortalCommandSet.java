@@ -109,15 +109,15 @@ public class PortalCommandSet extends CommandSet
 			}
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.name"))
-				player.sendMessage(ChatColor.DARK_GREEN + "/portal name [name]" + ChatColor.GREEN + " sets the name of this portal.");
+				player.sendMessage(ChatColor.DARK_GREEN + "/portal name <name>" + ChatColor.GREEN + " sets the name of this portal.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.warp"))
-				player.sendMessage(ChatColor.DARK_GREEN + "/portal warp [name]" + ChatColor.GREEN + " sets the portal name to warp to.");
+				player.sendMessage(ChatColor.DARK_GREEN + "/portal warp <name>" + ChatColor.GREEN + " sets the portal name to warp to.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.privacy"))
-				player.sendMessage(ChatColor.DARK_GREEN + "/portal privacy [name] public|hidden|private" + ChatColor.GREEN + " sets the portal's privacy level.");
+				player.sendMessage(ChatColor.DARK_GREEN + "/portal privacy <name> public|hidden|private" + ChatColor.GREEN + " sets the portal's privacy level.");
 			else if (plugin.permissions.hasPermission(player, "travelportals.command.hide"))
-				player.sendMessage(ChatColor.DARK_GREEN + "/portal hide [name]" + ChatColor.GREEN + " hides (or unhides) a portal from the list.");
+				player.sendMessage(ChatColor.DARK_GREEN + "/portal hide <name>" + ChatColor.GREEN + " hides (or unhides) a portal from the list.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.command.info"))
 				player.sendMessage(ChatColor.DARK_GREEN + "/portal info" + ChatColor.GREEN + " shows information about named or nearby portal.");
@@ -126,25 +126,25 @@ public class PortalCommandSet extends CommandSet
 				player.sendMessage(ChatColor.DARK_GREEN + "/portal claim" + ChatColor.GREEN + " claims (or gives up ownership of) a portal.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deactivate", player.isOp()))
-				player.sendMessage(ChatColor.DARK_RED + "/portal deactivate [name]" + ChatColor.RED + " deactivates a portal entirely.");
+				player.sendMessage(ChatColor.DARK_RED + "/portal deactivate <name>" + ChatColor.RED + " deactivates a portal entirely.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.renameworld", player.isOp()))
-				player.sendMessage(ChatColor.RED + "If you rename a world, use " + ChatColor.DARK_RED + "/portal renameworld [oldname] [newname]" + ChatColor.RED + " to redirect existing portals");
+				player.sendMessage(ChatColor.RED + "If you rename a world, use " + ChatColor.DARK_RED + "/portal renameworld <oldname> <newname>" + ChatColor.RED + " to redirect existing portals");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.fixworld", player.isOp()))
-				sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with " + ChatColor.DARK_RED + "/portal fixworld [world]");
+				sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with " + ChatColor.DARK_RED + "/portal fixworld <world>");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.deleteworld", player.isOp()))
-				player.sendMessage(ChatColor.RED + "If you delete a world, use " + ChatColor.DARK_RED + "/portal deleteworld [name]" + ChatColor.RED + " to delete all portals pointing to it.");
+				player.sendMessage(ChatColor.RED + "If you delete a world, use " + ChatColor.DARK_RED + "/portal deleteworld <name>" + ChatColor.RED + " to delete all portals pointing to it.");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.export", player.isOp()))
 				player.sendMessage(ChatColor.RED + "You can export to travelportals.txt with " + ChatColor.DARK_RED + "/portal export");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reimport", player.isOp()))
-				player.sendMessage(ChatColor.RED + "You can import portals with " + ChatColor.DARK_RED + "/portal reimport [file name]");
+				player.sendMessage(ChatColor.RED + "You can import portals with " + ChatColor.DARK_RED + "/portal reimport <file name>");
 
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.reload", player.isOp()))
-				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use " + ChatColor.DARK_RED + "/portal reload");
+				player.sendMessage(ChatColor.RED + "If you want to reload the plugin config use " + ChatColor.DARK_RED + "/portal reload [nosave]");
 			/*
 			if (plugin.permissions.hasPermission(player, "travelportals.admin.command.convert", player.isOp()))
 				sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use " + ChatColor.DARK_RED + "/portal convert from|to " + StorageType.stringValues());
@@ -159,14 +159,14 @@ public class PortalCommandSet extends CommandSet
 			sender.sendMessage(ChatColor.GRAY + "Note: Most commands aren't accessible from the command line.");
 			sender.sendMessage(ChatColor.DARK_GREEN + "portal info" + ChatColor.GREEN + " shows information about named or nearby portal.");
 			sender.sendMessage(ChatColor.DARK_GREEN + "portal hide" + ChatColor.GREEN + " hides or unhides a named portal.");
-			sender.sendMessage(ChatColor.DARK_RED + "portal deactivate [name]" + ChatColor.RED + " deactivates a portal entirely.");
+			sender.sendMessage(ChatColor.DARK_RED + "portal deactivate <name>" + ChatColor.RED + " deactivates a portal entirely.");
 			sender.sendMessage(ChatColor.DARK_RED + "portal export" + ChatColor.RED + " exports all known portals to travelportals.txt");
-			sender.sendMessage(ChatColor.DARK_RED + "portal reimport [file name]" + ChatColor.RED + " imports a list of portals from a txt file");
-			sender.sendMessage(ChatColor.RED + "If you rename a world, use " + ChatColor.DARK_RED + "/portal renameworld [oldname] [newname]" + ChatColor.RED + " to replace it");
+			sender.sendMessage(ChatColor.DARK_RED + "portal reimport <file name>" + ChatColor.RED + " imports a list of portals from a txt file");
+			sender.sendMessage(ChatColor.RED + "If you rename a world, use " + ChatColor.DARK_RED + "/portal renameworld <oldname> <newname>" + ChatColor.RED + " to replace it");
 			sender.sendMessage(ChatColor.RED + "You can set any portals without worlds with " + ChatColor.DARK_RED + "/portal fixworld world");
-			sender.sendMessage(ChatColor.RED + "If you delete a world, use " + ChatColor.DARK_RED + "/portal deleteworld [name]" + ChatColor.RED + " to delete all portals pointing to it.");
+			sender.sendMessage(ChatColor.RED + "If you delete a world, use " + ChatColor.DARK_RED + "/portal deleteworld <name>" + ChatColor.RED + " to delete all portals pointing to it.");
 			//sender.sendMessage(ChatColor.RED + "If you want to convert from one storage to another use " + ChatColor.DARK_RED + "/portal convert from|to " + StorageType.stringValues());
-			sender.sendMessage(ChatColor.RED + "If you want to reload the plugin config use " + ChatColor.DARK_RED + "/portal reload");
+			sender.sendMessage(ChatColor.RED + "If you want to reload the plugin config use " + ChatColor.DARK_RED + "/portal reload [nosave]");
 			sender.sendMessage(ChatColor.GRAY + "To get a list of existing portals, use the command " + ChatColor.WHITE + "/portal list.");
 		}
 		return true;
@@ -183,7 +183,9 @@ public class PortalCommandSet extends CommandSet
 		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.reload", sender.isOp()))
 			return noPermissionForAction(sender);
 
-		plugin.getPortalStorage().save(); // Force save before loading it again
+		if (args.length == 0 || "nosave".equalsIgnoreCase(args[0])) {
+			plugin.getPortalStorage().save(); // Force save before loading it again
+		}
 		plugin.reloadConfig();
 		if (plugin.load()) {
 			sender.sendMessage(ChatColor.DARK_GREEN + "Reloaded the config!");
