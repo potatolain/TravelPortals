@@ -183,7 +183,7 @@ public class PortalCommandSet extends CommandSet
 		if (!plugin.permissions.hasPermission(sender, "travelportals.admin.command.reload", sender.isOp()))
 			return noPermissionForAction(sender);
 
-		if (args.length == 0 || "nosave".equalsIgnoreCase(args[0])) {
+		if (args.length == 0 || !"nosave".equalsIgnoreCase(args[0])) {
 			plugin.getPortalStorage().save(); // Force save before loading it again
 		}
 		plugin.reloadConfig();
